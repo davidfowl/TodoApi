@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-class TodoApi3
+﻿class TodoApi3
 {
     public static void MapRoutes(IEndpointRouteBuilder routes)
     {
