@@ -10,7 +10,7 @@ class TodoApi3
 
         async Task<IResult> GetTodo(int id, [FromServices] TodoDbContext2 db)
         {
-            return await db.Todos.FindAsync(id) is Todo todo ? new JsonResult(todo) : new StatusCodeResult(404);
+            return await db.Todos.FindAsync(id) is Todo todo ? Ok(todo) : NotFound();
         }
 
         async Task AddTodo(Todo todo, [FromServices] TodoDbContext2 db)
@@ -24,13 +24,13 @@ class TodoApi3
             var todo = await db.Todos.FindAsync(id);
             if (todo is null)
             {
-                return new StatusCodeResult(404);
+                return NotFound();
             }
 
             db.Todos.Remove(todo);
             await db.SaveChangesAsync();
 
-            return new StatusCodeResult(200);
+            return Ok();
         }
 
         routes.MapGet("/todos", GetTodos);
