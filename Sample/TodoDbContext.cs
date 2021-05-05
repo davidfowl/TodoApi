@@ -1,4 +1,6 @@
-﻿public class TodoDbContext : DbContext
+﻿using System.ComponentModel.DataAnnotations;
+
+public class TodoDbContext : DbContext
 {
     public DbSet<Todo> Todos { get; set; }
 
@@ -20,4 +22,4 @@ public class TodoDbContext2 : DbContext
     public DbSet<Todo> Todos { get; set; }
 }
 
-public record Todo(int Id, string Name, bool IsComplete);
+public record Todo(int Id, [property: Required] string Title, bool IsComplete);
