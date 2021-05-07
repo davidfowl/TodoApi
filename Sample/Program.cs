@@ -16,9 +16,7 @@ var options = new DbContextOptionsBuilder().UseSqlite(connectionString).Options;
     db.Database.EnsureCreated();
 }
 
+// Register the routes
 TodoApi.MapRoutes(app, options);
-// TodoApi2.MapRoutes(app);
-// TodoApi3.MapRoutes(app);
-// TodoApi4.MapRoutes(app);
 
 app.Run();
