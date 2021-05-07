@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc.Routing;
 
 class TodoApi5
 {
-    private readonly TodoDbContext2 _db;
+    private readonly TodoDbContext _db;
 
-    public TodoApi5(TodoDbContext2 db)
+    public TodoApi5(TodoDbContext db)
     {
         _db = db;
     }
