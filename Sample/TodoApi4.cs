@@ -5,18 +5,18 @@
         return await db.Todos.ToListAsync();
     }
 
-    public static async Task<IResult> GetTodo(int id, [FromServices] TodoDbContext db)
+    public static async Task<IResult> GetTodo([FromServices] TodoDbContext db, int id)
     {
         return await db.Todos.FindAsync(id) is Todo todo ? Ok(todo) : NotFound();
     }
 
-    public static async Task AddTodo(Todo todo, [FromServices] TodoDbContext db)
+    public static async Task AddTodo([FromServices] TodoDbContext db, Todo todo)
     {
         await db.Todos.AddAsync(todo);
         await db.SaveChangesAsync();
     }
 
-    public static async Task<IResult> DeleteTodo(int id, [FromServices] TodoDbContext db)
+    public static async Task<IResult> DeleteTodo([FromServices] TodoDbContext db, int id)
     {
         var todo = await db.Todos.FindAsync(id);
         if (todo is null)
