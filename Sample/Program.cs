@@ -11,8 +11,10 @@ var app = builder.Build();
 var options = new DbContextOptionsBuilder().UseSqlite(connectionString).Options;
 
 // This makes sure the database and tables are created
-var db = new TodoDbContext(options);
-db.Database.EnsureCreated();
+{
+    using var db = new TodoDbContext(options);
+    db.Database.EnsureCreated();
+}
 
 TodoApi.MapRoutes(app, options);
 // TodoApi2.MapRoutes(app);
