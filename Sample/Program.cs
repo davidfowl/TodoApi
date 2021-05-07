@@ -1,10 +1,14 @@
 
 var builder = WebApplication.CreateBuilder(args);
+
+var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
+
 // Uncomment this to use dependency injection
-// builder.Services.AddDbContext<TodoDbContext>(o => o.UseSqlite("DataSource=Todos.db"));
+// builder.Services.AddDbContext<TodoDbContext>(o => o.UseSqlite(connectionString));
+
 var app = builder.Build();
 
-var options = new DbContextOptionsBuilder().UseSqlite("Data Source=Todos.db").Options;
+var options = new DbContextOptionsBuilder().UseSqlite(connectionString).Options;
 
 // This makes sure the database and tables are created
 var db = new TodoDbContext(options);
