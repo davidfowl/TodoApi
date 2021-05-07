@@ -2,11 +2,15 @@
 
 public class TodoDbContext : DbContext
 {
-    public TodoDbContext(DbContextOptions options) : base(options)
-    {
-    }
+    public TodoDbContext(DbContextOptions options) : base(options) { }
 
     public DbSet<Todo> Todos { get; set; }
 }
 
-public record Todo(int Id, [property: Required] string Title, bool IsComplete);
+public class Todo
+{
+    public int Id { get; set; }
+    [Required]
+    public string Title { get; set; }
+    public bool IsComplete { get; set; }
+}
