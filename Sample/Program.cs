@@ -11,8 +11,8 @@ var app = builder.Build();
 var options = new DbContextOptionsBuilder().UseSqlite(connectionString).Options;
 
 // This makes sure the database and tables are created
+using (var db = new TodoDbContext(options))
 {
-    using var db = new TodoDbContext(options);
     db.Database.EnsureCreated();
 }
 
