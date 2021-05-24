@@ -10,10 +10,12 @@
         return await db.Todos.FindAsync(id) is Todo todo ? Ok(todo) : NotFound();
     }
 
-    public static async Task AddTodo([FromServices] TodoDbContext db, Todo todo)
+    public static async Task<IResult> AddTodo([FromServices] TodoDbContext db, Todo todo)
     {
         await db.Todos.AddAsync(todo);
         await db.SaveChangesAsync();
+
+        return CreatedAt(todo, "todos", new { todo.Id });
     }
 
     public static async Task<IResult> DeleteTodo([FromServices] TodoDbContext db, int id)
@@ -33,7 +35,7 @@
     public static void MapRoutes(IEndpointRouteBuilder routes)
     {
         routes.MapGet("/todos", GetTodos);
-        routes.MapGet("/todos/{id}", GetTodo);
+        routes.MapGet("/todos/{id}", GetTodo).WithMetadata(new EndpointNameMetadata("todos"));
         routes.MapPost("/todos", AddTodo);
         routes.MapDelete("/todos/{id}", DeleteTodo);
     }

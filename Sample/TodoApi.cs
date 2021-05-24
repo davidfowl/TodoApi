@@ -12,13 +12,16 @@
         {
             using var db = new TodoDbContext(options);
             return await db.Todos.FindAsync(id) is Todo todo ? Ok(todo) : NotFound();
-        });
+        })
+        .WithMetadata(new EndpointNameMetadata("todos"));
 
         routes.MapPost("/todos", async (Todo todo) =>
         {
             using var db = new TodoDbContext(options);
             await db.Todos.AddAsync(todo);
             await db.SaveChangesAsync();
+
+            return CreatedAt(todo, "todos", new { todo.Id });
         });
 
         routes.MapDelete("/todos/{id}", async (int id) =>
