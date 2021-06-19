@@ -38,6 +38,7 @@
         {
             var linkGenerator = httpContext.RequestServices.GetRequiredService<LinkGenerator>();
 
+            httpContext.Response.StatusCode = StatusCodes.Status201Created;
             httpContext.Response.Headers.Location = linkGenerator.GetPathByName(_endpointName, _values);
 
             return httpContext.Response.WriteAsJsonAsync(_value);
