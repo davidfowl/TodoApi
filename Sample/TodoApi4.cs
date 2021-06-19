@@ -1,16 +1,16 @@
 ﻿class TodoApi4
 {
-    public static async Task<List<Todo>> GetTodos([FromServices] TodoDbContext db)
+    public static async Task<List<Todo>> GetTodos(TodoDbContext db)
     {
         return await db.Todos.ToListAsync();
     }
 
-    public static async Task<IResult> GetTodo([FromServices] TodoDbContext db, int id)
+    public static async Task<IResult> GetTodo(TodoDbContext db, int id)
     {
         return await db.Todos.FindAsync(id) is Todo todo ? Ok(todo) : NotFound();
     }
 
-    public static async Task<IResult> AddTodo([FromServices] TodoDbContext db, Todo todo)
+    public static async Task<IResult> AddTodo(TodoDbContext db, Todo todo)
     {
         await db.Todos.AddAsync(todo);
         await db.SaveChangesAsync();
@@ -18,7 +18,7 @@
         return CreatedAt(todo, "todos", new { todo.Id });
     }
 
-    public static async Task<IResult> DeleteTodo([FromServices] TodoDbContext db, int id)
+    public static async Task<IResult> DeleteTodo(TodoDbContext db, int id)
     {
         var todo = await db.Todos.FindAsync(id);
         if (todo is null)

@@ -56,7 +56,7 @@ class TodoApi5
             if (attribute is null) continue;
 
             // Create a delegate mapping the route template and methods
-            RequestDelegate del = RequestDelegateFactory.Create(method, context => objectFactory(context.RequestServices, null));
+            RequestDelegate del = RequestDelegateFactory.Create(method, routes.ServiceProvider, context => objectFactory(context.RequestServices, null));
 
             routes.MapMethods(attribute.Template, attribute.HttpMethods, del);
         }

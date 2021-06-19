@@ -2,17 +2,17 @@
 {
     public static void MapRoutes(IEndpointRouteBuilder routes)
     {
-        async Task<List<Todo>> GetTodos([FromServices] TodoDbContext db)
+        async Task<List<Todo>> GetTodos(TodoDbContext db)
         {
             return await db.Todos.ToListAsync();
         }
 
-        async Task<IResult> GetTodo([FromServices] TodoDbContext db, int id)
+        async Task<IResult> GetTodo(TodoDbContext db, int id)
         {
             return await db.Todos.FindAsync(id) is Todo todo ? Ok(todo) : NotFound();
         }
 
-        async Task<IResult> AddTodo([FromServices] TodoDbContext db, Todo todo)
+        async Task<IResult> AddTodo(TodoDbContext db, Todo todo)
         {
             await db.Todos.AddAsync(todo);
             await db.SaveChangesAsync();
@@ -20,7 +20,7 @@
             return CreatedAt(todo, "todos", new { todo.Id });
         }
 
-        async Task<IResult> DeleteTodo([FromServices] TodoDbContext db, int id)
+        async Task<IResult> DeleteTodo(TodoDbContext db, int id)
         {
             var todo = await db.Todos.FindAsync(id);
             if (todo is null)
