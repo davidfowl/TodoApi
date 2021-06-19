@@ -7,16 +7,6 @@ builder.Services.AddDbContext<TodoDbContext>(o => o.UseSqlite(connectionString))
 
 var app = builder.Build();
 
-//var options = new DbContextOptionsBuilder().UseSqlite(connectionString).Options;
-
-//// This makes sure the database and tables are created
-//using (var db = new TodoDbContext(options))
-//{
-//    db.Database.EnsureCreated();
-//}
-
-// Register the routes
-// TodoApi.MapRoutes(app, options);
 TodoApi2.MapRoutes(app);
 
 app.Run();
