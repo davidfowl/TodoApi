@@ -11,7 +11,7 @@
         {
             return await db.Todos.FindAsync(id) is Todo todo ? Ok(todo) : NotFound();
         })
-        .WithMetadata(new EndpointNameMetadata("todos"));
+        .WithName("todos");
 
         routes.MapPost("/todos", async (TodoDbContext db, Todo todo) =>
         {
