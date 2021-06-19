@@ -19,6 +19,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{builder.Environment.ApplicationName} v1"));
 }
 
-TodoApi2.MapRoutes(app);
+TodoApi.MapRoutes(app);
 
 app.Run();
