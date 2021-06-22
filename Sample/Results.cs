@@ -3,23 +3,8 @@
     public static IResult NotFound() => new StatusCodeResult(404);
     public static IResult Ok() => new StatusCodeResult(200);
     public static IResult Status(int statusCode) => new StatusCodeResult(statusCode);
-    public static OkResult<T> Ok<T>(T value) => new(value);
-    public static CreatedAtRouteResult<T> CreatedAt<T>(T value, string endpointName, object values) => new(value, endpointName, values);
-
-    public class OkResult<T> : IResult
-    {
-        private readonly T _value;
-
-        public OkResult(T value)
-        {
-            _value = value;
-        }
-
-        public Task ExecuteAsync(HttpContext httpContext)
-        {
-            return httpContext.Response.WriteAsJsonAsync(_value);
-        }
-    }
+    public static IResult Ok(object value) => new JsonResult(value);
+    public static IResult CreatedAt<T>(T value, string endpointName, object values) => new CreatedAtRouteResult<T>(value, endpointName, values);
 
     public class CreatedAtRouteResult<T> : IResult
     {
