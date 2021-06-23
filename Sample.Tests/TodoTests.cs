@@ -13,7 +13,7 @@ namespace Sample.Tests
     public class TodoTests
     {
         [Fact]
-        public async Task GetTodosReturnsEmptyList()
+        public async Task GetTodos()
         {
             await using var application = new TodoApplication();
 
@@ -24,7 +24,7 @@ namespace Sample.Tests
         }
 
         [Fact]
-        public async Task PostingNewTodoAddsItemToDatabase()
+        public async Task PostTodos()
         {
             await using var application = new TodoApplication();
 
@@ -38,6 +38,29 @@ namespace Sample.Tests
             Assert.Single(todos);
             Assert.Equal("I want to do this thing tomorrow", todos[0].Title);
             Assert.False(todos[0].IsComplete);
+        }
+
+        [Fact]
+        public async Task DeleteTodos()
+        {
+            await using var application = new TodoApplication();
+
+            var client = application.CreateClient();
+            var response = await client.PostAsJsonAsync("/todos", new Todo { Title = "I want to do this thing tomorrow" });
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+            var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+
+            Assert.Single(todos);
+            Assert.Equal("I want to do this thing tomorrow", todos[0].Title);
+            Assert.False(todos[0].IsComplete);
+
+            await client.DeleteAsync($"/todos/{todos[0].Id}");
+
+            response = await client.GetAsync($"/todos/{todos[0].Id}");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 
