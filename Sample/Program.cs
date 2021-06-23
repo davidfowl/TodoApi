@@ -1,10 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
 
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddEndpointsApiExplorer(); // TBD: Figure this out how to move this into the core
 builder.Services.AddDbContext<TodoDbContext>(o => o.UseSqlite(connectionString));
 builder.Services.AddSwaggerGen(c =>
 {
@@ -19,6 +20,37 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{builder.Environment.ApplicationName} v1"));
 }
 
-TodoApi.MapRoutes(app);
+app.MapGet("/todos", async (TodoDbContext db) =>
+{
+    return await db.Todos.ToListAsync();
+});
+
+app.MapGet("/todos/{id}", async (TodoDbContext db, int id) =>
+{
+    return await db.Todos.FindAsync(id) is Todo todo ? Ok(todo) : NotFound();
+})
+.WithName("todos");
+
+app.MapPost("/todos", async (TodoDbContext db, Todo todo) =>
+{
+    await db.Todos.AddAsync(todo);
+    await db.SaveChangesAsync();
+
+    return CreatedAt(todo, "todos", new { todo.Id });
+});
+
+app.MapDelete("/todos/{id}", async (TodoDbContext db, int id) =>
+{
+    var todo = await db.Todos.FindAsync(id);
+    if (todo is null)
+    {
+        return NotFound();
+    }
+
+    db.Todos.Remove(todo);
+    await db.SaveChangesAsync();
+
+    return Ok();
+});
 
 app.Run();
