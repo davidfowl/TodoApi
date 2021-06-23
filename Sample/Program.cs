@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
 
-builder.Services.AddEndpointsApiExplorer(); // TBD: Figure this out how to move this into the core
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<TodoDbContext>(o => o.UseSqlite(connectionString));
 builder.Services.AddSwaggerGen(c =>
 {
