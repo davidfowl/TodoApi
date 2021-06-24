@@ -1,4 +1,6 @@
-﻿namespace Microsoft.AspNetCore.Builder
+﻿// TODO: https://github.com/dotnet/aspnetcore/issues/33687
+
+namespace Microsoft.AspNetCore.Builder
 {
     public static class EndpointMetadataExtensions
     {
