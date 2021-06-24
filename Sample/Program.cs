@@ -30,15 +30,14 @@ app.MapGet("/todos", async (TodoDbContext db) =>
 app.MapGet("/todos/{id}", async (TodoDbContext db, int id) =>
 {
     return await db.Todos.FindAsync(id) is Todo todo ? Ok(todo) : NotFound();
-})
-.WithName("todos");
+});
 
 app.MapPost("/todos", async (TodoDbContext db, Todo todo) =>
 {
     await db.Todos.AddAsync(todo);
     await db.SaveChangesAsync();
 
-    return CreatedAt(todo, "todos", new { todo.Id });
+    return Created($"/todo/{todo.Id}", todo);
 });
 
 app.MapDelete("/todos/{id}", async (TodoDbContext db, int id) =>
