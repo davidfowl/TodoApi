@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Xunit;
@@ -68,13 +69,15 @@ namespace Sample.Tests
     {
         protected override IHost CreateHost(IHostBuilder builder)
         {
-            builder.ConfigureServices(services =>
+            var root = new InMemoryDatabaseRoot();
+
+            builder.ConfigureServices(services => 
             {
                 services.AddScoped(sp =>
                 {
                     // Replace SQL Lite with the in memory provider for tests
                     return new DbContextOptionsBuilder<TodoDbContext>()
-                                .UseInMemoryDatabase("Tests")
+                                .UseInMemoryDatabase("Tests", root)
                                 .UseApplicationServiceProvider(sp)
                                 .Options;
                 });
