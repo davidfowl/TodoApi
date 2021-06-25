@@ -1,6 +1,9 @@
-## ASP.NET Core Minimal APIs
+## Todo REST API with ASP.NET Core Minimal APIs
 
-Samples with minimal APIs from the ASP.NET community stand up. These samples use a nightly build of C# 10.
+Todo REST API samples using ASP.NET Core minimal APIs. It showcases:
+- Using EntityFramework and SQLite for data access
+- OpenAPI support
+- Writing tests for your REST API
 
 ### Download .NET Preview builds
 
