@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
 
-builder.Services.AddEndpointsApiExplorer(); // TODO: https://github.com/dotnet/aspnetcore/pull/33800
 builder.Services.AddDbContext<TodoDbContext>(o => o.UseSqlite(connectionString));
 builder.Services.AddSwaggerGen(c =>
 {
