@@ -9,6 +9,15 @@ builder.Services.AddDbContext<TodoDbContext>(o => o.UseSqlite(connectionString))
 
 var app = builder.Build();
 
+// TODO: Migrations don't work in preview5
+var options = new DbContextOptionsBuilder().UseSqlite(connectionString).Options;
+
+// This makes sure the database and tables are created
+using (var db = new TodoDbContext(options))
+{
+    db.Database.EnsureCreated();
+}
+
 app.MapGet("/todos", async ([FromServices] TodoDbContext db) =>
 {
     return await db.Todos.ToListAsync();
