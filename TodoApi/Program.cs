@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +7,7 @@ var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Da
 builder.Services.AddDbContext<TodoDbContext>(o => o.UseSqlite(connectionString));
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = builder.Environment.ApplicationName, Version = "v1" });
+    c.SwaggerDoc("v1", new() { Title = builder.Environment.ApplicationName, Version = "v1" });
 });
 
 var app = builder.Build();
