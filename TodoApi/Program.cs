@@ -43,6 +43,11 @@ app.MapPut("/todos/{id}", async (TodoDbContext db, int id, Todo todo) =>
         return Results.BadRequest();
     }
 
+    if (!await db.Todos.AnyAsync(x => x.Id == id))
+    {
+        return Results.NotFound();
+    }
+
     db.Update(todo);
     await db.SaveChangesAsync();
 
