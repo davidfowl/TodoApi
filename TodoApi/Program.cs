@@ -43,7 +43,7 @@ app.MapPut("/todos/{id}", async (TodoDbContext db, int id, Todo todo) =>
         return Results.BadRequest();
     }
 
-    db.Entry(todo).State = EntityState.Modified;
+    db.Update(todo);
     await db.SaveChangesAsync();
 
     return Results.Ok();
