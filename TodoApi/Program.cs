@@ -36,6 +36,20 @@ app.MapPost("/todos", async (TodoDbContext db, Todo todo) =>
     return Results.Created($"/todo/{todo.Id}", todo);
 });
 
+app.MapPut("/todos/{id}", async (TodoDbContext db, int id, Todo todo) =>
+{
+    if (id != todo.Id)
+    {
+        return Results.BadRequest();
+    }
+
+    db.Entry(todo).State = EntityState.Modified;
+    await db.SaveChangesAsync();
+
+    return Results.Ok();
+});
+
+
 app.MapDelete("/todos/{id}", async (TodoDbContext db, int id) =>
 {
     var todo = await db.Todos.FindAsync(id);
