@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<TodoDbContext>(o => o.UseSqlite(connectionString));
+builder.Services.AddSqlite<TodoDbContext>(connectionString);
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = builder.Environment.ApplicationName, Version = "v1" });
@@ -18,6 +18,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{builder.Environment.ApplicationName} v1"));
 }
+
+app.MapFallback(() => Results.Redirect("/swagger"));
 
 app.MapGet("/todos", async (TodoDbContext db) =>
 {
