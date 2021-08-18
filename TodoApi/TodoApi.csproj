@@ -15,4 +15,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="TodoApi.Tests" />
+  </ItemGroup>
+
 </Project>
