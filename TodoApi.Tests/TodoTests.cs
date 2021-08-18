@@ -65,7 +65,7 @@ namespace Sample.Tests
         }
     }
 
-    class TodoApplication : WebApplicationFactory<Todo>
+    class TodoApplication : WebApplicationFactory<Program>
     {
         protected override IHost CreateHost(IHostBuilder builder)
         {
