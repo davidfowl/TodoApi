@@ -73,3 +73,5 @@ app.MapDelete("/todos/{id}", async (TodoDbContext db, int id) =>
 });
 
 app.Run();
+
+public partial class Program { }
