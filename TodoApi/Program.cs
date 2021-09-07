@@ -11,6 +11,8 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new() { Title = builder.Environment.ApplicationName, Version = "v1" });
 });
 
+builder.WebHost.UseUrls("http://*:8080");
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
