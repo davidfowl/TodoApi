@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Xunit;
 
@@ -73,13 +75,11 @@ namespace Sample.Tests
 
             builder.ConfigureServices(services => 
             {
-                services.AddScoped(sp =>
+                services.RemoveAll(typeof(DbContextOptions<TodoDbContext>));
+
+                services.AddDbContext<TodoDbContext>(options =>
                 {
-                    // Replace SQL Lite with the in memory provider for tests
-                    return new DbContextOptionsBuilder<TodoDbContext>()
-                                .UseInMemoryDatabase("Tests", root)
-                                .UseApplicationServiceProvider(sp)
-                                .Options;
+                    options.UseInMemoryDatabase("Testing", root);
                 });
             });
 
