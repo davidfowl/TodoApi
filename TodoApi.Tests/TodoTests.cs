@@ -59,7 +59,9 @@ namespace Sample.Tests
             Assert.Equal("I want to do this thing tomorrow", todo.Title);
             Assert.False(todo.IsComplete);
 
-            await client.DeleteAsync($"/todos/{todo.Id}");
+            response = await client.DeleteAsync($"/todos/{todo.Id}");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             response = await client.GetAsync($"/todos/{todo.Id}");
 
