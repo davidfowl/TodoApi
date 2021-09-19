@@ -38,9 +38,9 @@ namespace Sample.Tests
 
             var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
 
-            Assert.Single(todos);
-            Assert.Equal("I want to do this thing tomorrow", todos[0].Title);
-            Assert.False(todos[0].IsComplete);
+            var todo = Assert.Single(todos);
+            Assert.Equal("I want to do this thing tomorrow", todo.Title);
+            Assert.False(todo.IsComplete);
         }
 
         [Fact]
@@ -55,13 +55,13 @@ namespace Sample.Tests
 
             var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
 
-            Assert.Single(todos);
-            Assert.Equal("I want to do this thing tomorrow", todos[0].Title);
-            Assert.False(todos[0].IsComplete);
+            var todo = Assert.Single(todos);
+            Assert.Equal("I want to do this thing tomorrow", todo.Title);
+            Assert.False(todo.IsComplete);
 
-            await client.DeleteAsync($"/todos/{todos[0].Id}");
+            await client.DeleteAsync($"/todos/{todo.Id}");
 
-            response = await client.GetAsync($"/todos/{todos[0].Id}");
+            response = await client.GetAsync($"/todos/{todo.Id}");
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
