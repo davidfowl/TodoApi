@@ -73,14 +73,12 @@ namespace Sample.Tests
         {
             var root = new InMemoryDatabaseRoot();
 
-            builder.ConfigureServices(services => 
+            builder.ConfigureServices(services =>
             {
                 services.RemoveAll(typeof(DbContextOptions<TodoDbContext>));
 
                 services.AddDbContext<TodoDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase("Testing", root);
-                });
+                    options.UseInMemoryDatabase("Testing", root));
             });
 
             return base.CreateHost(builder);
