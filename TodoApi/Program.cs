@@ -61,7 +61,6 @@ app.MapPut("/todos/{id}", async (TodoDbContext db, int id, Todo todo) =>
     return Results.Ok();
 });
 
-
 app.MapDelete("/todos/{id}", async (TodoDbContext db, int id) =>
 {
     var todo = await db.Todos.FindAsync(id);

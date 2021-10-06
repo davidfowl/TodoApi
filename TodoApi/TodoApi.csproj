@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,9 +11,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.0-rc.1.21452.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.5" />
-  </ItemGroup>
-
-  <ItemGroup>
     <InternalsVisibleTo Include="TodoApi.Tests" />
   </ItemGroup>
 
