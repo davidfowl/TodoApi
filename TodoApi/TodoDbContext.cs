@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+
+namespace Sample.Migrations;
 
 public class TodoDbContext : DbContext
 {
-    public TodoDbContext(DbContextOptions options) : base(options) { }
+    public TodoDbContext(DbContextOptions options) : base(options)
+    {
+    }
 
     public DbSet<Todo> Todos => Set<Todo>();
 }
@@ -11,7 +15,8 @@ public class TodoDbContext : DbContext
 public class Todo
 {
     public int Id { get; set; }
-    [Required]
-    public string? Title { get; set; }
+
+    [Required] public string? Title { get; set; }
+
     public bool IsComplete { get; set; }
 }

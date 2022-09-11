@@ -1,17 +1,19 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Sample.Migrations;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
+string connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSqlite<TodoDbContext>(connectionString);
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = builder.Environment.ApplicationName, Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = builder.Environment.ApplicationName, Version = "v1" });
 });
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
@@ -21,16 +23,13 @@ if (app.Environment.IsDevelopment())
 
 app.MapFallback(() => Results.Redirect("/swagger"));
 
-app.MapGet("/todos", async (TodoDbContext db) =>
-{
-    return await db.Todos.ToListAsync();
-});
+app.MapGet("/todos", async (TodoDbContext db) => await db.Todos.ToListAsync());
 
-app.MapGet("/todos/{id}", async (TodoDbContext db, int id) =>
+app.MapGet("/todos/{id:int}", async (TodoDbContext db, int id) =>
 {
     return await db.Todos.FindAsync(id) switch
     {
-        Todo todo => Results.Ok(todo),
+        { } todo => Results.Ok(todo),
         null => Results.NotFound()
     };
 });
@@ -43,17 +42,11 @@ app.MapPost("/todos", async (TodoDbContext db, Todo todo) =>
     return Results.Created($"/todos/{todo.Id}", todo);
 });
 
-app.MapPut("/todos/{id}", async (TodoDbContext db, int id, Todo todo) =>
+app.MapPut("/todos/{id:int}", async (TodoDbContext db, int id, Todo todo) =>
 {
-    if (id != todo.Id)
-    {
-        return Results.BadRequest();
-    }
+    if (id != todo.Id) return Results.BadRequest();
 
-    if (!await db.Todos.AnyAsync(x => x.Id == id))
-    {
-        return Results.NotFound();
-    }
+    if (!await db.Todos.AnyAsync(x => x.Id == id)) return Results.NotFound();
 
     db.Update(todo);
     await db.SaveChangesAsync();
@@ -61,13 +54,10 @@ app.MapPut("/todos/{id}", async (TodoDbContext db, int id, Todo todo) =>
     return Results.Ok();
 });
 
-app.MapDelete("/todos/{id}", async (TodoDbContext db, int id) =>
+app.MapDelete("/todos/{id:int}", async (TodoDbContext db, int id) =>
 {
-    var todo = await db.Todos.FindAsync(id);
-    if (todo is null)
-    {
-        return Results.NotFound();
-    }
+    Todo? todo = await db.Todos.FindAsync(id);
+    if (todo is null) return Results.NotFound();
 
     db.Todos.Remove(todo);
     await db.SaveChangesAsync();

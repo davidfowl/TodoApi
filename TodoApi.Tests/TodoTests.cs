@@ -6,35 +6,40 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
+using Sample.Migrations;
 using Xunit;
+
+namespace TodoApiTest;
 
 public class TodoTests
 {
     [Fact]
     public async Task GetTodos()
     {
-        await using var application = new TodoApplication();
+        await using TodoApplication application = new();
 
-        var client = application.CreateClient();
-        var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        HttpClient client = application.CreateClient();
+        List<Todo>? todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
 
+        Assert.NotNull(todos);
         Assert.Empty(todos);
     }
 
     [Fact]
     public async Task PostTodos()
     {
-        await using var application = new TodoApplication();
+        await using TodoApplication application = new();
 
-        var client = application.CreateClient();
-        var response = await client.PostAsJsonAsync("/todos", new Todo { Title = "I want to do this thing tomorrow" });
+        HttpClient client = application.CreateClient();
+        HttpResponseMessage response =
+            await client.PostAsJsonAsync("/todos", new Todo { Title = "I want to do this thing tomorrow" });
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
-        var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        List<Todo>? todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
 
-        var todo = Assert.Single(todos);
+        Assert.NotNull(todos);
+        Todo todo = Assert.Single(todos);
         Assert.Equal("I want to do this thing tomorrow", todo.Title);
         Assert.False(todo.IsComplete);
     }
@@ -42,16 +47,18 @@ public class TodoTests
     [Fact]
     public async Task DeleteTodos()
     {
-        await using var application = new TodoApplication();
+        await using TodoApplication application = new();
 
-        var client = application.CreateClient();
-        var response = await client.PostAsJsonAsync("/todos", new Todo { Title = "I want to do this thing tomorrow" });
+        HttpClient client = application.CreateClient();
+        HttpResponseMessage response =
+            await client.PostAsJsonAsync("/todos", new Todo { Title = "I want to do this thing tomorrow" });
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
-        var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        List<Todo>? todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
 
-        var todo = Assert.Single(todos);
+        Assert.NotNull(todos);
+        Todo todo = Assert.Single(todos);
         Assert.Equal("I want to do this thing tomorrow", todo.Title);
         Assert.False(todo.IsComplete);
 
@@ -65,11 +72,11 @@ public class TodoTests
     }
 }
 
-class TodoApplication : WebApplicationFactory<Program>
+internal class TodoApplication : WebApplicationFactory<Program>
 {
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        var root = new InMemoryDatabaseRoot();
+        InMemoryDatabaseRoot root = new();
 
         builder.ConfigureServices(services =>
         {
