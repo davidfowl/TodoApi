@@ -5,6 +5,6 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "nuget"
-    directory: "/TodoApi.Test"
+    directory: "/TodoApi.Tests"
     schedule:
       interval: "daily"
