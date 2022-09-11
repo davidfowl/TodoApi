@@ -1,0 +1,18 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/Test"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "nuget"
+    directory: "/Core"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "nuget"
+    directory: "/Web"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/Web/ClientApp"
+    schedule:
+      interval: "daily"     
