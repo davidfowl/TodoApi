@@ -12,7 +12,7 @@ namespace Sample.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.0-preview.6.21318.1");
+                .HasAnnotation("ProductVersion", "6.0.8");
 
             modelBuilder.Entity("Todo", b =>
                 {
