@@ -9,7 +9,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.8" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.9" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
         <InternalsVisibleTo Include="TodoApi.Tests" />
     </ItemGroup>
