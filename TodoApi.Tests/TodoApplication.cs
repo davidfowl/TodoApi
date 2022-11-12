@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,21 @@ internal class TodoApplication : WebApplicationFactory<Program>
             // We need to make this a singleton so that we can use it from our tests
             services.AddDbContext<TodoDbContext>(options => options.UseInMemoryDatabase("Testing", root), ServiceLifetime.Singleton);
             services.AddDbContextFactory<TodoDbContext>(options => options.UseInMemoryDatabase("Testing", root));
+        });
+
+        var keyBytes = new byte[32];
+        RandomNumberGenerator.Fill(keyBytes);
+        var base64Key = Convert.ToBase64String(keyBytes);
+
+        // We need to configure signing keys for CI scenarios where
+        // there's no user-jwts tool
+        builder.ConfigureAppConfiguration(config =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Authentication:Schemes:Bearer:SigningKeys:0:Issuer"] = "dotnet-user-jwts",
+                ["Authentication:Schemes:Bearer:SigningKeys:0:Value"] = base64Key
+            });
         });
 
         return base.CreateHost(builder);
