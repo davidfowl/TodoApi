@@ -9,6 +9,9 @@ internal static class TodoApi
     {
         group.WithTags("Todos");
 
+        // Rate limit all of the APIs
+        group.RequirePerUserRateLimit();
+
         group.MapGet("/", async (TodoDbContext db, UserId owner) =>
         {
             return await db.Todos.Where(todo => todo.OwnerId == owner.Id).ToListAsync();

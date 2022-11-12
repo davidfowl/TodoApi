@@ -4,6 +4,7 @@ Todo REST API samples using ASP.NET Core minimal APIs. It showcases:
 - Using EntityFramework and SQLite for data access
 - JWT authentication
 - OpenAPI support
+- Rate Limiting
 - Writing tests for your REST API
 
 ## Prerequisites

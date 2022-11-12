@@ -17,6 +17,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<SwaggerGeneratorOptions>(o => o.InferSecuritySchemes = true);
 
+// Configure rate limiting
+builder.Services.AddRateLimiting();
+
 // Configure OpenTelemetry
 builder.AddOpenTelemetry();
 
@@ -27,6 +30,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseRateLimiter();
 
 app.Map("/", () => Results.Redirect("/swagger"));
 
@@ -39,7 +44,7 @@ group.MapTodos()
 
 // Configure the prometheus endpoint for scraping metrics
 app.MapPrometheusScrapingEndpoint();
-    // NOTE: This should only be exposed on an internal port!
-    // .RequireHost("*:9100");
+// NOTE: This should only be exposed on an internal port!
+// .RequireHost("*:9100");
 
 app.Run();
