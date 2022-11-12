@@ -10,9 +10,9 @@ public static class OpenTelemetryExtensions
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
 
-        // TODO: Setup an exporter here
         builder.Logging.AddOpenTelemetry(o =>
         {
+            // TODO: Setup an exporter here
             o.SetResourceBuilder(resourceBuilder);
         });
 
@@ -37,13 +37,14 @@ public static class OpenTelemetryExtensions
                    });
         });
 
-        // TODO: Setup an exporter here
         builder.Services.AddOpenTelemetryTracing(tracing =>
         {
+            // TODO: Setup an exporter here
             tracing.SetResourceBuilder(resourceBuilder)
                    .AddAspNetCoreInstrumentation()
                    .AddHttpClientInstrumentation()
                    .AddEntityFrameworkCoreInstrumentation();
+
         });
 
         return builder;

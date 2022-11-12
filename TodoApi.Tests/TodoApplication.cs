@@ -17,14 +17,26 @@ internal class TodoApplication : WebApplicationFactory<Program>
         return Services.GetRequiredService<IDbContextFactory<TodoDbContext>>().CreateDbContext();
     }
 
+    public HttpClient CreateClient(string id, bool isAdmin = false)
+    {
+        return CreateDefaultClient(new AuthHandler(req =>
+        {
+            var token = CreateToken(id, isAdmin);
+            req.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
+        }));
+    }
+
     protected override IHost CreateHost(IHostBuilder builder)
     {
         var root = new InMemoryDatabaseRoot();
 
         builder.ConfigureServices(services =>
         {
+            // We need to remove this first because calling AddDbContext won't replace
+            // prior calls made in the application
             services.RemoveAll(typeof(DbContextOptions<TodoDbContext>));
 
+            // We need to make this a singleton so that we can use it from our tests
             services.AddDbContext<TodoDbContext>(options => options.UseInMemoryDatabase("Testing", root), ServiceLifetime.Singleton);
             services.AddDbContextFactory<TodoDbContext>(options => options.UseInMemoryDatabase("Testing", root));
         });
@@ -76,15 +88,6 @@ internal class TodoApplication : WebApplicationFactory<Program>
             Claims: new Dictionary<string, string> { ["id"] = id }));
 
         return JwtIssuer.WriteToken(token);
-    }
-
-    public HttpClient CreateClient(string id, bool isAdmin = false)
-    {
-        return CreateDefaultClient(new AuthHandler(req =>
-        {
-            var token = CreateToken(id, isAdmin);
-            req.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
-        }));
     }
 
     private sealed class AuthHandler : DelegatingHandler
