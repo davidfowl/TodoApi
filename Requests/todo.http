@@ -1,0 +1,19 @@
+### Get Todos
+@token = <put JWT token here>
+
+GET http://localhost:5000/todos
+Authorization: Bearer {{token}}
+
+### POST Todo
+
+POST http://localhost:5000/todos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "title": "Get a haircut"
+}
+
+### DELETE Todo
+DELETE http://localhost:5000/todos/1
+Authorization: Bearer {{token}}
