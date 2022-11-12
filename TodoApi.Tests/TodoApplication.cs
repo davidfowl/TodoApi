@@ -42,12 +42,12 @@ internal class TodoApplication : WebApplicationFactory<Program>
             services.AddDbContextFactory<TodoDbContext>(options => options.UseInMemoryDatabase("Testing", root));
         });
 
+        // We need to configure signing keys for CI scenarios where
+        // there's no user-jwts tool
         var keyBytes = new byte[32];
         RandomNumberGenerator.Fill(keyBytes);
         var base64Key = Convert.ToBase64String(keyBytes);
 
-        // We need to configure signing keys for CI scenarios where
-        // there's no user-jwts tool
         builder.ConfigureAppConfiguration(config =>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>

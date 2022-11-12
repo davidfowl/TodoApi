@@ -6,6 +6,8 @@ namespace TodoApi;
 
 public static class OpenTelemetryExtensions
 {
+    // Configures logging, distributed tracing, and metrics (with a prometheus endpoint)
+    // Other exporters can be configured to send telemetry to.
     public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);

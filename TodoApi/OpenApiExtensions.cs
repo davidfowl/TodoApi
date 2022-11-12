@@ -5,6 +5,7 @@ namespace TodoApi;
 
 public static class OpenApiExtensions
 {
+    // Adds the JWT security scheme to the Open API description
     public static IEndpointConventionBuilder AddOpenApiSecurityRequirement(this IEndpointConventionBuilder builder)
     {
         var scheme = new OpenApiSecurityScheme()
