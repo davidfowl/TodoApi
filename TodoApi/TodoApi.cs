@@ -18,7 +18,7 @@ internal static class TodoApi
         {
             return await db.Todos.FindAsync(id) switch
             {
-                Todo todo when todo.OwnerId == owner.Id => Results.Ok(todo),
+                Todo todo when todo.OwnerId == owner.Id || owner.IsAdmin => Results.Ok(todo),
                 _ => Results.NotFound()
             };
         })
@@ -56,7 +56,7 @@ internal static class TodoApi
                 return Results.BadRequest();
             }
 
-            if (!await db.Todos.AnyAsync(x => x.Id == id && x.OwnerId != owner.Id))
+            if (!await db.Todos.AnyAsync(x => x.Id == id && x.OwnerId != owner.Id && !owner.IsAdmin))
             {
                 return Results.NotFound();
             }
@@ -73,7 +73,7 @@ internal static class TodoApi
         group.MapDelete("/{id}", async (TodoDbContext db, int id, UserId owner) =>
         {
             var todo = await db.Todos.FindAsync(id);
-            if (todo is null || todo.OwnerId != owner.Id)
+            if (todo is null || (todo.OwnerId != owner.Id && !owner.IsAdmin))
             {
                 return Results.NotFound();
             }

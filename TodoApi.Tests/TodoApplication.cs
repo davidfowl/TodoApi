@@ -12,6 +12,11 @@ using Xunit;
 
 internal class TodoApplication : WebApplicationFactory<Program>
 {
+    public TodoDbContext CreateTodoDbContext()
+    {
+        return Services.GetRequiredService<IDbContextFactory<TodoDbContext>>().CreateDbContext();
+    }
+
     protected override IHost CreateHost(IHostBuilder builder)
     {
         var root = new InMemoryDatabaseRoot();
@@ -20,14 +25,14 @@ internal class TodoApplication : WebApplicationFactory<Program>
         {
             services.RemoveAll(typeof(DbContextOptions<TodoDbContext>));
 
-            services.AddDbContext<TodoDbContext>(options =>
-                options.UseInMemoryDatabase("Testing", root));
+            services.AddDbContext<TodoDbContext>(options => options.UseInMemoryDatabase("Testing", root), ServiceLifetime.Singleton);
+            services.AddDbContextFactory<TodoDbContext>(options => options.UseInMemoryDatabase("Testing", root));
         });
 
         return base.CreateHost(builder);
     }
 
-    private string CreateToken(string id)
+    private string CreateToken(string id, bool isAdmin = false)
     {
         // Read the user JWTs configuration for testing so unit tests can generate
         // JWT tokens.
@@ -52,6 +57,13 @@ internal class TodoApplication : WebApplicationFactory<Program>
 
         var jwtIssuer = new JwtIssuer(issuer, signingKeyBytes);
 
+        var roles = new List<string>();
+
+        if (isAdmin)
+        {
+            roles.Add("admin");
+        }
+
         var token = jwtIssuer.Create(new(
             JwtBearerDefaults.AuthenticationScheme,
             Name: Guid.NewGuid().ToString(),
@@ -59,18 +71,18 @@ internal class TodoApplication : WebApplicationFactory<Program>
             Issuer: jwtIssuer.Issuer,
             NotBefore: DateTime.UtcNow,
             ExpiresOn: DateTime.UtcNow.AddDays(1),
-            Roles: new List<string> { },
+            Roles: roles,
             Scopes: new List<string> { },
             Claims: new Dictionary<string, string> { ["id"] = id }));
 
         return JwtIssuer.WriteToken(token);
     }
 
-    public HttpClient CreateClient(string id)
+    public HttpClient CreateClient(string id, bool isAdmin = false)
     {
         return CreateDefaultClient(new AuthHandler(req =>
         {
-            var token = CreateToken(id);
+            var token = CreateToken(id, isAdmin);
             req.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
         }));
     }
