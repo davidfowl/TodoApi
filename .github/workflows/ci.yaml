@@ -1,0 +1,22 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 7.0.x
+        dotnet-quality: 'ga'
+ 
+    - name: dotnet build
+      run: dotnet build TodoApi.sln -c Release
+
+    - name: dotnet test
+      run: dotnet test TodoApi.sln -c Release --no-build
