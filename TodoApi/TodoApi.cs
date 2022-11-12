@@ -1,17 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace TodoApi;
 
-internal static class TodosApi
+internal static class TodoApi
 {
     public static RouteGroupBuilder MapTodos(this RouteGroupBuilder group)
     {
         group.WithTags("Todos");
 
-        group.MapGet("/", async (TodoDbContext db) =>
+        group.MapGet("/", async (TodoDbContext db, UserId owner) =>
         {
-            return await db.Todos.ToListAsync();
+            return await db.Todos.Where(todo => todo.OwnerId == owner.Id).ToListAsync();
         });
 
         group.MapGet("/{id}", async (TodoDbContext db, int id) =>
@@ -25,8 +26,14 @@ internal static class TodosApi
         .Produces<Todo>()
         .Produces(Status404NotFound);
 
-        group.MapPost("/", async (TodoDbContext db, Todo todo) =>
+        group.MapPost("/", async (TodoDbContext db, NewTodo newTodo, UserId owner) =>
         {
+            var todo = new Todo
+            {
+                Title = newTodo.Title,
+                OwnerId = owner.Id
+            };
+
             await db.Todos.AddAsync(todo);
             await db.SaveChangesAsync();
 
@@ -34,14 +41,14 @@ internal static class TodosApi
         })
        .Produces(Status201Created);
 
-        group.MapPut("/{id}", async (TodoDbContext db, int id, Todo todo) =>
+        group.MapPut("/{id}", async (TodoDbContext db, int id, Todo todo, UserId owner) =>
         {
             if (id != todo.Id)
             {
                 return Results.BadRequest();
             }
 
-            if (!await db.Todos.AnyAsync(x => x.Id == id))
+            if (!await db.Todos.AnyAsync(x => x.Id == id && x.OwnerId != owner.Id))
             {
                 return Results.NotFound();
             }
@@ -55,10 +62,10 @@ internal static class TodosApi
         .Produces(Status404NotFound)
         .Produces(Status200OK);
 
-        group.MapDelete("/{id}", async (TodoDbContext db, int id) =>
+        group.MapDelete("/{id}", async (TodoDbContext db, int id, UserId owner) =>
         {
             var todo = await db.Todos.FindAsync(id);
-            if (todo is null)
+            if (todo is null || todo.OwnerId != owner.Id)
             {
                 return Results.NotFound();
             }

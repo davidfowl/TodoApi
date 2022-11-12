@@ -1,31 +1,45 @@
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using TodoApi;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure auth
+builder.Services.AddAuthentication().AddJwtBearer();
+builder.Services.AddAuthorization();
 
 // Configure the database
 var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
 builder.Services.AddSqlite<TodoDbContext>(connectionString);
 
+// Configure Open API
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new() { Title = builder.Environment.ApplicationName, Version = "v1" });
-});
+builder.Services.AddSwaggerGen();
+builder.Services.Configure<SwaggerGeneratorOptions>(o => o.InferSecuritySchemes = true);
 
 var app = builder.Build();
+
+app.Use((context, next) =>
+{
+    return next(context);
+});
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{builder.Environment.ApplicationName} v1"));
+    app.UseSwaggerUI();
 }
 
-app.MapFallback(() => Results.Redirect("/swagger"));
+app.Map("/", () => Results.Redirect("/swagger"));
 
 // Configure the APIs
 var group = app.MapGroup("/todos");
 
-group.MapTodos();
+group.MapTodos()
+     .RequireAuthorization(pb => pb.RequireClaim("id"))
+     .AddOpenApiSecurityRequirement();
 
 app.Run();
