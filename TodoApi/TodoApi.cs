@@ -15,12 +15,12 @@ internal static class TodoApi
             return await db.Todos.Where(todo => todo.OwnerId == owner.Id).ToListAsync();
         });
 
-        group.MapGet("/{id}", async (TodoDbContext db, int id) =>
+        group.MapGet("/{id}", async (TodoDbContext db, int id, UserId owner) =>
         {
             return await db.Todos.FindAsync(id) switch
             {
-                Todo todo => Results.Ok(todo),
-                null => Results.NotFound()
+                Todo todo when todo.OwnerId == owner.Id => Results.Ok(todo),
+                _ => Results.NotFound()
             };
         })
         .Produces<Todo>()

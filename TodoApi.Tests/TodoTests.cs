@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Http;
 using Xunit;
 
 public class TodoTests
@@ -38,7 +39,7 @@ public class TodoTests
     }
 
     [Fact]
-    public async Task CanOnlySeeTodosPostedBySameUser()
+    public async Task CanOnlyGetTodosPostedBySameUser()
     {
         var userId0 = "34";
         var userId1 = "35";
@@ -62,6 +63,12 @@ public class TodoTests
         var todo = Assert.Single(todos0);
         Assert.Equal("I want to do this thing tomorrow", todo.Title);
         Assert.False(todo.IsComplete);
+
+        var todo0 = await client0.GetFromJsonAsync<Todo>($"/todos/{todo.Id}");
+        Assert.NotNull(todo0);
+
+        var ex = await Assert.ThrowsAsync<HttpRequestException>(() => client1.GetFromJsonAsync<Todo>($"/todos/{todo.Id}"));
+        Assert.Equal(HttpStatusCode.NotFound, ex.StatusCode);
     }
 
     [Fact]
