@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Http.Json;
-using Microsoft.AspNetCore.Http;
 using Xunit;
 
 public class TodoTests
@@ -97,5 +96,38 @@ public class TodoTests
         response = await client.GetAsync($"/todos/{todo.Id}");
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CannotDeleteUnownedTodos()
+    {
+        var userId0 = "34";
+        var userId1 = "35";
+
+        await using var application = new TodoApplication();
+
+        var client0 = application.CreateClient(userId0);
+        var client1 = application.CreateClient(userId1);
+
+        var response = await client0.PostAsJsonAsync("/todos", new Todo { Title = "I want to do this thing tomorrow" });
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+        var todos = await client0.GetFromJsonAsync<List<Todo>>("/todos");
+        Assert.NotNull(todos);
+
+        var todo = Assert.Single(todos);
+        Assert.Equal("I want to do this thing tomorrow", todo.Title);
+        Assert.False(todo.IsComplete);
+
+        response = await client1.DeleteAsync($"/todos/{todo.Id}");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        var undeletedTodo = await client0.GetFromJsonAsync<Todo>($"/todos/{todo.Id}");
+        Assert.NotNull(undeletedTodo);
+
+        Assert.Equal(todo.Title, undeletedTodo.Title);
+        Assert.Equal(todo.Id, undeletedTodo.Id);
     }
 }
