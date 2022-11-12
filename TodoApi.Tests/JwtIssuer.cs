@@ -63,25 +63,6 @@ internal sealed class JwtIssuer
         var handler = new JwtSecurityTokenHandler();
         return handler.WriteToken(token);
     }
-
-    public static JwtSecurityToken Extract(string token) => new JwtSecurityToken(token);
-
-    public bool IsValid(string encodedToken)
-    {
-        var handler = new JwtSecurityTokenHandler();
-        var tokenValidationParameters = new TokenValidationParameters
-        {
-            IssuerSigningKey = _signingKey,
-            ValidateAudience = false,
-            ValidateIssuer = false,
-            ValidateIssuerSigningKey = true
-        };
-        if (handler.ValidateToken(encodedToken, tokenValidationParameters, out _).Identity?.IsAuthenticated == true)
-        {
-            return true;
-        }
-        return false;
-    }
 }
 
 internal sealed record JwtCreatorOptions(

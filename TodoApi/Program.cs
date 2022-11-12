@@ -22,9 +22,6 @@ builder.AddOpenTelemetry();
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
