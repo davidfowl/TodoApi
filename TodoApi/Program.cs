@@ -19,11 +19,6 @@ builder.Services.Configure<SwaggerGeneratorOptions>(o => o.InferSecuritySchemes 
 
 var app = builder.Build();
 
-app.Use((context, next) =>
-{
-    return next(context);
-});
-
 app.UseAuthentication();
 app.UseAuthorization();
 
