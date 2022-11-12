@@ -17,6 +17,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<SwaggerGeneratorOptions>(o => o.InferSecuritySchemes = true);
 
+// Configure OpenTelemetry
+builder.AddOpenTelemetry();
+
 var app = builder.Build();
 
 app.UseAuthentication();
@@ -36,5 +39,8 @@ var group = app.MapGroup("/todos");
 group.MapTodos()
      .RequireAuthorization(pb => pb.RequireClaim("id"))
      .AddOpenApiSecurityRequirement();
+
+// Configure the prometheus endpoint for scraping metrics
+app.MapPrometheusScrapingEndpoint();
 
 app.Run();
