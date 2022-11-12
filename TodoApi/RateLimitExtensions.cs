@@ -26,6 +26,7 @@ public static class RateLimitExtensions
                          ReplenishmentPeriod = TimeSpan.FromSeconds(10),
                          AutoReplenishment = true,
                          TokenLimit = 100,
+                         TokensPerPeriod = 100,
                          QueueLimit = 100,
                      };
                  });
