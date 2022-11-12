@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Xunit;
 
 public class TodoTests
@@ -18,6 +17,7 @@ public class TodoTests
 
         var client = application.CreateClient();
         var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        Assert.NotNull(todos);
 
         Assert.Empty(todos);
     }
@@ -33,6 +33,8 @@ public class TodoTests
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        Assert.NotNull(todos);
+
 
         var todo = Assert.Single(todos);
         Assert.Equal("I want to do this thing tomorrow", todo.Title);
@@ -50,6 +52,7 @@ public class TodoTests
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        Assert.NotNull(todos);
 
         var todo = Assert.Single(todos);
         Assert.Equal("I want to do this thing tomorrow", todo.Title);
