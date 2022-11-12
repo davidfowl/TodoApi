@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using TodoApi.Tests;
 using Xunit;
@@ -29,17 +28,16 @@ internal class TodoApplication : WebApplicationFactory<Program>
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
+        // TODO: Use in memory sqlite
         var root = new InMemoryDatabaseRoot();
 
         builder.ConfigureServices(services =>
         {
-            // We need to remove this first because calling AddDbContext won't replace
-            // prior calls made in the application
-            services.RemoveAll(typeof(DbContextOptions<TodoDbContext>));
+            // We're going to use the factory from our tests
+            services.AddDbContextFactory<TodoDbContext>();
 
-            // We need to make this a singleton so that we can use it from our tests
-            services.AddDbContext<TodoDbContext>(options => options.UseInMemoryDatabase("Testing", root), ServiceLifetime.Singleton);
-            services.AddDbContextFactory<TodoDbContext>(options => options.UseInMemoryDatabase("Testing", root));
+            // We need to replace the configuration for the DbContext to use a different configured database
+            services.AddDbContextOptions<TodoDbContext>(o => o.UseInMemoryDatabase("Testing", root));
         });
 
         // We need to configure signing keys for CI scenarios where
