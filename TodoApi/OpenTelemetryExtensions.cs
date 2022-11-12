@@ -25,7 +25,15 @@ public static class OpenTelemetryExtensions
                    .AddHttpClientInstrumentation()
                    .AddEventCountersInstrumentation(c =>
                    {
-                       c.AddEventSources("Microsoft.AspNetCore.Hosting", "System.Net.Http", "System.Net.Sockets");
+                       // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
+                       c.AddEventSources(
+                           "Microsoft.AspNetCore.Hosting",
+                           // There's currently a bug preventing this from working
+                           // "Microsoft-AspNetCore-Server-Kestrel"
+                           "System.Net.Http", 
+                           "System.Net.Sockets",
+                           "System.Net.NameResolution",
+                           "System.Net.Security");
                    });
         });
 

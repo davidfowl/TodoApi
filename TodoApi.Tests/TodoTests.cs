@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
 public class TodoTests
@@ -35,6 +36,25 @@ public class TodoTests
         var todo = Assert.Single(todos);
         Assert.Equal("I want to do this thing tomorrow", todo.Title);
         Assert.False(todo.IsComplete);
+    }
+
+    [Fact]
+    public async Task PostingTodoWithoutTitleReturnsProblemDetails()
+    {
+        var userId = "34";
+        await using var application = new TodoApplication();
+
+        var client = application.CreateClient(userId);
+        var response = await client.PostAsJsonAsync("/todos", new Todo { });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        var problemDetails = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
+        Assert.NotNull(problemDetails);
+
+        Assert.Equal("One or more validation errors occurred.", problemDetails.Title);
+        Assert.NotEmpty(problemDetails.Errors);
+        Assert.Equal(new[] { "A title is required" }, problemDetails.Errors["title"]);
     }
 
     [Fact]

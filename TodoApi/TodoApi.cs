@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace TodoApi;
@@ -28,6 +27,14 @@ internal static class TodoApi
 
         group.MapPost("/", async (TodoDbContext db, NewTodo newTodo, UserId owner) =>
         {
+            if (string.IsNullOrEmpty(newTodo.Title))
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["title"] = new[] { "A title is required" }
+                });
+            }
+
             var todo = new Todo
             {
                 Title = newTodo.Title,
@@ -39,7 +46,8 @@ internal static class TodoApi
 
             return Results.Created($"/todos/{todo.Id}", todo);
         })
-       .Produces(Status201Created);
+       .Produces(Status201Created)
+       .ProducesValidationProblem();
 
         group.MapPut("/{id}", async (TodoDbContext db, int id, Todo todo, UserId owner) =>
         {
