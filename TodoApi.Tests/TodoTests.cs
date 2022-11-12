@@ -31,6 +31,7 @@ public class TodoTests
     {
         var userId = "34";
         await using var application = new TodoApplication();
+        using var db = application.CreateTodoDbContext();
 
         var client = application.CreateClient(userId);
         var response = await client.PostAsJsonAsync("/todos", new Todo { Title = "I want to do this thing tomorrow" });

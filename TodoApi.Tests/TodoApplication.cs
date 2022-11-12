@@ -2,8 +2,8 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,9 +12,13 @@ using Xunit;
 
 internal class TodoApplication : WebApplicationFactory<Program>
 {
+    private readonly SqliteConnection _sqliteConnection = new("Filename=:memory:");
+
     public TodoDbContext CreateTodoDbContext()
     {
-        return Services.GetRequiredService<IDbContextFactory<TodoDbContext>>().CreateDbContext();
+        var db = Services.GetRequiredService<IDbContextFactory<TodoDbContext>>().CreateDbContext();
+        db.Database.EnsureCreated();
+        return db;
     }
 
     public HttpClient CreateClient(string id, bool isAdmin = false)
@@ -28,8 +32,8 @@ internal class TodoApplication : WebApplicationFactory<Program>
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        // TODO: Use in memory sqlite
-        var root = new InMemoryDatabaseRoot();
+        // Open the connection, this creates the SQLite in-memory database, which will persist until the connection is closed
+        _sqliteConnection.Open();
 
         builder.ConfigureServices(services =>
         {
@@ -37,7 +41,7 @@ internal class TodoApplication : WebApplicationFactory<Program>
             services.AddDbContextFactory<TodoDbContext>();
 
             // We need to replace the configuration for the DbContext to use a different configured database
-            services.AddDbContextOptions<TodoDbContext>(o => o.UseInMemoryDatabase("Testing", root));
+            services.AddDbContextOptions<TodoDbContext>(o => o.UseSqlite(_sqliteConnection));
         });
 
         // We need to configure signing keys for CI scenarios where
@@ -102,6 +106,12 @@ internal class TodoApplication : WebApplicationFactory<Program>
             Claims: new Dictionary<string, string> { ["id"] = id }));
 
         return JwtIssuer.WriteToken(token);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        _sqliteConnection?.Dispose();
+        base.Dispose(disposing);
     }
 
     private sealed class AuthHandler : DelegatingHandler
