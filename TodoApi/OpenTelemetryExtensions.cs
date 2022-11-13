@@ -16,8 +16,7 @@ public static class OpenTelemetryExtensions
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.SetResourceBuilder(resourceBuilder)
-                   .AddOtlpExporter()
-                   .AddConsoleExporter();
+                   .AddOtlpExporter();
         });
 
         builder.Services.AddOpenTelemetryMetrics(metrics =>
