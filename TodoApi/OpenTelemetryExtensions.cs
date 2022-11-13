@@ -1,4 +1,5 @@
-﻿using OpenTelemetry.Metrics;
+﻿using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -12,10 +13,11 @@ public static class OpenTelemetryExtensions
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
 
-        builder.Logging.AddOpenTelemetry(o =>
+        builder.Logging.AddOpenTelemetry(logging =>
         {
-            // TODO: Setup an exporter here
-            o.SetResourceBuilder(resourceBuilder);
+            logging.SetResourceBuilder(resourceBuilder)
+                   .AddOtlpExporter()
+                   .AddConsoleExporter();
         });
 
         builder.Services.AddOpenTelemetryMetrics(metrics =>
@@ -32,7 +34,7 @@ public static class OpenTelemetryExtensions
                            "Microsoft.AspNetCore.Hosting",
                            // There's currently a bug preventing this from working
                            // "Microsoft-AspNetCore-Server-Kestrel"
-                           "System.Net.Http", 
+                           "System.Net.Http",
                            "System.Net.Sockets",
                            "System.Net.NameResolution",
                            "System.Net.Security");
@@ -41,12 +43,11 @@ public static class OpenTelemetryExtensions
 
         builder.Services.AddOpenTelemetryTracing(tracing =>
         {
-            // TODO: Setup an exporter here
             tracing.SetResourceBuilder(resourceBuilder)
+                   .AddOtlpExporter()
                    .AddAspNetCoreInstrumentation()
                    .AddHttpClientInstrumentation()
                    .AddEntityFrameworkCoreInstrumentation();
-
         });
 
         return builder;
