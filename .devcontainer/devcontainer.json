@@ -1,14 +1,11 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "features": {
-    "ghcr.io/devcontainers/features/dotnet:1": {
-      "version": "7"
-    }
-  },
-
+  "image": "mcr.microsoft.com/dotnet/sdk:7.0",
   "extensions": [
     "ms-dotnettools.csharp"
   ],
-
-  "forwardPorts": [5000, 5001]
+  "postCreateCommand": "dotnet restore",
+  "forwardPorts": [
+    5000,
+    5001
+  ]
 }
