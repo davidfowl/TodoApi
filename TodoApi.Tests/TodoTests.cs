@@ -3,6 +3,8 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 
+namespace TodoApi.Tests;
+
 public class TodoTests
 {
     [Fact]

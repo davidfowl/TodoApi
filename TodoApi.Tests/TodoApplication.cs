@@ -7,8 +7,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TodoApi.Tests;
 using Xunit;
+
+namespace TodoApi.Tests;
 
 internal class TodoApplication : WebApplicationFactory<Program>
 {
