@@ -13,17 +13,14 @@ Todo REST API samples using ASP.NET Core minimal APIs. It showcases:
 ## Prerequisites
 
 ### .NET
-
 1. [Install .NET 7](https://dotnet.microsoft.com/en-us/download)
 
 ### Database
-
 1. Install the **dotnet-ef** tool: `dotnet tool install dotnet-ef -g`
 1. Navigate to the TodoApi folder and run `dotnet ef database update` to create the database.
 1. Learn more about [dotnet-ef](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
 
 ### Authentication
-
 1. Run `dotnet user-jwts create --claim id=myid`
 1. You should be able to use this JWT token to make requests to the endpoint
 1. Learn more about [user-jwts](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security?view=aspnetcore-7.0#using-dotnet-user-jwts-to-improve-development-time-testing)
@@ -31,13 +28,11 @@ Todo REST API samples using ASP.NET Core minimal APIs. It showcases:
 ## Optional
 
 ### OpenTelemetry
-
 TodoApi uses OpenTelemetry to collect logs, metrics and spans.
 
 If you wish to view the collected telemetry, follow the steps below.
 
 #### Metrics
-
 1. Run Prometheus with Docker:
 
 ```
@@ -48,7 +43,6 @@ docker run -d -p 9090:9090 --name prometheus -v $PWD/prometheus.yml:/etc/prometh
 3. Query the collected metrics
 
 #### Spans
-
 1. Run Jaeger with Docker:
 
 ```
@@ -59,5 +53,4 @@ docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e COLLECTOR_OTL
 3. View the collected spans
 
 #### Logs
-
 Vendor support for OpenTelemetry-based logging is currently very limited.
