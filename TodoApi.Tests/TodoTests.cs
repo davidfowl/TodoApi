@@ -275,33 +275,4 @@ public class TodoTests
         Assert.NotNull(updatedTodo);
         Assert.True(updatedTodo.IsComplete);
     }
-
-    [Fact]
-    public async Task SearchTodoItems()
-    {
-        var userId = "34";
-        var adminUserId = "35";
-        UserId owner = new UserId(userId, false);
-        UserId admin = new UserId(adminUserId, true);
-
-        await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
-
-        Todo todo = new() { Title = "I want to do this thing tomorrow", OwnerId = userId };
-
-        db.Todos.Add(todo);
-        await db.SaveChangesAsync();
-
-        bool any = await db.Todos.AnyAsync(x => x.Id == todo.Id && todo.OwnerId != owner.Id && !owner.IsAdmin);
-        Assert.False(any);
-
-        any = await db.Todos.AnyAsync(x => x.Id == todo.Id && todo.OwnerId != admin.Id && !admin.IsAdmin);
-        Assert.False(any);
-
-        any = await db.Todos.AnyAsync(x => x.Id == todo.Id && (x.OwnerId == owner.Id || owner.IsAdmin));
-        Assert.True(any);
-
-        any = await db.Todos.AnyAsync(x => x.Id == todo.Id && (x.OwnerId == admin.Id || admin.IsAdmin));
-        Assert.True(any);
-    }
 }
