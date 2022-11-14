@@ -193,4 +193,115 @@ public class TodoTests
         var undeletedTodo = db.Todos.FirstOrDefault();
         Assert.Null(undeletedTodo);
     }
+
+    /// <summary>
+    /// Verify that user can only update owned Todos
+    /// Change userId
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task CanUpdateOwnedTodos()
+    {
+        var ownerId = "34";
+        var userId = "34";
+        await using var application = new TodoApplication();
+        using var db = application.CreateTodoDbContext();
+
+        db.Todos.Add(new Todo { Title = "I want to do this thing tomorrow", OwnerId = ownerId });
+
+        await db.SaveChangesAsync();
+
+        // Create API Client
+        var client = application.CreateClient(userId);
+
+        var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+
+        Assert.NotNull(todos);
+
+        var todo = Assert.Single(todos);
+        
+        //update the status
+        todo.IsComplete= true;
+
+        var response = await client.PutAsJsonAsync($"todos/{todo.Id}", todo);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        // Verify the update
+        todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        Assert.NotNull(todos);
+        var updatedTodo = Assert.Single(todos);
+        Assert.NotNull(updatedTodo);
+        Assert.True(updatedTodo.IsComplete);
+
+    }
+
+    /// <summary>
+    /// Check if Admin can update any todo item
+    /// </summary>
+    /// <returns></returns>
+    [Fact]
+    public async Task AdminCanUpdateUnownedTodos()
+    {
+        var userId = "34";
+        var adminUserId = "35";
+
+        await using var application = new TodoApplication();
+        using var db = application.CreateTodoDbContext();
+
+        db.Todos.Add(new Todo { Title = "I want to do this thing tomorrow", OwnerId = userId });
+
+        await db.SaveChangesAsync();
+
+        var client = application.CreateClient(userId);
+        var adminClient = application.CreateClient(adminUserId, isAdmin: true);
+
+        var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        Assert.NotNull(todos);
+
+        var todo = Assert.Single(todos);
+
+        //Update the todo
+        todo.IsComplete = true;
+
+        var response = await adminClient.PutAsJsonAsync($"/todos/{todo.Id}", todo);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+        // Verify the changes
+        todos = await  client.GetFromJsonAsync<List<Todo>>("/todos");
+        Assert.NotNull(todos);
+        var updatedTodo = Assert.Single(todos);
+        Assert.NotNull(updatedTodo);
+        Assert.True(updatedTodo.IsComplete);
+    }
+
+    [Fact]
+    public async Task SearchTodoItems()
+    {
+        var userId = "34";
+        var adminUserId = "35";
+        UserId owner = new UserId(userId, false);
+        UserId admin = new UserId(adminUserId, true);
+
+        await using var application = new TodoApplication();
+        using var db = application.CreateTodoDbContext();
+
+        Todo todo = new() { Title = "I want to do this thing tomorrow", OwnerId = userId };
+
+        db.Todos.Add(todo);
+        await db.SaveChangesAsync();
+
+        bool any = await db.Todos.AnyAsync(x => x.Id == todo.Id && todo.OwnerId != owner.Id && !owner.IsAdmin);
+        Assert.False(any);
+
+        any = await db.Todos.AnyAsync(x => x.Id == todo.Id && todo.OwnerId != admin.Id && !admin.IsAdmin);
+        Assert.False(any);
+
+        any = await db.Todos.AnyAsync(x => x.Id == todo.Id && (x.OwnerId == owner.Id || owner.IsAdmin));
+        Assert.True(any);
+
+        any = await db.Todos.AnyAsync(x => x.Id == todo.Id && (x.OwnerId == admin.Id || admin.IsAdmin));
+        Assert.True(any);
+    }
 }
