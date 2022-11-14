@@ -8,7 +8,7 @@ public class TodoDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        modelBuilder.ApplyConfiguration(new TodoEntityConfiguration());
     }
     
     public DbSet<Todo> Todos => Set<Todo>();
