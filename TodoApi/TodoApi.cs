@@ -59,7 +59,7 @@ internal static class TodoApi
                 return Results.BadRequest();
             }
 
-            if (!await db.Todos.AnyAsync(x => x.Id == id && x.OwnerId != owner.Id && !owner.IsAdmin))
+            if (!await db.Todos.AnyAsync(x => x.Id == id && (x.OwnerId == owner.Id || owner.IsAdmin)))
             {
                 return Results.NotFound();
             }
