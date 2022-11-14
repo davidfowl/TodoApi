@@ -7,16 +7,24 @@ namespace TodoApi;
 
 public static class OpenTelemetryExtensions
 {
-    // Configures logging, distributed tracing, and metrics (with a prometheus endpoint)
-    // Other exporters can be configured to send telemetry to.
+
+    /// <summary>
+    /// Configures logging, distributed tracing, and metrics
+    /// <list type="bullet">
+    /// <item><term>Distributed tracing</term> uses the OTLP Exporter, which can be viewed with Jaeger</item>
+    /// <item><term>Metrics</term> uses the Prometheus Exporter</item>
+    /// <item><term>Logging</term> can use the OTLP Exporter, but due to limited vendor support it is not enabled by default</item>
+    /// </list>
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
     public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
 
         builder.Logging.AddOpenTelemetry(logging =>
         {
-            logging.SetResourceBuilder(resourceBuilder)
-                   .AddOtlpExporter();
+            logging.SetResourceBuilder(resourceBuilder)/*.AddOtlpExporter()*/;
         });
 
         builder.Services.AddOpenTelemetryMetrics(metrics =>
