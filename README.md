@@ -1,5 +1,7 @@
 ## Todo REST API with ASP.NET Core
 
+[![CI](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml/badge.svg)](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml)
+
 Todo REST API samples using ASP.NET Core minimal APIs. It showcases:
 - Using EntityFramework and SQLite for data access
 - JWT authentication
