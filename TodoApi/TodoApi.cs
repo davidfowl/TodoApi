@@ -44,7 +44,7 @@ internal static class TodoApi
                 OwnerId = owner.Id
             };
 
-            await db.Todos.Add(todo);
+            db.Todos.Add(todo);
             await db.SaveChangesAsync();
 
             return Results.Created($"/todos/{todo.Id}", todo);
