@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Principal;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
 namespace TodoApi.Tests;
@@ -40,7 +41,7 @@ internal sealed class JwtIssuer
 
         if (options.Claims is { Count: > 0 } claimsToAdd)
         {
-            identity.AddClaims(claimsToAdd.Select(kvp => new Claim(kvp.Key, kvp.Value)));
+            identity.AddClaims(claimsToAdd);
         }
 
         // Although the JwtPayload supports having multiple audiences registered, the
@@ -63,15 +64,71 @@ internal sealed class JwtIssuer
         var handler = new JwtSecurityTokenHandler();
         return handler.WriteToken(token);
     }
+
+    public static string CreateToken(IConfiguration configuration, string id, bool isAdmin)
+    {
+        List<string>? roles = null;
+
+        if (isAdmin)
+        {
+            roles = new()
+            {
+                "admin"
+            };
+        }
+        var claims = new List<Claim>
+        {
+            new("id", id)
+        };
+
+        return CreateToken(configuration, claims, roles);
+    }
+
+    public static string CreateToken(IConfiguration configuration,
+                                     IList<Claim>? claims = null,
+                                     IList<string>? roles = null,
+                                     IList<string>? scopes = null)
+    {
+        // Read the user JWTs configuration for testing so unit tests can generate
+        // JWT tokens.
+
+        var bearerSection = configuration.GetSection("Authentication:Schemes:Bearer");
+        var section = bearerSection.GetSection("SigningKeys:0");
+        var issuer = section["Issuer"] ?? throw new InvalidOperationException("Missing issuer");
+        var signingKeyBase64 = section["Value"] ?? throw new InvalidOperationException("Missing signing key");
+
+        var signingKeyBytes = Convert.FromBase64String(signingKeyBase64);
+
+        var audiences = bearerSection.GetSection("ValidAudiences")
+                                     .GetChildren()
+                                     .Where(s => !string.IsNullOrEmpty(s.Value))
+                                     .Select(s => s.Value!)
+                                     .ToList();
+
+        var jwtIssuer = new JwtIssuer(issuer, signingKeyBytes);
+
+        var token = jwtIssuer.Create(new(
+            JwtBearerDefaults.AuthenticationScheme,
+            Name: Guid.NewGuid().ToString(),
+            Audiences: audiences,
+            Issuer: jwtIssuer.Issuer,
+            NotBefore: DateTime.UtcNow,
+            ExpiresOn: DateTime.UtcNow.AddDays(1),
+            Roles: roles,
+            Scopes: scopes,
+            Claims: claims));
+
+        return WriteToken(token);
+    }
 }
 
 internal sealed record JwtCreatorOptions(
     string Scheme,
     string Name,
-    List<string> Audiences,
+    IList<string>? Audiences,
     string Issuer,
     DateTime NotBefore,
     DateTime ExpiresOn,
-    List<string> Roles,
-    List<string> Scopes,
-    Dictionary<string, string> Claims);
+    IList<string>? Roles,
+    IList<string>? Scopes,
+    IList<Claim>? Claims);

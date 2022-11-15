@@ -1,13 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
-namespace TodoApi;
+namespace TodoApi.Apis;
 
 internal static class TodoApi
 {
     public static RouteGroupBuilder MapTodos(this RouteGroupBuilder group)
     {
         group.WithTags("Todos");
+
+        // Auth
+        group.RequireJwt()
+             .AddOpenApiSecurityRequirement();
 
         // Rate limit all of the APIs
         group.RequirePerUserRateLimit();
@@ -76,7 +80,7 @@ internal static class TodoApi
         group.MapDelete("/{id}", async (TodoDbContext db, int id, UserId owner) =>
         {
             var todo = await db.Todos.FindAsync(id);
-            if (todo is null || (todo.OwnerId != owner.Id && !owner.IsAdmin))
+            if (todo is null || todo.OwnerId != owner.Id && !owner.IsAdmin)
             {
                 return Results.NotFound();
             }
