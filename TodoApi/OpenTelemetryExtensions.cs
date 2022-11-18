@@ -1,5 +1,4 @@
-﻿using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
+﻿using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -51,7 +50,7 @@ public static class OpenTelemetryExtensions
         builder.Services.AddOpenTelemetryTracing(tracing =>
         {
             tracing.SetResourceBuilder(resourceBuilder)
-                   .AddOtlpExporter()
+                   //.AddOtlpExporter()
                    .AddAspNetCoreInstrumentation()
                    .AddHttpClientInstrumentation()
                    .AddEntityFrameworkCoreInstrumentation();
