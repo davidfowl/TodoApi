@@ -53,7 +53,7 @@ docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e COLLECTOR_OTL
 
 #### Logs
 
-1. Uncomment `.AddOtlpExporter` below `builder.Logging.AddOpenTelemetry`, in the `TodoApi/OpenTelemetryExtensions.cs` file
+1. Uncomment `.AddOtlpExporter` below `builder.Logging.AddOpenTelemetry`, in the `TodoApi/Extensions/OpenTelemetryExtensions.cs` file
 1. Find a Vendor that supports OpenTelemetry-based logging.
 
 Vendor support for OpenTelemetry-based logging is currently very limited.
