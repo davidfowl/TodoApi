@@ -38,9 +38,7 @@ app.Map("/", () => Results.Redirect("/swagger"));
 // Configure the APIs
 var group = app.MapGroup("/todos");
 
-group.MapTodos()
-     .RequireAuthorization(pb => pb.RequireClaim("id"))
-     .AddOpenApiSecurityRequirement();
+group.MapTodos();
 
 // Configure the prometheus endpoint for scraping metrics
 app.MapPrometheusScrapingEndpoint();

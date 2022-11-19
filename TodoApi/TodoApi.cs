@@ -9,6 +9,11 @@ internal static class TodoApi
     {
         group.WithTags("Todos");
 
+        // Add security requirements, all incoming requests to this API *must*
+        // be authentication with an "id" claim
+        group.RequireAuthorization(pb => pb.RequireClaim("id"))
+             .AddOpenApiSecurityRequirement();
+
         // Rate limit all of the APIs
         group.RequirePerUserRateLimit();
 
