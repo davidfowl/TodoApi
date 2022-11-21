@@ -64,13 +64,15 @@ internal static class TodoApi
                 return Results.BadRequest();
             }
 
-            if (!await db.Todos.AnyAsync(x => x.Id == id && (x.OwnerId == owner.Id || owner.IsAdmin)))
+            var rowsAffected = await db.Todos.Where(t => t.Id == id && (t.OwnerId == owner.Id || owner.IsAdmin))
+                                             .ExecuteUpdateAsync(updates => 
+                                                updates.SetProperty(t => t.IsComplete, todo.IsComplete)
+                                                       .SetProperty(t => t.Title, todo.Title));
+
+            if (rowsAffected == 0)
             {
                 return Results.NotFound();
             }
-
-            db.Update(todo);
-            await db.SaveChangesAsync();
 
             return Results.Ok();
         })
