@@ -97,14 +97,14 @@ internal class TodoApplication : WebApplicationFactory<Program>
 
         var token = jwtIssuer.Create(new(
             JwtBearerDefaults.AuthenticationScheme,
-            Name: Guid.NewGuid().ToString(),
+            Name: id,
             Audiences: audiences,
             Issuer: jwtIssuer.Issuer,
             NotBefore: DateTime.UtcNow,
             ExpiresOn: DateTime.UtcNow.AddDays(1),
             Roles: roles,
             Scopes: new List<string> { },
-            Claims: new Dictionary<string, string> { ["id"] = id }));
+            Claims: new Dictionary<string, string> { }));
 
         return JwtIssuer.WriteToken(token);
     }

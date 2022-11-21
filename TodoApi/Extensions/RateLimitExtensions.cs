@@ -15,8 +15,8 @@ public static class RateLimitExtensions
 
             options.AddPolicy(Policy, context =>
             {
-                // We always have a user id
-                var id = context.User.FindFirstValue("id")!;
+                // We always have a user name/id
+                var id = context.User.Identity!.Name!;
 
                 return RateLimitPartition.GetTokenBucketLimiter(id, key =>
                 {

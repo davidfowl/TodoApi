@@ -9,7 +9,7 @@ public record struct UserId(string Id, bool IsAdmin)
     public static ValueTask<UserId> BindAsync(HttpContext context)
     {
         // Grab the id claim and check if the user is an admin
-        var id = context.User.FindFirstValue("id")!;
+        var id = context.User.Identity!.Name!;
         var isAdmin = context.User.IsInRole("admin");
 
         return ValueTask.FromResult<UserId>(new(id, isAdmin));
