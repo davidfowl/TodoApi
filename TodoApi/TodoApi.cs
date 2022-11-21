@@ -80,14 +80,13 @@ internal static class TodoApi
 
         group.MapDelete("/{id}", async (TodoDbContext db, int id, UserId owner) =>
         {
-            var todo = await db.Todos.FindAsync(id);
-            if (todo is null || (todo.OwnerId != owner.Id && !owner.IsAdmin))
+            var rowsAffected = await db.Todos.Where(t => t.Id == id && (t.OwnerId == owner.Id || owner.IsAdmin))
+                                             .ExecuteDeleteAsync();
+
+            if (rowsAffected == 0)
             {
                 return Results.NotFound();
             }
-
-            db.Todos.Remove(todo);
-            await db.SaveChangesAsync();
 
             return Results.Ok();
         })
