@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  todoapi:
+    image: ${DOCKER_REGISTRY-}todoapi
+    build:
+      context: .
+      dockerfile: TodoApi/Dockerfile
+    container_name: todoapi
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
