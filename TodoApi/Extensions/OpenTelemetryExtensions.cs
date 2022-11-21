@@ -1,4 +1,5 @@
-﻿using OpenTelemetry.Metrics;
+﻿using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -20,10 +21,16 @@ public static class OpenTelemetryExtensions
     public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
+        var endpoint = builder.Configuration.GetValue<string>("JAEGER_ENDPOINT") ?? "http://localhost:4317";
 
         builder.Logging.AddOpenTelemetry(logging =>
         {
-            logging.SetResourceBuilder(resourceBuilder)/*.AddOtlpExporter()*/;
+            logging
+                .SetResourceBuilder(resourceBuilder)
+                .AddOtlpExporter(options =>
+                {
+                    options.Endpoint = new Uri(endpoint);
+                });
         });
 
         builder.Services.AddOpenTelemetryMetrics(metrics =>
@@ -50,7 +57,10 @@ public static class OpenTelemetryExtensions
         builder.Services.AddOpenTelemetryTracing(tracing =>
         {
             tracing.SetResourceBuilder(resourceBuilder)
-                   //.AddOtlpExporter()
+                   .AddOtlpExporter(options =>
+                   {
+                       options.Endpoint = new Uri(endpoint);
+                   })
                    .AddAspNetCoreInstrumentation()
                    .AddHttpClientInstrumentation()
                    .AddEntityFrameworkCoreInstrumentation();
