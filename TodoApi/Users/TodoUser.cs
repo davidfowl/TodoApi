@@ -4,7 +4,7 @@ namespace TodoApi;
 
 public class TodoUser : IdentityUser
 {
-    public bool IsAdmin { get; set; }
+    
 }
 
 public class NewUser
