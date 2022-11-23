@@ -1,11 +1,9 @@
 using System.Net;
-using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc;
-using Xunit;
 
 namespace TodoApi.Tests;
 
-public class TodoTests
+public class TodoApiTests
 {
     [Fact]
     public async Task GetTodos()
@@ -14,6 +12,7 @@ public class TodoTests
 
         await using var application = new TodoApplication();
         using var db = application.CreateTodoDbContext();
+        await application.CreateUserAsync(userId);
 
         db.Todos.Add(new Todo { Title = "Thing one I have to do", OwnerId = userId });
 
@@ -34,6 +33,7 @@ public class TodoTests
         var userId = "34";
         await using var application = new TodoApplication();
         using var db = application.CreateTodoDbContext();
+        await application.CreateUserAsync(userId);
 
         var client = application.CreateClient(userId);
         var response = await client.PostAsJsonAsync("/todos", new Todo { Title = "I want to do this thing tomorrow" });
@@ -55,6 +55,7 @@ public class TodoTests
 
         await using var application = new TodoApplication();
         using var db = application.CreateTodoDbContext();
+        await application.CreateUserAsync(userId);
 
         db.Todos.Add(new Todo { Title = "I want to do this thing tomorrow", OwnerId = userId });
 
@@ -83,6 +84,8 @@ public class TodoTests
 
         await using var application = new TodoApplication();
         using var db = application.CreateTodoDbContext();
+        await application.CreateUserAsync(userId0);
+        await application.CreateUserAsync(userId1);
 
         db.Todos.Add(new Todo { Title = "I want to do this thing tomorrow", OwnerId = userId0 });
 
@@ -137,6 +140,8 @@ public class TodoTests
 
         await using var application = new TodoApplication();
         using var db = application.CreateTodoDbContext();
+        await application.CreateUserAsync(userId0);
+        await application.CreateUserAsync(userId1);
 
         db.Todos.Add(new Todo { Title = "I want to do this thing tomorrow", OwnerId = userId0 });
 
@@ -171,6 +176,8 @@ public class TodoTests
 
         await using var application = new TodoApplication();
         using var db = application.CreateTodoDbContext();
+        await application.CreateUserAsync(userId);
+        await application.CreateUserAsync(adminUserId);
 
         db.Todos.Add(new Todo { Title = "I want to do this thing tomorrow", OwnerId = userId });
 
@@ -206,6 +213,7 @@ public class TodoTests
         var userId = "34";
         await using var application = new TodoApplication();
         using var db = application.CreateTodoDbContext();
+        await application.CreateUserAsync(userId);
 
         db.Todos.Add(new Todo { Title = "I want to do this thing tomorrow", OwnerId = ownerId });
 
@@ -248,6 +256,8 @@ public class TodoTests
 
         await using var application = new TodoApplication();
         using var db = application.CreateTodoDbContext();
+        await application.CreateUserAsync(userId);
+        await application.CreateUserAsync(adminUserId);
 
         db.Todos.Add(new Todo { Title = "I want to do this thing tomorrow", OwnerId = userId });
 

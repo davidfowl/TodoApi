@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,15 @@ internal class TodoApplication : WebApplicationFactory<Program>
         var db = Services.GetRequiredService<IDbContextFactory<TodoDbContext>>().CreateDbContext();
         db.Database.EnsureCreated();
         return db;
+    }
+
+    public async Task CreateUserAsync(string username)
+    {
+        using var scope = Services.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TodoUser>>();
+        var newUser = new TodoUser { UserName = username };
+        var result = await userManager.CreateAsync(newUser, Guid.NewGuid().ToString());
+        Assert.True(result.Succeeded);
     }
 
     public HttpClient CreateClient(string id, bool isAdmin = false)
@@ -43,6 +53,17 @@ internal class TodoApplication : WebApplicationFactory<Program>
 
             // We need to replace the configuration for the DbContext to use a different configured database
             services.AddDbContextOptions<TodoDbContext>(o => o.UseSqlite(_sqliteConnection));
+
+            // Lower the requirements for the tests
+            services.Configure<IdentityOptions>(o =>
+            {
+                o.Password.RequireNonAlphanumeric = false;
+                o.Password.RequireDigit = false;
+                o.Password.RequiredUniqueChars = 0;
+                o.Password.RequiredLength = 1;
+                o.Password.RequireLowercase = false;
+                o.Password.RequireUppercase = false;
+            });
         });
 
         // We need to configure signing keys for CI scenarios where

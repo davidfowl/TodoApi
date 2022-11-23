@@ -20,4 +20,10 @@
     <ProjectReference Include="..\TodoApi\TodoApi.csproj" />
   </ItemGroup>
 
+    <ItemGroup>
+        <Using Include="System.Net.Http.Json" />
+        <Using Include="System.Net.Http" />
+        <Using Include="Xunit" />
+    </ItemGroup>
+
 </Project>

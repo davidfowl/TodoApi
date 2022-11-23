@@ -21,9 +21,9 @@ Todo REST API samples using ASP.NET Core minimal APIs. It showcases:
 
 ### Authentication
 1. Run `dotnet user-jwts create` to create a JWT token for your user and `dotnet user-jwts create -n admin --role admin` to create an admin user.
+1. Run the application and create a user by hitting POSTing a request with a matching user name to the name used to create your token.
 1. You should be able to use these tokens to make authenticated requests to the endpoint.
 1. Learn more about [user-jwts](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security?view=aspnetcore-7.0#using-dotnet-user-jwts-to-improve-development-time-testing)
-
 
 ## Optional
 
