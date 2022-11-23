@@ -12,6 +12,10 @@ builder.Services.AddAuthorization();
 var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
 builder.Services.AddSqlite<TodoDbContext>(connectionString);
 
+// Configure identity
+builder.Services.AddIdentityCore<TodoUser>()
+                .AddEntityFrameworkStores<TodoDbContext>();
+
 // Configure Open API
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -36,9 +40,8 @@ app.UseRateLimiter();
 app.Map("/", () => Results.Redirect("/swagger"));
 
 // Configure the APIs
-var group = app.MapGroup("/todos");
-
-group.MapTodos();
+app.MapGroup("/todos").MapTodos();
+app.MapGroup("/users").MapUsers();
 
 // Configure the prometheus endpoint for scraping metrics
 app.MapPrometheusScrapingEndpoint();
