@@ -28,6 +28,20 @@ public class TodoApiTests
     }
 
     [Fact]
+    public async Task GetTodosWithoutDbUser()
+    {
+        var userId = "34";
+
+        await using var application = new TodoApplication();
+        using var db = application.CreateTodoDbContext();
+
+        var client = application.CreateClient(userId);
+        var response = await client.GetAsync("/todos");
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
     public async Task PostTodos()
     {
         var userId = "34";
@@ -118,6 +132,8 @@ public class TodoApiTests
     {
         var userId = "34";
         await using var application = new TodoApplication();
+        using var db = application.CreateTodoDbContext();
+        await application.CreateUserAsync(userId);
 
         var client = application.CreateClient(userId);
         var response = await client.PostAsJsonAsync("/todos", new Todo { });

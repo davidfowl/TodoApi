@@ -10,8 +10,8 @@ internal static class TodoApi
         group.WithTags("Todos");
 
         // Add security requirements, all incoming requests to this API *must*
-        // be authenticated.
-        group.RequireAuthorization()
+        // be authenticated with a valid user.
+        group.RequireAuthorization(pb => pb.AddIdentityUserCheck())
              .AddOpenApiSecurityRequirement();
 
         // Rate limit all of the APIs

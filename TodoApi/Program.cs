@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure auth
 builder.Services.AddAuthentication().AddJwtBearer();
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorizationBuilder().AddIdentityUserCheck();
 
 // Configure the database
 var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
