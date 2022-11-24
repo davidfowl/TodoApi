@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 
 namespace TodoApi;
 
@@ -23,22 +22,18 @@ public static class AuthorizationHandlerExtensions
     // a valid token
     private class CheckUserTokenHandler : AuthorizationHandler<CheckUserTokenRequirement>
     {
-        private readonly UserManager<TodoUser> _userManager;
-        public CheckUserTokenHandler(UserManager<TodoUser> userManager) => _userManager = userManager;
+        private readonly CurrentUser _currentUser;
+        public CheckUserTokenHandler(CurrentUser currentUser) => _currentUser = currentUser;
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, CheckUserTokenRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CheckUserTokenRequirement requirement)
         {
-            // The user must be authorized
-            var username = context.User.Identity!.Name!;
-
-            // Make sure that a valid token isn't enough to call the API
-            var user = await _userManager.FindByNameAsync(username);
-
             // TODO: Check user if the user is locked out as well
-            if (user is not null)
+            if (_currentUser.User is not null)
             {
                 context.Succeed(requirement);
             }
+
+            return Task.CompletedTask;
         }
     }
 }

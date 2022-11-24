@@ -17,12 +17,12 @@ internal static class TodoApi
         // Rate limit all of the APIs
         group.RequirePerUserRateLimit();
 
-        group.MapGet("/", async (TodoDbContext db, UserId owner) =>
+        group.MapGet("/", async (TodoDbContext db, CurrentUser owner) =>
         {
             return await db.Todos.Where(todo => todo.OwnerId == owner.Id).ToListAsync();
         });
 
-        group.MapGet("/{id}", async (TodoDbContext db, int id, UserId owner) =>
+        group.MapGet("/{id}", async (TodoDbContext db, int id, CurrentUser owner) =>
         {
             return await db.Todos.FindAsync(id) switch
             {
@@ -33,7 +33,7 @@ internal static class TodoApi
         .Produces<Todo>()
         .Produces(Status404NotFound);
 
-        group.MapPost("/", async (TodoDbContext db, NewTodo newTodo, UserId owner) =>
+        group.MapPost("/", async (TodoDbContext db, NewTodo newTodo, CurrentUser owner) =>
         {
             if (string.IsNullOrEmpty(newTodo.Title))
             {
@@ -57,7 +57,7 @@ internal static class TodoApi
        .Produces(Status201Created)
        .ProducesValidationProblem();
 
-        group.MapPut("/{id}", async (TodoDbContext db, int id, Todo todo, UserId owner) =>
+        group.MapPut("/{id}", async (TodoDbContext db, int id, Todo todo, CurrentUser owner) =>
         {
             if (id != todo.Id)
             {
@@ -80,7 +80,7 @@ internal static class TodoApi
         .Produces(Status404NotFound)
         .Produces(Status200OK);
 
-        group.MapDelete("/{id}", async (TodoDbContext db, int id, UserId owner) =>
+        group.MapDelete("/{id}", async (TodoDbContext db, int id, CurrentUser owner) =>
         {
             var rowsAffected = await db.Todos.Where(t => t.Id == id && (t.OwnerId == owner.Id || owner.IsAdmin))
                                              .ExecuteDeleteAsync();

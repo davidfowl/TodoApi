@@ -16,6 +16,9 @@ builder.Services.AddSqlite<TodoDbContext>(connectionString);
 builder.Services.AddIdentityCore<TodoUser>()
                 .AddEntityFrameworkStores<TodoDbContext>();
 
+// State that represents the current user from the database *and* the request
+builder.Services.AddCurrentUser();
+
 // Configure Open API
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -35,7 +38,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+
+// This needs to run between authentication, but before authorization
+// since we need to use the current user in authorization policies
+app.UseCurrentUser();
+
+app.UseAuthorization();
+
 app.UseRateLimiter();
+
 
 app.Map("/", () => Results.Redirect("/swagger"));
 
