@@ -13,7 +13,7 @@ public static class CurrentUserExtensions
     {
         return app.Use(async (context, next) =>
         {
-            // Resolve the current user service and the
+            // Resolve the current user so we can set the properties on this scoped instance
             var currentUser = context.RequestServices.GetRequiredService<CurrentUser>();
 
             currentUser.Principal = context.User;
