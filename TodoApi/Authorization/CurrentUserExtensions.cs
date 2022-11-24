@@ -18,12 +18,13 @@ public static class CurrentUserExtensions
 
             currentUser.Principal = context.User;
 
-            if (currentUser.Id is { } id)
+            // Only query the database if the user is authenticated
+            if (context.User is { Identity: { IsAuthenticated: true, Name: var name } } && name is not null)
             {
                 // Resolve the user manager and see if the current user is a valid user in the database
                 // we do this once and store it on the current user.
                 var userManager = context.RequestServices.GetRequiredService<UserManager<TodoUser>>();
-                currentUser.User = await userManager.FindByNameAsync(id);
+                currentUser.User = await userManager.FindByNameAsync(name);
             }
 
             await next(context);
