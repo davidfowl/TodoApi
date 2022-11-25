@@ -51,7 +51,6 @@ app.UseAuthorization();
 
 app.UseRateLimiter();
 
-
 app.Map("/", () => Results.Redirect("/swagger"));
 
 // Configure the APIs
