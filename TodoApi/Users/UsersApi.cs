@@ -9,7 +9,7 @@ public static class UsersApi
     {
         group.WithTags("Users");
 
-        group.WithParameterValidation();
+        group.WithParameterValidation(typeof(UserInfo));
 
         group.MapPost("/", async (UserInfo newUser, UserManager<TodoUser> userManager) =>
         {

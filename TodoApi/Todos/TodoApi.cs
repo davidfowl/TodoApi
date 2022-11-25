@@ -18,7 +18,7 @@ internal static class TodoApi
         group.RequirePerUserRateLimit();
 
         // Validate the parameters
-        group.WithParameterValidation();
+        group.WithParameterValidation(typeof(Todo), typeof(NewTodo));
 
         group.MapGet("/", async (TodoDbContext db, CurrentUser owner) =>
         {
