@@ -20,6 +20,23 @@ public class UserApiTests
     }
 
     [Fact]
+    public async Task MissingUserOrPasswordReturnsBadRequest()
+    {
+        await using var application = new TodoApplication();
+        using var db = application.CreateTodoDbContext();
+
+        var client = application.CreateClient();
+        var response = await client.PostAsJsonAsync("/users", new UserInfo { Username = "todouser", Password = "" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var content = await response.Content.ReadAsStringAsync();
+
+        response = await client.PostAsJsonAsync("/users", new UserInfo { Username = "", Password = "password" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task CanGetATokenForValidUser()
     {
         await using var application = new TodoApplication();

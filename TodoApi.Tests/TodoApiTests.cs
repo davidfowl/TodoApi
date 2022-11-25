@@ -144,7 +144,7 @@ public class TodoApiTests
 
         Assert.Equal("One or more validation errors occurred.", problemDetails.Title);
         Assert.NotEmpty(problemDetails.Errors);
-        Assert.Equal(new[] { "A title is required" }, problemDetails.Errors["title"]);
+        Assert.Equal(new[] { "The Title field is required." }, problemDetails.Errors["Title"]);
     }
 
     [Fact]

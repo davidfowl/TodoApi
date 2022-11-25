@@ -14,5 +14,5 @@ public class Todo
 public class NewTodo
 {
     [Required]
-    public string? Title { get; set; }
+    public string Title { get; set; } = default!;
 }

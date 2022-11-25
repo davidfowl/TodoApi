@@ -17,6 +17,9 @@ internal static class TodoApi
         // Rate limit all of the APIs
         group.RequirePerUserRateLimit();
 
+        // Validate the parameters
+        group.WithParameterValidation();
+
         group.MapGet("/", async (TodoDbContext db, CurrentUser owner) =>
         {
             return await db.Todos.Where(todo => todo.OwnerId == owner.Id).ToListAsync();
@@ -35,14 +38,6 @@ internal static class TodoApi
 
         group.MapPost("/", async (TodoDbContext db, NewTodo newTodo, CurrentUser owner) =>
         {
-            if (string.IsNullOrEmpty(newTodo.Title))
-            {
-                return Results.ValidationProblem(new Dictionary<string, string[]>
-                {
-                    ["title"] = new[] { "A title is required" }
-                });
-            }
-
             var todo = new Todo
             {
                 Title = newTodo.Title,
