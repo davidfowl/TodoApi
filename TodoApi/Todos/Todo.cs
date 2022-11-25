@@ -11,6 +11,7 @@ public class Todo
     public string OwnerId { get; set; } = default!;
 }
 
+// DTO for creating a new todo
 public class NewTodo
 {
     [Required]

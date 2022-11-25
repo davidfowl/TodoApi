@@ -12,36 +12,52 @@ public static class AuthenticationServiceExtensions
 {
     public static IServiceCollection AddTokenService(this IServiceCollection services)
     {
+        // Wire up the token service
         return services.AddSingleton<ITokenService, TokenService>();
     }
 }
 
 public interface ITokenService
 {
+    // Generate a JWT token for the specified user name and admin role
     string GenerateToken(string username, bool isAdmin = false);
 }
 
-public class TokenService : ITokenService
+public sealed class TokenService : ITokenService
 {
     private readonly string _issuer;
     private readonly SigningCredentials _jwtSigningCredentials;
-    private readonly string[] _audiences;
+    private readonly Claim[] _audiences;
 
     public TokenService(IAuthenticationConfigurationProvider authenticationConfigurationProvider)
     {
+        // We're reading the authentication configuration for the Bearer scheme
         var bearerSection = authenticationConfigurationProvider.GetSchemeConfiguration(JwtBearerDefaults.AuthenticationScheme);
+
+        // An example of what the expected schema looks like
+        // "Authentication": {
+        //     "Schemes": {
+        //       "Bearer": {
+        //         "ValidAudiences": [ ],
+        //         "ValidIssuer": "",
+        //         "SigningKeys": [ { "Issuer": .., "Value": base64Key, "Length": 32 } ]
+        //       }
+        //     }
+        //   }
 
         var section = bearerSection.GetSection("SigningKeys:0");
 
-        _issuer = section["Issuer"] ?? throw new InvalidOperationException("Issuer is not specifed");
+        _issuer = bearerSection["ValidIssuer"] ?? throw new InvalidOperationException("Issuer is not specifed");
         var signingKeyBase64 = section["Value"] ?? throw new InvalidOperationException("Signing key is not specified");
 
-        _jwtSigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Convert.FromBase64String(signingKeyBase64)), 
-            SecurityAlgorithms.HmacSha256Signature);
+        var signingKeyBytes = Convert.FromBase64String(signingKeyBase64);
+
+        _jwtSigningCredentials = new SigningCredentials(new SymmetricSecurityKey(signingKeyBytes),
+                SecurityAlgorithms.HmacSha256Signature);
 
         _audiences = bearerSection.GetSection("ValidAudiences").GetChildren()
                     .Where(s => !string.IsNullOrEmpty(s.Value))
-                    .Select(s => s.Value!)
+                    .Select(s => new Claim(JwtRegisteredClaimNames.Aud, s.Value!))
                     .ToArray();
     }
 
@@ -61,7 +77,7 @@ public class TokenService : ITokenService
             identity.AddClaim(new Claim(ClaimTypes.Role, "admin"));
         }
 
-        identity.AddClaims(_audiences.Select(aud => new Claim(JwtRegisteredClaimNames.Aud, aud)));
+        identity.AddClaims(_audiences);
 
         var handler = new JwtSecurityTokenHandler();
 
