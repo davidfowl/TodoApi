@@ -20,10 +20,21 @@ Todo REST API samples using ASP.NET Core minimal APIs. It showcases:
 1. Navigate to the TodoApi folder and run `dotnet ef database update` to create the database.
 1. Learn more about [dotnet-ef](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
 
-### Authentication
-1. Run `dotnet user-jwts create` to create a JWT token for your user and `dotnet user-jwts create -n admin --role admin` to create an admin user.
-1. Run the application and create a user by hitting POSTing a request with a matching user name to the name used to create your token.
-1. You should be able to use these tokens to make authenticated requests to the endpoint.
+### Users and Authentication
+1. To create a new user, run the application and POST a JSON payload to `/users` endpoint:
+
+    ```json
+    {
+      "username": "myuser",
+      "password": "<put a password here>"
+    }
+    ```
+1. To get a token for the above user run `dotnet user-jwts` to create a JWT token with the same user name specified above e.g:
+
+    ```
+    dotnet user-jwts create -n myuser
+    ```
+1. You should be able to use this tokens to make authenticated requests to the todo endpoints.
 1. Learn more about [user-jwts](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security?view=aspnetcore-7.0#using-dotnet-user-jwts-to-improve-development-time-testing)
 
 ## Optional

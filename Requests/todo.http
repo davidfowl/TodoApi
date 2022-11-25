@@ -1,3 +1,14 @@
+### Create User
+@password = <put a password here>
+
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+    "username": "myuser",
+    "password": "{{password}}"
+}
+
 ### Get Todos
 @token = <put JWT token here>
 
