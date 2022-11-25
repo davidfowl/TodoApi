@@ -23,10 +23,10 @@ public static class UsersApi
                 return Results.Ok();
             }
 
-            return Results.BadRequest();
+            return Results.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
         })
         .Produces(Status200OK)
-        .ProducesProblem(Status400BadRequest)
+        .ProducesValidationProblem()
         .Produces(Status400BadRequest);
 
         group.MapPost("/token", async (UserInfo userInfo, UserManager<TodoUser> userManager, ITokenService tokenService) =>
