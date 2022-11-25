@@ -34,7 +34,7 @@ Todo REST API samples using ASP.NET Core minimal APIs. It showcases:
     ```
     dotnet user-jwts create -n myuser
     ```
-1. You should be able to use this tokens to make authenticated requests to the todo endpoints.
+1. You should be able to use this token to make authenticated requests to the todo endpoints.
 1. Learn more about [user-jwts](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security?view=aspnetcore-7.0#using-dotnet-user-jwts-to-improve-development-time-testing)
 
 ## Optional
