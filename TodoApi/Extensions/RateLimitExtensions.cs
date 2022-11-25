@@ -15,10 +15,10 @@ public static class RateLimitExtensions
 
             options.AddPolicy(Policy, context =>
             {
-                // We always have a user name/id
-                var id = context.User.Identity!.Name!;
+                // We always have a user name
+                var username = context.User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-                return RateLimitPartition.GetTokenBucketLimiter(id, key =>
+                return RateLimitPartition.GetTokenBucketLimiter(username, key =>
                 {
                     return new()
                     {
