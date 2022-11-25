@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 
 namespace TodoApi;
@@ -19,7 +20,7 @@ public static class CurrentUserExtensions
             currentUser.Principal = context.User;
 
             // Only query the database if the user is authenticated
-            if (context.User is { Identity: { IsAuthenticated: true, Name: var name and not null } })
+            if (context.User.FindFirstValue(ClaimTypes.NameIdentifier) is { Length: > 0 } name)
             {
                 // Resolve the user manager and see if the current user is a valid user in the database
                 // we do this once and store it on the current user.

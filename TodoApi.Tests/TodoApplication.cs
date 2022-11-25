@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Xunit;
 
 namespace TodoApi.Tests;
 
@@ -23,12 +22,12 @@ internal class TodoApplication : WebApplicationFactory<Program>
         return db;
     }
 
-    public async Task CreateUserAsync(string username)
+    public async Task CreateUserAsync(string username, string? password = null)
     {
         using var scope = Services.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TodoUser>>();
         var newUser = new TodoUser { UserName = username };
-        var result = await userManager.CreateAsync(newUser, Guid.NewGuid().ToString());
+        var result = await userManager.CreateAsync(newUser, password ?? Guid.NewGuid().ToString());
         Assert.True(result.Succeeded);
     }
 
@@ -88,46 +87,9 @@ internal class TodoApplication : WebApplicationFactory<Program>
     {
         // Read the user JWTs configuration for testing so unit tests can generate
         // JWT tokens.
+        var tokenService = Services.GetRequiredService<ITokenService>();
 
-        var configuration = Services.GetRequiredService<IConfiguration>();
-        var bearerSection = configuration.GetSection("Authentication:Schemes:Bearer");
-        var section = bearerSection.GetSection("SigningKeys:0");
-        var issuer = section["Issuer"];
-        var signingKeyBase64 = section["Value"];
-
-        Assert.NotNull(issuer);
-        Assert.NotNull(signingKeyBase64);
-
-        var signingKeyBytes = Convert.FromBase64String(signingKeyBase64);
-
-        var audiences = bearerSection.GetSection("ValidAudiences").GetChildren().Select(s =>
-        {
-            var audience = s.Value;
-            Assert.NotNull(audience);
-            return audience;
-        }).ToList();
-
-        var jwtIssuer = new JwtIssuer(issuer, signingKeyBytes);
-
-        var roles = new List<string>();
-
-        if (isAdmin)
-        {
-            roles.Add("admin");
-        }
-
-        var token = jwtIssuer.Create(new(
-            JwtBearerDefaults.AuthenticationScheme,
-            Name: id,
-            Audiences: audiences,
-            Issuer: jwtIssuer.Issuer,
-            NotBefore: DateTime.UtcNow,
-            ExpiresOn: DateTime.UtcNow.AddDays(1),
-            Roles: roles,
-            Scopes: new List<string> { },
-            Claims: new Dictionary<string, string> { }));
-
-        return JwtIssuer.WriteToken(token);
+        return tokenService.GenerateToken(id, isAdmin);
     }
 
     protected override void Dispose(bool disposing)

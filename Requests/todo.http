@@ -9,6 +9,16 @@ Content-Type: application/json
     "password": "{{password}}"
 }
 
+### Get a token
+
+POST http://localhost:5000/users/token
+Content-Type: application/json
+
+{
+    "username": "myuser",
+    "password": "{{password}}"
+}
+
 ### Get Todos
 @token = <put JWT token here>
 

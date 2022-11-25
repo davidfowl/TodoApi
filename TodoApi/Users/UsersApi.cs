@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity; 
 using static Microsoft.AspNetCore.Http.StatusCodes;
 
 namespace TodoApi;
@@ -9,7 +9,7 @@ public static class UsersApi
     {
         group.WithTags("Users");
 
-        group.MapPost("/", async (NewUser newUser, UserManager<TodoUser> userManager) =>
+        group.MapPost("/", async (UserInfo newUser, UserManager<TodoUser> userManager) =>
         {
             if (newUser.Password is null)
             {
@@ -27,6 +27,25 @@ public static class UsersApi
         })
         .Produces(Status200OK)
         .ProducesProblem(Status400BadRequest)
+        .Produces(Status400BadRequest);
+
+        group.MapPost("/token", async (UserInfo userInfo, UserManager<TodoUser> userManager, ITokenService tokenService) =>
+        {
+            if (userInfo.Username is null || userInfo.Password is null)
+            {
+                return Results.BadRequest();
+            }
+
+            var user = await userManager.FindByNameAsync(userInfo.Username);
+
+            if (user == null || !await userManager.CheckPasswordAsync(user, userInfo.Password))
+            {
+                return Results.BadRequest();
+            }
+
+            return Results.Ok(new AuthToken(tokenService.GenerateToken(user.UserName!)));
+        })
+        .Produces<AuthToken>()
         .Produces(Status400BadRequest);
 
         return group;
