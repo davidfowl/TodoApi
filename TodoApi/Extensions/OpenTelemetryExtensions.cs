@@ -38,8 +38,7 @@ public static class OpenTelemetryExtensions
                        // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
                        c.AddEventSources(
                            "Microsoft.AspNetCore.Hosting",
-                           // There's currently a bug preventing this from working
-                           // "Microsoft-AspNetCore-Server-Kestrel"
+                           "Microsoft-AspNetCore-Server-Kestrel",
                            "System.Net.Http",
                            "System.Net.Sockets",
                            "System.Net.NameResolution",
