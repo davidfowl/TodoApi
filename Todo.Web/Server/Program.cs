@@ -3,7 +3,10 @@ using Todo.Web.Server;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure auth with the front end
-builder.Services.AddAuthentication().AddCookie();
+builder.Services.AddAuthentication().AddCookie(o =>
+{
+    o.Cookie.SameSite = SameSiteMode.Strict;
+});
 builder.Services.AddAuthorizationBuilder();
 
 // Add the forwarder to make sending requests to the backend easier
