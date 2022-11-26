@@ -34,19 +34,27 @@ else
 {
     <input type="button" value="Logout" onclick="@(() => Logout())" />
 
-    <div>
-        <input type="text" name="todo" @bind="todoItem" />
-    </div>
-    <input type="button" value="Add Todo" onclick="@(() => AddTodo())" />
-
-    <ul>
+    <section class="todoapp">
+      <header class="header">
+        <form onsubmit="@(() => AddTodo())">
+          <input class="new-todo" placeholder="What needs to be done?" @bind="todoItem" />
+        </form>
+      </header>
+      <section class="main" style="display: block">
+        <ul class="todo-list">
         @foreach (var todo in todos)
         {
-            <li>
-                @todo.Title
-            </li>
+            <li class=@(todo.IsComplete ? "completed" : "") @key="@todo.Id">
+                <div class="view">
+                  <input class="toggle" type="checkbox" checked="@todo.IsComplete" />
+                  <label>@todo.Title</label>
+                  <button class="destroy"></button>
+                </div>
+              </li>
         }
-    </ul>
+        </ul>
+      </section>
+    </section>
 }
 
 @code {
