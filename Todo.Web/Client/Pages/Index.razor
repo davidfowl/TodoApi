@@ -1,9 +1,106 @@
 ﻿@page "/"
+@using System.Net;
 @inject HttpClient Client
 
+<h1>Todos</h1>
+
+@if (todos is null)
+{
+    if (statusCode == HttpStatusCode.Unauthorized || statusCode == HttpStatusCode.Forbidden)
+    {
+        <em>We need to authenticate</em>
+
+        <div>
+            <input type="text" name="username" @bind="username" />
+        </div>
+        <div>
+            <input type="password" name="password" @bind="password" />
+        </div>
+        <input type="button" value="Login" onclick="@(() => Login())" />
+    }
+    else if (statusCode >= HttpStatusCode.InternalServerError)
+    {
+        <em>There was an error!</em>
+    }
+    else
+    {
+        <em>Loading...</em>
+    }
+}
+else
+{
+    <input type="button" value="Logout" onclick="@(() => Logout())" />
+
+    <div>
+        <input type="text" name="todo" @bind="todoItem" />
+    </div>
+    <input type="button" value="Add Todo" onclick="@(() => AddTodo())" />
+
+    <ul>
+        @foreach (var todo in todos)
+        {
+            <li>
+                @todo.Title
+            </li>
+        }
+    </ul>
+}
+
 @code {
+    TodoItem[]? todos;
+    HttpStatusCode statusCode;
+
+    string? username;
+    string? password;
+
+    string? todoItem;
+
+    private async Task AddTodo()
+    {
+        if (todoItem is { Length: > 0 })
+        {
+            var response = await Client.PostAsJsonAsync("todos", new TodoItem { Title = todoItem });
+
+            if (response.IsSuccessStatusCode)
+            {
+                todoItem = null;
+
+                await OnInitializedAsync();
+            }
+        }
+    }
+
+    private async Task Logout()
+    {
+        var response = await Client.PostAsync("auth/logout", content: null);
+        if (response.IsSuccessStatusCode)
+        {
+            statusCode = HttpStatusCode.Unauthorized;
+            todos = null;
+        }
+    }
+
+    private async Task Login()
+    {
+        var response = await Client.PostAsJsonAsync("auth/login", new { Username = username, Password = password });
+
+        if (response.IsSuccessStatusCode)
+        {
+            username = null;
+            password = null;
+
+            await OnInitializedAsync();
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        // todos = (await Client.GetFromJsonAsync<JsonArray>("/api/todos"))!;
+        var response = await Client.GetAsync("todos");
+        statusCode = response.StatusCode;
+
+        if (response.IsSuccessStatusCode)
+        {
+            todos = await response.Content.ReadFromJsonAsync<TodoItem[]>();
+        }
     }
 }
