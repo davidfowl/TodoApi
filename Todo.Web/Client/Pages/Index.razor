@@ -1,0 +1,9 @@
+﻿@page "/"
+@inject HttpClient Client
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // todos = (await Client.GetFromJsonAsync<JsonArray>("/api/todos"))!;
+    }
+}
