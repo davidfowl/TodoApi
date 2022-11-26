@@ -18,12 +18,11 @@ public class TodoApiTests
         await db.SaveChangesAsync();
 
         var client = application.CreateClient(userId);
-        var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        var todos = await client.GetFromJsonAsync<List<TodoItem>>("/todos");
         Assert.NotNull(todos);
 
         var todo = Assert.Single(todos);
         Assert.Equal("Thing one I have to do", todo.Title);
-        Assert.Equal(userId, todo.OwnerId);
     }
 
     [Fact]
@@ -49,11 +48,11 @@ public class TodoApiTests
         await application.CreateUserAsync(userId);
 
         var client = application.CreateClient(userId);
-        var response = await client.PostAsJsonAsync("/todos", new Todo { Title = "I want to do this thing tomorrow" });
+        var response = await client.PostAsJsonAsync("/todos", new TodoItem { Title = "I want to do this thing tomorrow" });
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
-        var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        var todos = await client.GetFromJsonAsync<List<TodoItem>>("/todos");
         Assert.NotNull(todos);
 
         var todo = Assert.Single(todos);
@@ -107,10 +106,10 @@ public class TodoApiTests
         var client0 = application.CreateClient(userId0);
         var client1 = application.CreateClient(userId1);
 
-        var todos0 = await client0.GetFromJsonAsync<List<Todo>>("/todos");
+        var todos0 = await client0.GetFromJsonAsync<List<TodoItem>>("/todos");
         Assert.NotNull(todos0);
 
-        var todos1 = await client1.GetFromJsonAsync<List<Todo>>("/todos");
+        var todos1 = await client1.GetFromJsonAsync<List<TodoItem>>("/todos");
         Assert.NotNull(todos1);
 
         Assert.Empty(todos1);
@@ -119,7 +118,7 @@ public class TodoApiTests
         Assert.Equal("I want to do this thing tomorrow", todo.Title);
         Assert.False(todo.IsComplete);
 
-        var todo0 = await client0.GetFromJsonAsync<Todo>($"/todos/{todo.Id}");
+        var todo0 = await client0.GetFromJsonAsync<TodoItem>($"/todos/{todo.Id}");
         Assert.NotNull(todo0);
 
         var response = await client1.GetAsync($"/todos/{todo.Id}");
@@ -135,7 +134,7 @@ public class TodoApiTests
         await application.CreateUserAsync(userId);
 
         var client = application.CreateClient(userId);
-        var response = await client.PostAsJsonAsync("/todos", new Todo { });
+        var response = await client.PostAsJsonAsync("/todos", new TodoItem { });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
 
@@ -165,7 +164,7 @@ public class TodoApiTests
         var client0 = application.CreateClient(userId0);
         var client1 = application.CreateClient(userId1);
 
-        var todos = await client0.GetFromJsonAsync<List<Todo>>("/todos");
+        var todos = await client0.GetFromJsonAsync<List<TodoItem>>("/todos");
         Assert.NotNull(todos);
 
         var todo = Assert.Single(todos);
@@ -201,7 +200,7 @@ public class TodoApiTests
         var client = application.CreateClient(userId);
         var adminClient = application.CreateClient(adminUserId, isAdmin: true);
 
-        var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        var todos = await client.GetFromJsonAsync<List<TodoItem>>("/todos");
         Assert.NotNull(todos);
 
         var todo = Assert.Single(todos);
@@ -237,7 +236,7 @@ public class TodoApiTests
         // Create API Client
         var client = application.CreateClient(userId);
 
-        var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        var todos = await client.GetFromJsonAsync<List<TodoItem>>("/todos");
 
         Assert.NotNull(todos);
 
@@ -251,7 +250,7 @@ public class TodoApiTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         // Verify the update
-        todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        todos = await client.GetFromJsonAsync<List<TodoItem>>("/todos");
         Assert.NotNull(todos);
         var updatedTodo = Assert.Single(todos);
         Assert.NotNull(updatedTodo);
@@ -281,7 +280,7 @@ public class TodoApiTests
         var client = application.CreateClient(userId);
         var adminClient = application.CreateClient(adminUserId, isAdmin: true);
 
-        var todos = await client.GetFromJsonAsync<List<Todo>>("/todos");
+        var todos = await client.GetFromJsonAsync<List<TodoItem>>("/todos");
         Assert.NotNull(todos);
 
         var todo = Assert.Single(todos);
@@ -294,7 +293,7 @@ public class TodoApiTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         // Verify the changes
-        todos = await  client.GetFromJsonAsync<List<Todo>>("/todos");
+        todos = await  client.GetFromJsonAsync<List<TodoItem>>("/todos");
         Assert.NotNull(todos);
         var updatedTodo = Assert.Single(todos);
         Assert.NotNull(updatedTodo);

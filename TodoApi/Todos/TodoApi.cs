@@ -18,25 +18,25 @@ internal static class TodoApi
         group.RequirePerUserRateLimit();
 
         // Validate the parameters
-        group.WithParameterValidation(typeof(Todo), typeof(NewTodo));
+        group.WithParameterValidation(typeof(TodoItem));
 
         group.MapGet("/", async (TodoDbContext db, CurrentUser owner) =>
         {
-            return await db.Todos.Where(todo => todo.OwnerId == owner.Id).ToListAsync();
+            return await db.Todos.Where(todo => todo.OwnerId == owner.Id).Select(t => t.AsTodoItem()).ToListAsync();
         });
 
         group.MapGet("/{id}", async (TodoDbContext db, int id, CurrentUser owner) =>
         {
             return await db.Todos.FindAsync(id) switch
             {
-                Todo todo when todo.OwnerId == owner.Id || owner.IsAdmin => Results.Ok(todo),
+                Todo todo when todo.OwnerId == owner.Id || owner.IsAdmin => Results.Ok(todo.AsTodoItem()),
                 _ => Results.NotFound()
             };
         })
-        .Produces<Todo>()
+        .Produces<TodoItem>()
         .Produces(Status404NotFound);
 
-        group.MapPost("/", async (TodoDbContext db, NewTodo newTodo, CurrentUser owner) =>
+        group.MapPost("/", async (TodoDbContext db, TodoItem newTodo, CurrentUser owner) =>
         {
             var todo = new Todo
             {
@@ -52,7 +52,7 @@ internal static class TodoApi
        .Produces(Status201Created)
        .ProducesValidationProblem();
 
-        group.MapPut("/{id}", async (TodoDbContext db, int id, Todo todo, CurrentUser owner) =>
+        group.MapPut("/{id}", async (TodoDbContext db, int id, TodoItem todo, CurrentUser owner) =>
         {
             if (id != todo.Id)
             {
