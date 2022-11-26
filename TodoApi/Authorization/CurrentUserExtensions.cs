@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 
 namespace TodoApi;
@@ -7,28 +8,36 @@ public static class CurrentUserExtensions
 {
     public static IServiceCollection AddCurrentUser(this IServiceCollection services)
     {
-        return services.AddScoped<CurrentUser>();
+        services.AddScoped<CurrentUser>();
+        services.AddScoped<IClaimsTransformation, ClaimsTransformation>();
+        return services;
     }
 
-    public static IApplicationBuilder UseCurrentUser(this IApplicationBuilder app)
+    private sealed class ClaimsTransformation : IClaimsTransformation
     {
-        return app.Use(async (context, next) =>
+        private readonly CurrentUser _currentUser;
+        private readonly UserManager<TodoUser> _userManager;
+
+        public ClaimsTransformation(CurrentUser currentUser, UserManager<TodoUser> userManager)
         {
-            // Resolve the current user so we can set the properties on this scoped instance
-            var currentUser = context.RequestServices.GetRequiredService<CurrentUser>();
+            _currentUser = currentUser;
+            _userManager = userManager;
+        }
 
-            currentUser.Principal = context.User;
+        public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
+        {
+            // We're not going to transform anything. We're using this as a hook into authorization
+            // to set the current user without adding custom middleware.
+            _currentUser.Principal = principal;
 
-            // Only query the database if the user is authenticated
-            if (context.User.FindFirstValue(ClaimTypes.NameIdentifier) is { Length: > 0 } name)
+            if (principal.FindFirstValue(ClaimTypes.NameIdentifier) is { Length: > 0 } name)
             {
                 // Resolve the user manager and see if the current user is a valid user in the database
                 // we do this once and store it on the current user.
-                var userManager = context.RequestServices.GetRequiredService<UserManager<TodoUser>>();
-                currentUser.User = await userManager.FindByNameAsync(name);
+                _currentUser.User = await _userManager.FindByNameAsync(name);
             }
 
-            await next(context);
-        });
+            return principal;
+        }
     }
 }
