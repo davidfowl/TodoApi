@@ -101,5 +101,9 @@ else
         {
             todos = await response.Content.ReadFromJsonAsync<TodoItem[]>();
         }
+        else if (statusCode == HttpStatusCode.Forbidden)
+        {
+            await Logout();
+        }
     }
 }
