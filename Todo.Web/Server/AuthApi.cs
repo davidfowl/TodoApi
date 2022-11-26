@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Todo.Web.Server;
 
@@ -10,17 +10,10 @@ public static class AuthApi
     {
         var group = routes.MapGroup("/auth");
 
-        group.MapPost("login", async (UserInfo userInfo, IHttpClientFactory clientFactory) =>
+        group.MapPost("login", async (UserInfo userInfo, TodoClient client) =>
         {
-            var todoClient = clientFactory.CreateClient("TodoApi");
-            var response = await todoClient.PostAsJsonAsync("users/token", userInfo);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                return Results.Unauthorized();
-            }
-
-            var token = await response.Content.ReadFromJsonAsync<AuthToken>();
+            // Retrieve the access token give the user info
+            var token = await client.GetTokenAsync(userInfo);
 
             if (token is null)
             {
@@ -31,7 +24,12 @@ public static class AuthApi
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userInfo.Username));
 
             var properties = new AuthenticationProperties();
-            properties.SetString("token", token.Token);
+            var tokens = new[]
+            {
+                new AuthenticationToken { Name = TokenNames.AccessToken, Value = token }
+            };
+
+            properties.StoreTokens(tokens);
 
             return Results.SignIn(new ClaimsPrincipal(identity),
                 properties: properties,

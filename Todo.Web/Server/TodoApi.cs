@@ -11,18 +11,18 @@ public static class TodoApi
 
         group.RequireAuthorization();
 
-        var invoker = new HttpMessageInvoker(new SocketsHttpHandler());
-
         var transform = static async ValueTask (HttpContext context, HttpRequestMessage req) =>
         {
-            var result = await context.AuthenticateAsync();
-            var authToken = result.Properties!.GetString("token");
-            req.Headers.Authorization = new("Bearer", authToken);
+            var accessToken = await context.GetTokenAsync(TokenNames.AccessToken);
+            req.Headers.Authorization = new("Bearer", accessToken);
         };
+
+        // Use this HttpClient for all proxied requests
+        var client = new HttpMessageInvoker(new SocketsHttpHandler());
 
         group.Map("/", async (IHttpForwarder forwarder, HttpContext context) =>
         {
-            await forwarder.SendAsync(context, todoUrl, invoker, transform);
+            await forwarder.SendAsync(context, todoUrl, client, transform);
 
             return Results.Empty;
         });

@@ -1,12 +1,11 @@
 ﻿@page "/"
-@using System.Net;
 @inject HttpClient Client
 
 <h1>Todos</h1>
 
 @if (todos is null)
 {
-    if (statusCode == HttpStatusCode.Unauthorized || statusCode == HttpStatusCode.Forbidden)
+    if (statusCode == HttpStatusCode.Unauthorized)
     {
         <em>We need to authenticate</em>
 

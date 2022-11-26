@@ -1,5 +1,4 @@
 using Todo.Web.Server;
-using Yarp.ReverseProxy.Forwarder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +12,7 @@ builder.Services.AddHttpForwarder();
 var todoUrl = builder.Configuration["TodoApiUrl"] ?? throw new InvalidOperationException("Todo API URL is not configured");
 
 // Configure the HttpClient for the backend API
-builder.Services.AddHttpClient("TodoApi", client =>
+builder.Services.AddHttpClient<TodoClient>(client =>
 {
     client.BaseAddress = new(todoUrl);
 });
