@@ -5,8 +5,10 @@ namespace TodoApi;
 
 internal static class TodoApi
 {
-    public static RouteGroupBuilder MapTodos(this RouteGroupBuilder group)
+    public static RouteGroupBuilder MapTodos(this IEndpointRouteBuilder routes)
     {
+        var group = routes.MapGroup("/todos");
+
         group.WithTags("Todos");
 
         // Add security requirements, all incoming requests to this API *must*

@@ -5,8 +5,10 @@ namespace TodoApi;
 
 public static class UsersApi
 {
-    public static RouteGroupBuilder MapUsers(this RouteGroupBuilder group)
+    public static RouteGroupBuilder MapUsers(this IEndpointRouteBuilder routes)
     {
+        var group = routes.MapGroup("/users");
+
         group.WithTags("Users");
 
         group.WithParameterValidation(typeof(UserInfo));

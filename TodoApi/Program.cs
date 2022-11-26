@@ -46,8 +46,8 @@ app.UseRateLimiter();
 app.Map("/", () => Results.Redirect("/swagger"));
 
 // Configure the APIs
-app.MapGroup("/todos").MapTodos();
-app.MapGroup("/users").MapUsers();
+app.MapTodos();
+app.MapUsers();
 
 // Configure the prometheus endpoint for scraping metrics
 app.MapPrometheusScrapingEndpoint();
