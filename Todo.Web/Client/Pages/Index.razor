@@ -5,7 +5,11 @@
 
 @if (todos is null)
 {
-    if (statusCode == HttpStatusCode.Unauthorized)
+    if (statusCode is null)
+    {
+        <em>Loading...</em>
+    }
+    else if (statusCode == HttpStatusCode.Unauthorized)
     {
         <em>We need to authenticate</em>
 
@@ -23,7 +27,7 @@
     }
     else
     {
-        <em>Loading...</em>
+        @statusCode
     }
 }
 else
@@ -47,7 +51,7 @@ else
 
 @code {
     TodoItem[]? todos;
-    HttpStatusCode statusCode;
+    HttpStatusCode? statusCode;
 
     string? username;
     string? password;
@@ -94,6 +98,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        statusCode = null;
         var response = await Client.GetAsync("todos");
         statusCode = response.StatusCode;
 
