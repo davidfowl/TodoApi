@@ -59,9 +59,7 @@ else
                                             <input class="form-check-input me-2" type="checkbox" value="" aria-label="..." />
                                             @todo.Title
                                         </div>
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Remove item" onclick="@(() => DeleteTodo(id))">
-                                            <i class="fas fa-times text-primary"></i>
-                                        </a>
+                                        <a href="#!" data-mdb-toggle="tooltip" title="Remove item" style="text-decoration:none" onclick="@(() => DeleteTodo(id))">🗙</a>
                                     </li>
                                 }
                             </ul>
