@@ -3,8 +3,8 @@
 [![CI](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml/badge.svg)](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml)
 
 This is a Todo application that features:
-- **Todo.Web** - An ASP.NET Core hosted Blazor WASM front end application
-- **TodoApi** - An ASP.NET Core REST API backend using minimal APIs
+- [**Todo.Web**](Todo.Web) - An ASP.NET Core hosted Blazor WASM front end application
+- [**TodoApi**](TodoApi) - An ASP.NET Core REST API backend using minimal APIs
 
 ![image](https://user-images.githubusercontent.com/95136/204161352-bc54ccb7-32cf-49ba-a6f7-f46d0f2d204f.png)
 
