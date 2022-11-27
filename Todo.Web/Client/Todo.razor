@@ -54,14 +54,11 @@ else
 
     async Task AddTodo()
     {
-        if (todoItem is { Length: > 0 })
+        if (await Client.AddTodoAsync(todoItem))
         {
-            if (await Client.AddTodoAsync(todoItem))
-            {
-                todoItem = null;
+            todoItem = null;
 
-                await OnInitializedAsync();
-            }
+            await OnInitializedAsync();
         }
     }
 

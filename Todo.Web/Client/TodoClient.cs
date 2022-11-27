@@ -11,8 +11,13 @@ public class TodoClient
         _client = client;
     }
 
-    public async Task<bool> AddTodoAsync(string title)
+    public async Task<bool> AddTodoAsync(string? title)
     {
+        if (string.IsNullOrEmpty(title))
+        {
+            return false;
+        }
+
         var response = await _client.PostAsJsonAsync("todos", new TodoItem { Title = title });
         return response.IsSuccessStatusCode;
     }
@@ -39,7 +44,7 @@ public class TodoClient
 
     public async Task<bool> LoginAsync(string? username, string? password)
     {
-        if (username is null || password is null)
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
             return false;
         }
