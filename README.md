@@ -1,14 +1,23 @@
-## Todo REST API with ASP.NET Core
+## Todo application with ASP.NET Core
 
 [![CI](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml/badge.svg)](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml)
 
-Todo REST API samples using ASP.NET Core minimal APIs. It showcases:
+This is a Todo application that features:
+- An ASP.NET Core hosted Blazor WASM front end application
+- An ASP.NET Core REST API backend using minimal APIs
+
+![image](https://user-images.githubusercontent.com/95136/204161352-bc54ccb7-32cf-49ba-a6f7-f46d0f2d204f.png)
+
+It showcases:
+- Blazor WASM
+- Cookie authentication
+- Proxying requests from the front end application server using YARP's IHttpForwarder
 - Using EntityFramework and SQLite for data access
 - JWT authentication
 - User management with ASP.NET Core Identity
 - OpenAPI support
 - Rate Limiting
-- Writing tests for your REST API
+- Writing integration tests for your REST API
 
 ## Prerequisites
 
