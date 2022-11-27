@@ -48,8 +48,8 @@ public static class AuthApi
         var properties = new AuthenticationProperties();
         var tokens = new[]
         {
-                new AuthenticationToken { Name = TokenNames.AccessToken, Value = token }
-            };
+            new AuthenticationToken { Name = TokenNames.AccessToken, Value = token }
+        };
 
         properties.StoreTokens(tokens);
 
