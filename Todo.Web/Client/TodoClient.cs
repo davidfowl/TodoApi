@@ -17,6 +17,12 @@ public class TodoClient
         return response.IsSuccessStatusCode;
     }
 
+    public async Task<bool> DeleteTodoAsync(int id)
+    {
+        var response = await _client.DeleteAsync($"todos/{id}");
+        return response.IsSuccessStatusCode;
+    }
+
     public async Task<(HttpStatusCode, TodoItem[]?)> GetTodosAsync()
     {
         var response = await _client.GetAsync("todos");

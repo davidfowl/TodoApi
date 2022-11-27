@@ -9,6 +9,9 @@ builder.Services.AddAuthentication().AddCookie(o =>
 });
 builder.Services.AddAuthorizationBuilder();
 
+// Add razor pages so we can render the Blazor WASM todo component
+builder.Services.AddRazorPages();
+
 // Add the forwarder to make sending requests to the backend easier
 builder.Services.AddHttpForwarder();
 
@@ -42,7 +45,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapFallbackToFile("index.html");
+app.MapFallbackToPage("/_Host");
 
 // Configure the APIs
 app.MapAuth();

@@ -1,7 +1,5 @@
 ﻿@inject TodoClient Client
 
-<h1>Todos</h1>
-
 @if (todos is null)
 {
     if (statusCode is null)
@@ -27,28 +25,22 @@ else
 {
     <input type="button" value="Logout" onclick="@(() => Logout())" />
 
-    <section class="todoapp">
-      <header class="header">
-        <h1>todos</h1>
-        <form onsubmit="@(() => AddTodo())">
-          <input class="new-todo" placeholder="What needs to be done?" @bind="todoItem" />
-        </form>
-      </header>
-      <section class="main" style="display: block">
-        <ul class="todo-list">
+    <form onsubmit="@(() => AddTodo())">
+        <input class="new-todo" placeholder="What needs to be done?" @bind="todoItem" />
+    </form>
+    <ul class="todo-list">
         @foreach (var todo in todos)
         {
-            <li class=@(todo.IsComplete ? "completed" : "") @key="@todo.Id">
+            var id = todo.Id;
+            <li class=@(todo.IsComplete ? "completed" : "") @key="id">
                 <div class="view">
-                  <input class="toggle" type="checkbox" checked="@todo.IsComplete" />
-                  <label>@todo.Title</label>
-                  <button class="destroy"></button>
+                    <input class="toggle" type="checkbox" @bind="@todo.IsComplete" />
+                    <label>@todo.Title</label>
+                    <button class="destroy" onclick="@(() => DeleteTodo(id))"></button>
                 </div>
-              </li>
+            </li>
         }
-        </ul>
-      </section>
-    </section>
+    </ul>
 }
 
 @code {
@@ -60,7 +52,7 @@ else
 
     string? todoItem;
 
-    private async Task AddTodo()
+    async Task AddTodo()
     {
         if (todoItem is { Length: > 0 })
         {
@@ -73,7 +65,17 @@ else
         }
     }
 
-    private async Task Logout()
+    async Task DeleteTodo(int id)
+    {
+        if (await Client.DeleteTodoAsync(id))
+        {
+            await OnInitializedAsync();
+
+            StateHasChanged();
+        }
+    }
+
+    async Task Logout()
     {
         if (await Client.LogoutAsync())
         {
@@ -82,7 +84,7 @@ else
         }
     }
 
-    private async Task Login()
+    async Task Login()
     {
         if (await Client.LoginAsync(username, password))
         {
