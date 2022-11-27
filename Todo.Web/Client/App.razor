@@ -1,12 +1,105 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿@inject TodoClient Client
+
+<h1>Todos</h1>
+
+@if (todos is null)
+{
+    if (statusCode is null)
+    {
+        <em>Loading...</em>
+    }
+    else if (statusCode == HttpStatusCode.Unauthorized)
+    {
+        <div>
+            <input type="text" name="username" @bind="username" />
+        </div>
+        <div>
+            <input type="password" name="password" @bind="password" />
+        </div>
+        <input type="button" value="Login" onclick="@(() => Login())" />
+    }
+    else
+    {
+        @statusCode
+    }
+}
+else
+{
+    <input type="button" value="Logout" onclick="@(() => Logout())" />
+
+    <section class="todoapp">
+      <header class="header">
+        <h1>todos</h1>
+        <form onsubmit="@(() => AddTodo())">
+          <input class="new-todo" placeholder="What needs to be done?" @bind="todoItem" />
+        </form>
+      </header>
+      <section class="main" style="display: block">
+        <ul class="todo-list">
+        @foreach (var todo in todos)
+        {
+            <li class=@(todo.IsComplete ? "completed" : "") @key="@todo.Id">
+                <div class="view">
+                  <input class="toggle" type="checkbox" checked="@todo.IsComplete" />
+                  <label>@todo.Title</label>
+                  <button class="destroy"></button>
+                </div>
+              </li>
+        }
+        </ul>
+      </section>
+    </section>
+}
+
+@code {
+    TodoItem[]? todos;
+    HttpStatusCode? statusCode;
+
+    string? username;
+    string? password;
+
+    string? todoItem;
+
+    private async Task AddTodo()
+    {
+        if (todoItem is { Length: > 0 })
+        {
+            if (await Client.AddTodoAsync(todoItem))
+            {
+                todoItem = null;
+
+                await OnInitializedAsync();
+            }
+        }
+    }
+
+    private async Task Logout()
+    {
+        if (await Client.LogoutAsync())
+        {
+            statusCode = HttpStatusCode.Unauthorized;
+            todos = null;
+        }
+    }
+
+    private async Task Login()
+    {
+        if (await Client.LoginAsync(username, password))
+        {
+            username = null;
+            password = null;
+
+            await OnInitializedAsync();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        (statusCode, todos) = await Client.GetTodosAsync();
+
+        if (statusCode == HttpStatusCode.Forbidden)
+        {
+            await Logout();
+        }
+    }
+}
