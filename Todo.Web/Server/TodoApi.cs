@@ -20,7 +20,7 @@ public static class TodoApi
         // Use this HttpClient for all proxied requests
         var client = new HttpMessageInvoker(new SocketsHttpHandler());
 
-        group.Map("/", async (IHttpForwarder forwarder, HttpContext context) =>
+        group.Map("{*path}", async (IHttpForwarder forwarder, HttpContext context) =>
         {
             await forwarder.SendAsync(context, todoUrl, client, transform);
 
