@@ -297,3 +297,4 @@ __pycache__/
 .DS_Store
 *.db-shm
 *.db-wal
+/.tye
