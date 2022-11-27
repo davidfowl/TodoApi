@@ -1,5 +1,5 @@
 ﻿@page "/"
-@inject HttpClient Client
+@inject TodoClient Client
 
 <h1>Todos</h1>
 
@@ -11,8 +11,6 @@
     }
     else if (statusCode == HttpStatusCode.Unauthorized)
     {
-        <em>We need to authenticate</em>
-
         <div>
             <input type="text" name="username" @bind="username" />
         </div>
@@ -20,10 +18,6 @@
             <input type="password" name="password" @bind="password" />
         </div>
         <input type="button" value="Login" onclick="@(() => Login())" />
-    }
-    else if (statusCode >= HttpStatusCode.InternalServerError)
-    {
-        <em>There was an error!</em>
     }
     else
     {
@@ -36,6 +30,7 @@ else
 
     <section class="todoapp">
       <header class="header">
+        <h1>todos</h1>
         <form onsubmit="@(() => AddTodo())">
           <input class="new-todo" placeholder="What needs to be done?" @bind="todoItem" />
         </form>
@@ -70,9 +65,7 @@ else
     {
         if (todoItem is { Length: > 0 })
         {
-            var response = await Client.PostAsJsonAsync("todos", new TodoItem { Title = todoItem });
-
-            if (response.IsSuccessStatusCode)
+            if (await Client.AddTodoAsync(todoItem))
             {
                 todoItem = null;
 
@@ -83,8 +76,7 @@ else
 
     private async Task Logout()
     {
-        var response = await Client.PostAsync("auth/logout", content: null);
-        if (response.IsSuccessStatusCode)
+        if (await Client.LogoutAsync())
         {
             statusCode = HttpStatusCode.Unauthorized;
             todos = null;
@@ -93,9 +85,7 @@ else
 
     private async Task Login()
     {
-        var response = await Client.PostAsJsonAsync("auth/login", new { Username = username, Password = password });
-
-        if (response.IsSuccessStatusCode)
+        if (await Client.LoginAsync(username, password))
         {
             username = null;
             password = null;
@@ -106,15 +96,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        statusCode = null;
-        var response = await Client.GetAsync("todos");
-        statusCode = response.StatusCode;
+        (statusCode, todos) = await Client.GetTodosAsync();
 
-        if (response.IsSuccessStatusCode)
-        {
-            todos = await response.Content.ReadFromJsonAsync<TodoItem[]>();
-        }
-        else if (statusCode == HttpStatusCode.Forbidden)
+        if (statusCode == HttpStatusCode.Forbidden)
         {
             await Logout();
         }
