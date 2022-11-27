@@ -33,7 +33,12 @@
 }
 else
 {
-    <input type="button" value="Logout" onclick="@(() => Logout())" />
+    <ul class="nav justify-content-center">
+        <li class="nav-item">
+            Logged in as <strong>@CurrentUser</strong>
+            <a class="btn btn-primary" href="#" role="button" onclick="@(() => Logout())">Logout</a>
+        </li>
+    </ul>
 
     <section class="vh-100">
         <div class="container py-5">
@@ -43,7 +48,7 @@ else
                     <div class="card" style="border-radius: 15px;">
                         <div class="card-body p-5">
 
-                            <h6 class="mb-3">@CurrentUser Todo List</h6>
+                            <h6 class="mb-3">Todo List</h6>
 
                             <form class="d-flex justify-content-center align-items-center mb-4" onsubmit="@(() => AddTodo())">
                                 <div class="form-outline flex-fill">
