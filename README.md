@@ -3,19 +3,20 @@
 [![CI](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml/badge.svg)](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml)
 
 This is a Todo application that features:
-- An ASP.NET Core hosted Blazor WASM front end application
-- An ASP.NET Core REST API backend using minimal APIs
+- **Todo.Web** - An ASP.NET Core hosted Blazor WASM front end application
+- **TodoApi** - An ASP.NET Core REST API backend using minimal APIs
 
 ![image](https://user-images.githubusercontent.com/95136/204161352-bc54ccb7-32cf-49ba-a6f7-f46d0f2d204f.png)
 
 It showcases:
-- Blazor WASM
-- Cookie authentication
-- Proxying requests from the front end application server using YARP's IHttpForwarder
+- Blazor WebAssembly
+- Minimal APIs
 - Using EntityFramework and SQLite for data access
-- JWT authentication
+- OpenAPI
 - User management with ASP.NET Core Identity
-- OpenAPI support
+- Cookie authentication
+- JWT authentication
+- Proxying requests from the front end application server using YARP's IHttpForwarder
 - Rate Limiting
 - Writing integration tests for your REST API
 
