@@ -53,6 +53,17 @@ public class TodoClient
         return response.IsSuccessStatusCode;
     }
 
+    public async Task<bool> CreateUserAsync(string? username, string? password)
+    {
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            return false;
+        }
+
+        var response = await _client.PostAsJsonAsync("auth/register", new UserInfo { Username = username, Password = password });
+        return response.IsSuccessStatusCode;
+    }
+
     public async Task<bool> LogoutAsync()
     {
         var response = await _client.PostAsync("auth/logout", content: null);

@@ -27,4 +27,17 @@ public class TodoClient
 
         return token.Token;
     }
+
+    public async Task<string?> CreateUserAsync(UserInfo userInfo)
+    {
+        var response = await _client.PostAsJsonAsync("users", userInfo);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        // TODO: Make this a single call on the backend
+        return await GetTokenAsync(userInfo);
+    }
 }

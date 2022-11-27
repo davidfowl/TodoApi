@@ -11,7 +11,7 @@
     }
     else if (statusCode == HttpStatusCode.Unauthorized)
     {
-        <form onsubmit="@(() => Login())" class="form-horizontal py-5 vh-100">
+        <div class="form-horizontal py-5 vh-100">
             <div class="mb-3">
                 <label for="username" class="form-label">User name</label>
                 <input id="username" class="form-control" @bind="username" />
@@ -21,9 +21,10 @@
                 <input id="password" type="password" class="form-control" @bind="password" />
             </div>
             <div>
-                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="button" class="btn btn-primary" onclick="@(()=> Login())">Login</button>
+                <button type="button" class="btn btn-primary" onclick="@(()=> Create())">Create User</button>
             </div>
-        </form>
+        </div>
     }
     else
     {
@@ -117,6 +118,24 @@ else
     async Task Login()
     {
         if (await Client.LoginAsync(username, password))
+        {
+            CurrentUser = username;
+
+            username = null;
+            password = null;
+
+            statusCode = null;
+
+            // Show loading screen
+            StateHasChanged();
+
+            await OnInitializedAsync();
+        }
+    }
+
+    async Task Create()
+    {
+        if (await Client.CreateUserAsync(username, password))
         {
             CurrentUser = username;
 
