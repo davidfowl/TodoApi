@@ -35,7 +35,14 @@ To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [Tod
    - **Visual Studio** - Setup multiple startup projects by right clicking on the solution and selecting Properties. Select `TodoApi` and `Todo.Web.Server` as startup projects.
 
       <img width="591" alt="image" src="https://user-images.githubusercontent.com/95136/204311327-479445c8-4f73-4845-b146-d56be8ceb9ab.png">
-   - **Visual Studio Code** - Open up 2 terminal windows, one in [Todo.Web.Server](Todo.Web/Server/) and the other in [TodoApi](TodoApi/) run `dotnet watch run -lp https`.
+   - **Visual Studio Code** - Open up 2 terminal windows, one in [Todo.Web.Server](Todo.Web/Server/) and the other in [TodoApi](TodoApi/) run: 
+   
+      ```
+      dotnet watch run -lp https
+      ```
+
+      This will run both applications with the `https` profile.
+
    - **Tye** - Install the global tool using the following command: 
    
       ```
