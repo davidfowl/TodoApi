@@ -1,0 +1,59 @@
+﻿@inject TodoClient Client
+
+<EditForm Model="@this" class="form-horizontal py-5" OnValidSubmit="@Login">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="username" class="form-label">User name</label>
+        <InputText id="username" class="form-control" @bind-Value="Username" />
+        <ValidationMessage For="@(() => Username)" />
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <InputText id="password" type="password" class="form-control" @bind-Value="Password" />
+        <ValidationMessage For="@(() => Password)" />
+    </div>
+    <div>
+        <button class="btn btn-primary">Login</button>
+        <button type="button" class="btn btn-secondary" @onclick="@Create">Create User</button>
+    </div>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(alertMessage))
+{
+    <div class="alert alert-danger">@alertMessage</div>
+}
+
+@code {
+    string? alertMessage;
+
+    [Required, StringLength(15)] public string? Username { get; set; }
+    [Required, StringLength(32, MinimumLength = 6)] public string? Password { get; set; }
+
+    [Parameter] public EventCallback<string> OnLoggedIn { get; set; }
+
+    async Task Login()
+    {
+        alertMessage = null;
+        if (await Client.LoginAsync(Username, Password))
+        {
+            await OnLoggedIn.InvokeAsync(Username);
+        }
+        else
+        {
+            alertMessage = "Login failed";
+        }
+    }
+
+    async Task Create()
+    {
+        alertMessage = null;
+        if (await Client.CreateUserAsync(Username, Password))
+        {
+            await OnLoggedIn.InvokeAsync(Username);
+        }
+        else
+        {
+            alertMessage = "Failed to create user";
+        }
+    }
+}

@@ -1,0 +1,75 @@
+﻿@inject TodoClient Client
+
+@if (todos is null)
+{
+    <div class="d-flex justify-content-center align-items-center vh-100">
+        <div class="spinner-border" role="status"></div>
+    </div>
+}
+else
+{
+    <h6 class="mb-3">Todo List</h6>
+
+    <EditForm @ref="@form" Model="@this" OnValidSubmit="@AddTodo" class="d-flex justify-content-center align-items-center mb-4">
+        <DataAnnotationsValidator />
+        <div class="form-outline flex-fill">
+            <InputText autofocus class="form-control form-control-lg" @bind-Value="@NewTodo" placeholder="Type a new todo item" />
+            <ValidationMessage For="@(() => NewTodo)" />
+        </div>
+    </EditForm>
+
+    <ul class="list-group mb-0">
+        @foreach (var todo in todos)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2" @key="@todo.Id">
+                <div class="d-flex align-items-center">
+                    <input class="form-check-input me-2" type="checkbox" value="" aria-label="..." />
+                    @todo.Title
+                </div>
+                <a data-mdb-toggle="tooltip" title="Remove item" style="text-decoration:none" @onclick="@(() => DeleteTodo(todo))">🗙</a>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    TodoItem[]? todos;
+    EditForm? form;
+
+    [Required, StringLength(20)] public string? NewTodo { get; set; }
+
+    [Parameter] public EventCallback OnForbidden { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTodos();
+    }
+
+    async Task LoadTodos()
+    {
+        (var statusCode, todos) = await Client.GetTodosAsync();
+
+        if (statusCode == HttpStatusCode.Forbidden)
+        {
+            await OnForbidden.InvokeAsync();
+        }
+    }
+
+    async Task AddTodo()
+    {
+        if (await Client.AddTodoAsync(NewTodo))
+        {
+            NewTodo = null;
+            form!.EditContext!.MarkAsUnmodified();
+            await LoadTodos(); // Would be nice if the backend returned the inserted data so we could append it locally without reloading everything
+        }
+    }
+
+    async Task DeleteTodo(TodoItem todo)
+    {
+        if (await Client.DeleteTodoAsync(todo.Id))
+        {
+            todos = todos!.Except(new[] { todo }).ToArray();
+        }
+    }
+}
