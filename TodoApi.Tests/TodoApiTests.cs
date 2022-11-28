@@ -10,7 +10,7 @@ public class TodoApiTests
         var userId = "34";
 
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
         await application.CreateUserAsync(userId);
 
         db.Todos.Add(new Todo { Title = "Thing one I have to do", OwnerId = userId });
@@ -31,7 +31,7 @@ public class TodoApiTests
         var userId = "34";
 
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
 
         var client = application.CreateClient(userId);
         var response = await client.GetAsync("/todos");
@@ -44,7 +44,7 @@ public class TodoApiTests
     {
         var userId = "34";
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
         await application.CreateUserAsync(userId);
 
         var client = application.CreateClient(userId);
@@ -66,7 +66,7 @@ public class TodoApiTests
         var userId = "34";
 
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
         await application.CreateUserAsync(userId);
 
         db.Todos.Add(new Todo { Title = "I want to do this thing tomorrow", OwnerId = userId });
@@ -95,7 +95,7 @@ public class TodoApiTests
         var userId1 = "35";
 
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
         await application.CreateUserAsync(userId0);
         await application.CreateUserAsync(userId1);
 
@@ -130,7 +130,7 @@ public class TodoApiTests
     {
         var userId = "34";
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
         await application.CreateUserAsync(userId);
 
         var client = application.CreateClient(userId);
@@ -153,7 +153,7 @@ public class TodoApiTests
         var userId1 = "35";
 
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
         await application.CreateUserAsync(userId0);
         await application.CreateUserAsync(userId1);
 
@@ -189,7 +189,7 @@ public class TodoApiTests
         var adminUserId = "35";
 
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
         await application.CreateUserAsync(userId);
         await application.CreateUserAsync(adminUserId);
 
@@ -226,7 +226,7 @@ public class TodoApiTests
         var ownerId = "34";
         var userId = "34";
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
         await application.CreateUserAsync(userId);
 
         db.Todos.Add(new Todo { Title = "I want to do this thing tomorrow", OwnerId = ownerId });
@@ -269,7 +269,7 @@ public class TodoApiTests
         var adminUserId = "35";
 
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
         await application.CreateUserAsync(userId);
         await application.CreateUserAsync(adminUserId);
 
