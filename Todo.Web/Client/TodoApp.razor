@@ -21,8 +21,8 @@
                 <input id="password" type="password" class="form-control" @bind="password" />
             </div>
             <div>
-                <button type="button" class="btn btn-primary" onclick="@(()=> Login())">Login</button>
-                <button type="button" class="btn btn-primary" onclick="@(()=> Create())">Create User</button>
+                <button type="button" class="btn btn-primary" onclick="@Login">Login</button>
+                <button type="button" class="btn btn-primary" onclick="@Create">Create User</button>
             </div>
         </div>
     }
@@ -36,7 +36,7 @@ else
     <ul class="nav justify-content-center">
         <li class="nav-item">
             Logged in as <strong>@CurrentUser</strong>
-            <a class="btn btn-primary" href="#" role="button" onclick="@(() => Logout())">Logout</a>
+            <a class="btn btn-primary" href="#" role="button" onclick="@Logout">Logout</a>
         </li>
     </ul>
 
@@ -50,7 +50,7 @@ else
 
                             <h6 class="mb-3">Todo List</h6>
 
-                            <form class="d-flex justify-content-center align-items-center mb-4" onsubmit="@(() => AddTodo())">
+                            <form class="d-flex justify-content-center align-items-center mb-4" onsubmit="@AddTodo">
                                 <div class="form-outline flex-fill">
                                     <input type="text" id="form3" class="form-control form-control-lg" @bind="todoItem" placeholder="Type a new todo item" />
                                 </div>
