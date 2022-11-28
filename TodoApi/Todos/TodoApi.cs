@@ -24,7 +24,7 @@ internal static class TodoApi
 
         group.MapGet("/", async (TodoDbContext db, CurrentUser owner) =>
         {
-            return await db.Todos.Where(todo => todo.OwnerId == owner.Id).Select(t => t.AsTodoItem()).ToListAsync();
+            return await db.Todos.Where(todo => todo.OwnerId == owner.Id).Select(t => t.AsTodoItem()).AsNoTracking().ToListAsync();
         });
 
         group.MapGet("/{id}", async Task<Results<Ok<TodoItem>, NotFound>> (TodoDbContext db, int id, CurrentUser owner) =>
