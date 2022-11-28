@@ -20,12 +20,7 @@ public class TodoClient
 
         var token = await response.Content.ReadFromJsonAsync<AuthToken>();
 
-        if (token is null)
-        {
-            return null;
-        }
-
-        return token.Token;
+        return token?.Token;
     }
 
     public async Task<string?> CreateUserAsync(UserInfo userInfo)
