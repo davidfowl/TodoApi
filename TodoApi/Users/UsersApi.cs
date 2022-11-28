@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using static Microsoft.AspNetCore.Http.StatusCodes;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 
 namespace TodoApi;
 
@@ -13,33 +13,29 @@ public static class UsersApi
 
         group.WithParameterValidation(typeof(UserInfo));
 
-        group.MapPost("/", async (UserInfo newUser, UserManager<TodoUser> userManager) =>
+        group.MapPost("/", async Task<Results<Ok, ValidationProblem>> (UserInfo newUser, UserManager<TodoUser> userManager) =>
         {
             var result = await userManager.CreateAsync(new() { UserName = newUser.Username }, newUser.Password);
 
             if (result.Succeeded)
             {
-                return Results.Ok();
+                return TypedResults.Ok();
             }
 
-            return Results.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
-        })
-        .Produces(Status200OK)
-        .ProducesValidationProblem();
+            return TypedResults.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
+        });
 
-        group.MapPost("/token", async (UserInfo userInfo, UserManager<TodoUser> userManager, ITokenService tokenService) =>
+        group.MapPost("/token", async Task<Results<BadRequest, Ok<AuthToken>>> (UserInfo userInfo, UserManager<TodoUser> userManager, ITokenService tokenService) =>
         {
             var user = await userManager.FindByNameAsync(userInfo.Username);
 
             if (user == null || !await userManager.CheckPasswordAsync(user, userInfo.Password))
             {
-                return Results.BadRequest();
+                return TypedResults.BadRequest();
             }
 
-            return Results.Ok(new AuthToken(tokenService.GenerateToken(user.UserName!)));
-        })
-        .Produces<AuthToken>()
-        .Produces(Status400BadRequest);
+            return TypedResults.Ok(new AuthToken(tokenService.GenerateToken(user.UserName!)));
+        });
 
         return group;
     }

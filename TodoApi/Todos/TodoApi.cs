@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using static Microsoft.AspNetCore.Http.StatusCodes;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace TodoApi;
 
@@ -27,18 +27,16 @@ internal static class TodoApi
             return await db.Todos.Where(todo => todo.OwnerId == owner.Id).Select(t => t.AsTodoItem()).ToListAsync();
         });
 
-        group.MapGet("/{id}", async (TodoDbContext db, int id, CurrentUser owner) =>
+        group.MapGet("/{id}", async Task<Results<Ok<TodoItem>, NotFound>> (TodoDbContext db, int id, CurrentUser owner) =>
         {
             return await db.Todos.FindAsync(id) switch
             {
-                Todo todo when todo.OwnerId == owner.Id || owner.IsAdmin => Results.Ok(todo.AsTodoItem()),
-                _ => Results.NotFound()
+                Todo todo when todo.OwnerId == owner.Id || owner.IsAdmin => TypedResults.Ok(todo.AsTodoItem()),
+                _ => TypedResults.NotFound()
             };
-        })
-        .Produces<TodoItem>()
-        .Produces(Status404NotFound);
+        });
 
-        group.MapPost("/", async (TodoDbContext db, TodoItem newTodo, CurrentUser owner) =>
+        group.MapPost("/", async Task<Created<TodoItem>> (TodoDbContext db, TodoItem newTodo, CurrentUser owner) =>
         {
             var todo = new Todo
             {
@@ -49,49 +47,41 @@ internal static class TodoApi
             db.Todos.Add(todo);
             await db.SaveChangesAsync();
 
-            return Results.Created($"/todos/{todo.Id}", todo);
-        })
-       .Produces(Status201Created)
-       .ProducesValidationProblem();
+            return TypedResults.Created($"/todos/{todo.Id}", todo.AsTodoItem());
+        });
 
-        group.MapPut("/{id}", async (TodoDbContext db, int id, TodoItem todo, CurrentUser owner) =>
+        group.MapPut("/{id}", async Task<Results<Ok, NotFound, BadRequest>> (TodoDbContext db, int id, TodoItem todo, CurrentUser owner) =>
         {
             if (id != todo.Id)
             {
-                return Results.BadRequest();
+                return TypedResults.BadRequest();
             }
 
             var rowsAffected = await db.Todos.Where(t => t.Id == id && (t.OwnerId == owner.Id || owner.IsAdmin))
-                                             .ExecuteUpdateAsync(updates => 
+                                             .ExecuteUpdateAsync(updates =>
                                                 updates.SetProperty(t => t.IsComplete, todo.IsComplete)
                                                        .SetProperty(t => t.Title, todo.Title));
 
             if (rowsAffected == 0)
             {
-                return Results.NotFound();
+                return TypedResults.NotFound();
             }
 
-            return Results.Ok();
-        })
-        .Produces(Status400BadRequest)
-        .Produces(Status404NotFound)
-        .Produces(Status200OK);
+            return TypedResults.Ok();
+        });
 
-        group.MapDelete("/{id}", async (TodoDbContext db, int id, CurrentUser owner) =>
+        group.MapDelete("/{id}", async Task<Results<NotFound, Ok>> (TodoDbContext db, int id, CurrentUser owner) =>
         {
             var rowsAffected = await db.Todos.Where(t => t.Id == id && (t.OwnerId == owner.Id || owner.IsAdmin))
                                              .ExecuteDeleteAsync();
 
             if (rowsAffected == 0)
             {
-                return Results.NotFound();
+                return TypedResults.NotFound();
             }
 
-            return Results.Ok();
-        })
-        .Produces(Status400BadRequest)
-        .Produces(Status404NotFound)
-        .Produces(Status200OK);
+            return TypedResults.Ok();
+        });
 
         return group;
     }
