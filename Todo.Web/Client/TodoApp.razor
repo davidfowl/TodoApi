@@ -1,168 +1,34 @@
-﻿@using Microsoft.AspNetCore.Components.Forms
-@inject TodoClient Client
+﻿@inject TodoClient Client
 
-@if (todos is null)
-{
-    if (statusCode is null)
-    {
-        <div class="d-flex justify-content-center align-items-center vh-100">
-            <div class="spinner-border" role="status"></div>
-        </div>
-    }
-    else if (statusCode == HttpStatusCode.Unauthorized)
-    {
-        <div class="form-horizontal py-5 vh-100">
-            <div class="mb-3">
-                <label for="username" class="form-label">User name</label>
-                <input id="username" class="form-control" @bind="username" />
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input id="password" type="password" class="form-control" @bind="password" />
-            </div>
-            <div>
-                <button type="button" class="btn btn-primary" onclick="@Login">Login</button>
-                <button type="button" class="btn btn-primary" onclick="@Create">Create User</button>
-            </div>
-        </div>
-    }
-    else
-    {
-        @statusCode
-    }
-}
-else
+@if (!string.IsNullOrEmpty(CurrentUser))
 {
     <ul class="nav justify-content-center">
         <li class="nav-item">
             Logged in as <strong>@CurrentUser</strong>
-            <a class="btn btn-primary" href="#" role="button" onclick="@Logout">Logout</a>
+            <a class="btn btn-primary" role="button" @onclick="@Logout">Logout</a>
         </li>
     </ul>
 
-    <section class="vh-100">
-        <div class="container py-5">
-            <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col col-xl-10">
-
-                    <div class="card" style="border-radius: 15px;">
-                        <div class="card-body p-5">
-
-                            <h6 class="mb-3">Todo List</h6>
-
-                            <form class="d-flex justify-content-center align-items-center mb-4" onsubmit="@AddTodo">
-                                <div class="form-outline flex-fill">
-                                    <input type="text" id="form3" class="form-control form-control-lg" @bind="todoItem" placeholder="Type a new todo item" />
-                                </div>
-                            </form>
-
-                            <ul class="list-group mb-0">
-                                @foreach (var todo in todos)
-                                {
-                                    var id = todo.Id;
-                                    <li class="list-group-item d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2" @key="id">
-                                        <div class="d-flex align-items-center">
-                                            <input class="form-check-input me-2" type="checkbox" value="" aria-label="..." />
-                                            @todo.Title
-                                        </div>
-                                        <a href="#!" data-mdb-toggle="tooltip" title="Remove item" style="text-decoration:none" onclick="@(() => DeleteTodo(id))">🗙</a>
-                                    </li>
-                                }
-                            </ul>
-
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </section>
+    <TodoList OnForbidden="@Logout" />
+}
+else
+{
+    <LogInForm OnLoggedIn="@HandleLogin" />
 }
 
 @code {
-    TodoItem[]? todos;
-    HttpStatusCode? statusCode;
+    [Parameter] public string? CurrentUser { get; set; }
 
-    string? username;
-    string? password;
-
-    string? todoItem;
-
-    [Parameter]
-    public string? CurrentUser { get; set; }
-
-    async Task AddTodo()
+    void HandleLogin(string newUsername)
     {
-        if (await Client.AddTodoAsync(todoItem))
-        {
-            todoItem = null;
-
-            await OnInitializedAsync();
-        }
-    }
-
-    async Task DeleteTodo(int id)
-    {
-        if (await Client.DeleteTodoAsync(id))
-        {
-            await OnInitializedAsync();
-
-            StateHasChanged();
-        }
+        CurrentUser = newUsername;
     }
 
     async Task Logout()
     {
         if (await Client.LogoutAsync())
         {
-            statusCode = HttpStatusCode.Unauthorized;
-            todos = null;
-        }
-    }
-
-    async Task Login()
-    {
-        if (await Client.LoginAsync(username, password))
-        {
-            CurrentUser = username;
-
-            username = null;
-            password = null;
-
-            statusCode = null;
-
-            // Show loading screen
-            StateHasChanged();
-
-            await OnInitializedAsync();
-        }
-    }
-
-    async Task Create()
-    {
-        if (await Client.CreateUserAsync(username, password))
-        {
-            CurrentUser = username;
-
-            username = null;
-            password = null;
-
-            statusCode = null;
-
-            // Show loading screen
-            StateHasChanged();
-
-            await OnInitializedAsync();
-        }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        (statusCode, todos) = await Client.GetTodosAsync();
-
-        if (statusCode == HttpStatusCode.Forbidden)
-        {
-            await Logout();
+            CurrentUser = null;
         }
     }
 }
