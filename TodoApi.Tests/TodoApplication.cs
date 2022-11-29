@@ -25,7 +25,7 @@ internal class TodoApplication : WebApplicationFactory<Program>
     public async Task CreateUserAsync(string username, string? password = null)
     {
         using var scope = Services.CreateScope();
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TodoUser>>();
+        using var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TodoUser>>();
         var newUser = new TodoUser { UserName = username };
         var result = await userManager.CreateAsync(newUser, password ?? Guid.NewGuid().ToString());
         Assert.True(result.Succeeded);
