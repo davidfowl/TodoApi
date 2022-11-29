@@ -57,12 +57,12 @@ else
 
     async Task AddTodo()
     {
-        var response = await Client.AddTodoAsync(NewTodo);
-        if (response.IsSuccessStatusCode)
+        var createdTodo = await Client.AddTodoAsync(NewTodo);
+        if (createdTodo is not null)
         {
             NewTodo = null;
             form!.EditContext!.MarkAsUnmodified();
-            todos = todos!.Append(response.TodoItem!).ToArray();
+            todos = todos!.Append(createdTodo).ToArray();
         }
     }
 

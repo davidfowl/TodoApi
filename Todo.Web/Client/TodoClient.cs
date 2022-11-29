@@ -11,11 +11,11 @@ public class TodoClient
         _client = client;
     }
 
-    public async Task<(bool IsSuccessStatusCode, TodoItem? TodoItem)> AddTodoAsync(string? title)
+    public async Task<TodoItem?> AddTodoAsync(string? title)
     {
         if (string.IsNullOrEmpty(title))
         {
-            return (false, null);
+            return null;
         }
 
         TodoItem? createdTodo = null;
@@ -27,7 +27,7 @@ public class TodoClient
             createdTodo = await response.Content.ReadFromJsonAsync<TodoItem>();
         }
 
-        return (response.IsSuccessStatusCode, createdTodo);
+        return createdTodo;
     }
 
     public async Task<bool> DeleteTodoAsync(int id)
