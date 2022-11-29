@@ -6,7 +6,7 @@ public class UserApiTests
     public async Task CanCreateAUser()
     {
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
 
         var client = application.CreateClient();
         var response = await client.PostAsJsonAsync("/users", new UserInfo { Username = "todouser", Password = "@pwd" });
@@ -23,7 +23,7 @@ public class UserApiTests
     public async Task MissingUserOrPasswordReturnsBadRequest()
     {
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
 
         var client = application.CreateClient();
         var response = await client.PostAsJsonAsync("/users", new UserInfo { Username = "todouser", Password = "" });
@@ -40,7 +40,7 @@ public class UserApiTests
     public async Task CanGetATokenForValidUser()
     {
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
         await application.CreateUserAsync("todouser", "p@assw0rd1");
 
         var client = application.CreateClient();
@@ -65,7 +65,7 @@ public class UserApiTests
     public async Task BadRequestForInvalidCredentials()
     {
         await using var application = new TodoApplication();
-        using var db = application.CreateTodoDbContext();
+        await using var db = application.CreateTodoDbContext();
         await application.CreateUserAsync("todouser", "p@assw0rd1");
 
         var client = application.CreateClient();
