@@ -8,6 +8,13 @@ services:
       dockerfile: TodoApi/Dockerfile
     container_name: todoapi
 
+  todo-web-server:
+    image: ${DOCKER_REGISTRY-}todo-web-server
+    build:
+      context: .
+      dockerfile: Todo.Web/Server/Dockerfile
+    container_name: todo-web-server
+
   prometheus:
     image: prom/prometheus
     container_name: prometheus

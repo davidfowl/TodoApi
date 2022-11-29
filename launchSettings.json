@@ -3,8 +3,12 @@
     "Docker Compose": {
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "todo-web-server",
+      "composeLaunchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "serviceActions": {
         "todoapi": "StartDebugging",
+        "todo-web-server": "StartDebugging",
         "prometheus": "StartWithoutDebugging",
         "jaeger": "StartWithoutDebugging"
       }
