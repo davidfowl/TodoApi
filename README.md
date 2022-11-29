@@ -1,5 +1,6 @@
 ## Todo application with ASP.NET Core
-
+## Such a silly project!
+## I did this in a day of youtube videos when I was 10
 [![CI](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml/badge.svg)](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml)
 
 This is a Todo application that features:
