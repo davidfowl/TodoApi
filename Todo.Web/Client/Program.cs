@@ -5,7 +5,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services.AddHttpClient<TodoClient>(client =>
 {
-    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress);
+    client.BaseAddress = new(builder.HostEnvironment.BaseAddress);
 
     // The cookie auth stack detects this header and avoids redirects for unauthenticated
     // requests

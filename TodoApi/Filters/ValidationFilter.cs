@@ -45,7 +45,7 @@ public static class ValidationFilterExtensions
                     {
                         if (efic.Arguments[index] is { } arg && !MiniValidator.TryValidate(arg, out var errors))
                         {
-                            return new ValueTask<object?>(Results.ValidationProblem(errors));
+                            return new(Results.ValidationProblem(errors));
                         }
                     }
 

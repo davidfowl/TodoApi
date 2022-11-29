@@ -43,7 +43,7 @@ public static class AuthApi
         }
 
         var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
-        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userInfo.Username));
+        identity.AddClaim(new(ClaimTypes.NameIdentifier, userInfo.Username));
 
         var properties = new AuthenticationProperties();
         var tokens = new[]
