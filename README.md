@@ -49,7 +49,7 @@ To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [Tod
       dotnet tool install --global Microsoft.Tye --version 0.11.0-alpha.22111.1
       ```
 
-      Run `tye run` in the repository root and navigate to the tye dashboard (usually http://localhost:8080) to see both applications running.
+      Run `tye run` in the repository root and navigate to the tye dashboard (usually http://localhost:8000) to see both applications running.
 
 
 ## Optional
