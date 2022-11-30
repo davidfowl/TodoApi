@@ -20,16 +20,7 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
-      - type: bind
-        source: ./TodoApi/Todos.db
-        target: /app/Todos.db
-      - type: bind
-        source: ./TodoApi/Todos.db-shm
-        target: /app/Todos.db-shm
-      - type: bind
-        source: ./TodoApi/Todos.db-wal
-        target: /app/Todos.db-wal
-    container_name: todoapi
+      - ./TodoApi/.db:/app/.db
 
   todo-web-server:
     image: ${DOCKER_REGISTRY-}todo-web-server
@@ -55,8 +46,6 @@ services:
     configs:
       - source: prometheus_config
         target: /etc/prometheus/prometheus.yml
-    depends_on:
-      - todoapi
     container_name: prometheus
 
   jaeger:
@@ -77,6 +66,4 @@ services:
       - "14268:14268"
       - "14269:14269"
       - "9411:9411"
-    depends_on:
-      - todoapi
     container_name: jaeger

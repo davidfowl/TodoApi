@@ -12,7 +12,7 @@ builder.Services.AddAuthorizationBuilder().AddCurrentUserHandler();
 builder.Services.AddTokenService();
 
 // Configure the database
-var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=Todos.db";
+var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=.db/Todos.db";
 builder.Services.AddSqlite<TodoDbContext>(connectionString);
 
 // Configure identity
