@@ -6,10 +6,8 @@ configs:
 
 services:
   todoapi:
-    image: ${DOCKER_REGISTRY-}todoapi
-    build:
-      context: .
-      dockerfile: TodoApi/Dockerfile
+    image: todoapi
+    pull_policy: if_not_present
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
