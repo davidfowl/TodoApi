@@ -57,11 +57,12 @@ else
 
     async Task AddTodo()
     {
-        if (await Client.AddTodoAsync(NewTodo))
+        var createdTodo = await Client.AddTodoAsync(NewTodo);
+        if (createdTodo is not null)
         {
             NewTodo = null;
             form!.EditContext!.MarkAsUnmodified();
-            await LoadTodos(); // Would be nice if the backend returned the inserted data so we could append it locally without reloading everything
+            todos = todos!.Append(createdTodo).ToArray();
         }
     }
 
