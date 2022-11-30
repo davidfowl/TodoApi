@@ -33,7 +33,7 @@ else
 }
 
 @code {
-    TodoItem[]? todos;
+    List<TodoItem>? todos;
     EditForm? form;
 
     [Required]
@@ -65,7 +65,7 @@ else
         {
             NewTodo = null;
             form!.EditContext!.MarkAsUnmodified();
-            todos = todos!.Append(createdTodo).ToArray();
+            todos!.Add(createdTodo);
         }
     }
 
@@ -73,7 +73,7 @@ else
     {
         if (await Client.DeleteTodoAsync(todo.Id))
         {
-            todos = todos!.Except(new[] { todo }).ToArray();
+            todos!.Remove(todo);
         }
     }
 }
