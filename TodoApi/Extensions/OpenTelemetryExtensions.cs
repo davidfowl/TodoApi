@@ -21,16 +21,20 @@ public static class OpenTelemetryExtensions
     public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
-        var endpoint = builder.Configuration.GetValue<string>("JAEGER_ENDPOINT") ?? "http://localhost:4317";
+        var jaegerEndpoint = builder.Configuration.GetValue<string>("OpenTelemetry:Endpoint") ?? "http://localhost:4317";
 
         builder.Logging.AddOpenTelemetry(logging =>
         {
-            logging
-                .SetResourceBuilder(resourceBuilder)
-                .AddOtlpExporter(options =>
+            logging.SetResourceBuilder(resourceBuilder);
+
+            var loggingCollectorEnabled = builder.Configuration.GetValue<bool>("OpenTelemetry:LoggingCollectorEnabled");
+            if (loggingCollectorEnabled)
+            {
+                logging.AddOtlpExporter(options =>
                 {
-                    options.Endpoint = new Uri(endpoint);
+                    options.Endpoint = new Uri(jaegerEndpoint);
                 });
+            }
         });
 
         builder.Services.AddOpenTelemetryMetrics(metrics =>
@@ -56,13 +60,18 @@ public static class OpenTelemetryExtensions
         builder.Services.AddOpenTelemetryTracing(tracing =>
         {
             tracing.SetResourceBuilder(resourceBuilder)
-                   .AddOtlpExporter(options =>
-                   {
-                       options.Endpoint = new Uri(endpoint);
-                   })
                    .AddAspNetCoreInstrumentation()
                    .AddHttpClientInstrumentation()
                    .AddEntityFrameworkCoreInstrumentation();
+
+            var tracingCollectorEnabled = builder.Configuration.GetValue<bool>("OpenTelemetry:TracingCollectorEnabled");
+            if (tracingCollectorEnabled)
+            {
+                tracing.AddOtlpExporter(options =>
+                {
+                    options.Endpoint = new Uri(jaegerEndpoint);
+                });
+            }
         });
 
         return builder;

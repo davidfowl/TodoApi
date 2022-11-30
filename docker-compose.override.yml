@@ -9,7 +9,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - JAEGER_ENDPOINT=http://jaeger:4317
+      - OpenTelemetry__LoggingCollectorEnabled=true
+      - OpenTelemetry__TracingCollectorEnabled=true
+      - OpenTelemetry__Endpoint=http://jaeger:4317
     ports:
       - "5000:80"
       - "5001:443"
