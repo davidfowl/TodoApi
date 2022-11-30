@@ -36,15 +36,15 @@ public class TodoClient
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<(HttpStatusCode, TodoItem[]?)> GetTodosAsync()
+    public async Task<(HttpStatusCode, List<TodoItem>?)> GetTodosAsync()
     {
         var response = await _client.GetAsync("todos");
         var statusCode = response.StatusCode;
-        TodoItem[]? todos = null;
+        List<TodoItem>? todos = null;
 
         if (response.IsSuccessStatusCode)
         {
-            todos = await response.Content.ReadFromJsonAsync<TodoItem[]>();
+            todos = await response.Content.ReadFromJsonAsync<List<TodoItem>>();
         }
 
         return (statusCode, todos);
