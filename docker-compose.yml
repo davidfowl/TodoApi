@@ -21,10 +21,8 @@ services:
       - ./TodoApi/.db:/app/.db
 
   todo-web-server:
-    image: ${DOCKER_REGISTRY-}todo-web-server
-    build:
-      context: .
-      dockerfile: Todo.Web/Server/Dockerfile
+    image: todo-web-server
+    pull_policy: if_not_present
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
