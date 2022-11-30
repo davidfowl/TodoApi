@@ -20,6 +20,15 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - type: bind
+        source: ./TodoApi/Todos.db
+        target: /app/Todos.db
+      - type: bind
+        source: ./TodoApi/Todos.db-shm
+        target: /app/Todos.db-shm
+      - type: bind
+        source: ./TodoApi/Todos.db-wal
+        target: /app/Todos.db-wal
     container_name: todoapi
 
   todo-web-server:
