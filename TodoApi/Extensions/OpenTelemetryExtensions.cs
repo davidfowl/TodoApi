@@ -21,18 +21,17 @@ public static class OpenTelemetryExtensions
     public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
-        var jaegerEndpoint = builder.Configuration.GetValue<string>("OpenTelemetry:Endpoint") ?? "http://localhost:4317";
+        var oltpEndpoint = builder.Configuration.GetValue<string>("OTEL_EXPORTER_OTLP_ENDPOINT");
 
         builder.Logging.AddOpenTelemetry(logging =>
         {
             logging.SetResourceBuilder(resourceBuilder);
 
-            var loggingCollectorEnabled = builder.Configuration.GetValue<bool>("OpenTelemetry:LoggingCollectorEnabled");
-            if (loggingCollectorEnabled)
+            if (!string.IsNullOrWhiteSpace(oltpEndpoint))
             {
                 logging.AddOtlpExporter(options =>
                 {
-                    options.Endpoint = new Uri(jaegerEndpoint);
+                    options.Endpoint = new Uri(oltpEndpoint);
                 });
             }
         });
@@ -64,12 +63,11 @@ public static class OpenTelemetryExtensions
                    .AddHttpClientInstrumentation()
                    .AddEntityFrameworkCoreInstrumentation();
 
-            var tracingCollectorEnabled = builder.Configuration.GetValue<bool>("OpenTelemetry:TracingCollectorEnabled");
-            if (tracingCollectorEnabled)
+            if (!string.IsNullOrWhiteSpace(oltpEndpoint))
             {
                 tracing.AddOtlpExporter(options =>
                 {
-                    options.Endpoint = new Uri(jaegerEndpoint);
+                    options.Endpoint = new Uri(oltpEndpoint);
                 });
             }
         });

@@ -95,7 +95,7 @@ docker run -d -p 9090:9090 --name prometheus -v $PWD/prometheus.yml:/etc/prometh
 
 #### Spans
 
-1. Set `OpenTelemetry__TracingCollectorEnabled` to true in the `TodoApi/appsettings.json` file or via enviroment variable to enable `.AddOtlpExporter` below `builder.Services.AddOpenTelemetryTracing`, in the `TodoApi/OpenTelemetryExtensions.cs` file
+1. Configure Env var `OTEL_EXPORTER_OTLP_ENDPOINT` with the right endpoint URL to enable `.AddOtlpExporter` below `builder.Services.AddOpenTelemetryTracing`, in the `TodoApi/OpenTelemetryExtensions.cs` file
 1. Run Jaeger with Docker:
 
 ```
@@ -107,7 +107,7 @@ docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e COLLECTOR_OTL
 
 #### Logs
 
-1. Set `OpenTelemetry__LoggingCollectorEnabled` to true in the `TodoApi/appsettings.json` file or via enviroment variable to enable `.AddOtlpExporter` below `builder.Logging.AddOpenTelemetry`, in the `TodoApi/Extensions/OpenTelemetryExtensions.cs` file
+1. Configure Env var `OTEL_EXPORTER_OTLP_ENDPOINT` with the right endpoint URL to enable `.AddOtlpExporter` below `builder.Logging.AddOpenTelemetry`, in the `TodoApi/Extensions/OpenTelemetryExtensions.cs` file
 1. Find a Vendor that supports OpenTelemetry-based logging.
 
 Vendor support for OpenTelemetry-based logging is currently very limited.
