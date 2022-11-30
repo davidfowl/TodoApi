@@ -29,10 +29,7 @@ public static class OpenTelemetryExtensions
 
             if (!string.IsNullOrWhiteSpace(oltpEndpoint))
             {
-                logging.AddOtlpExporter(options =>
-                {
-                    options.Endpoint = new Uri(oltpEndpoint);
-                });
+                logging.AddOtlpExporter();
             }
         });
 
@@ -65,10 +62,7 @@ public static class OpenTelemetryExtensions
 
             if (!string.IsNullOrWhiteSpace(oltpEndpoint))
             {
-                tracing.AddOtlpExporter(options =>
-                {
-                    options.Endpoint = new Uri(oltpEndpoint);
-                });
+                tracing.AddOtlpExporter();
             }
         });
 
