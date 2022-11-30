@@ -36,9 +36,12 @@ else
     TodoItem[]? todos;
     EditForm? form;
 
-    [Required, StringLength(20)] public string? NewTodo { get; set; }
+    [Required]
+    [StringLength(20)] 
+    public string? NewTodo { get; set; }
 
-    [Parameter] public EventCallback OnForbidden { get; set; }
+    [Parameter] 
+    public EventCallback OnForbidden { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -49,7 +52,7 @@ else
     {
         (var statusCode, todos) = await Client.GetTodosAsync();
 
-        if (statusCode == HttpStatusCode.Forbidden)
+        if (statusCode == HttpStatusCode.Forbidden || statusCode == HttpStatusCode.Unauthorized)
         {
             await OnForbidden.InvokeAsync();
         }
