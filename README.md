@@ -64,7 +64,7 @@ To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [Tod
       dotnet publish ./Todo.Web/Server/Todo.Web.Server.csproj --os linux --arch x64 /t:PublishContainer -c Release --self-contained true
       ```
 
-   1. Now you may run `docker-compose up -d` to spin up both apps todoapi and todo-web-server plus jaeger and prometheus.
+   1. Now you may run `docker-compose up -d` to spin up both apps todo-api and todo-web-server plus jaeger and prometheus.
 
 
 ## Optional

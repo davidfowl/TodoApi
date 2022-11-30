@@ -5,8 +5,8 @@ configs:
     file: ./TodoApi/prometheus.yml
 
 services:
-  todoapi:
-    image: todoapi
+  todo-api:
+    image: todo-api
     pull_policy: if_not_present
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -26,7 +26,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - TodoApiUrl=http://todoapi
+      - TodoApiUrl=http://todo-api
     ports:
       - "5002:80"
       - "5003:443"

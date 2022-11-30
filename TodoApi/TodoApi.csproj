@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <UserSecretsId>e616b306-8ad0-4843-a0e0-79b3b5655c22</UserSecretsId>
-    <ContainerImageName>todoapi</ContainerImageName>
+    <ContainerImageName>todo-api</ContainerImageName>
     <ContainerImageTag>latest</ContainerImageTag>
   </PropertyGroup>
 
