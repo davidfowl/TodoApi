@@ -35,6 +35,9 @@ To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [Tod
    - **Visual Studio** - Setup multiple startup projects by right clicking on the solution and selecting Properties. Select `TodoApi` and `Todo.Web.Server` as startup projects.
 
       <img width="591" alt="image" src="https://user-images.githubusercontent.com/95136/204311327-479445c8-4f73-4845-b146-d56be8ceb9ab.png">
+
+   - **Visual Studio** - Setup docker-compose project as Startup project. It will spin up both apps todoapi and todo-web-server plus jaeger and prometheus.
+
    - **Visual Studio Code** - Open up 2 terminal windows, one in [Todo.Web.Server](Todo.Web/Server/) and the other in [TodoApi](TodoApi/) run: 
    
       ```
@@ -92,7 +95,7 @@ docker run -d -p 9090:9090 --name prometheus -v $PWD/prometheus.yml:/etc/prometh
 
 #### Spans
 
-1. Uncomment `.AddOtlpExporter` below `builder.Services.AddOpenTelemetryTracing`, in the `TodoApi/OpenTelemetryExtensions.cs` file
+1. Set `OpenTelemetry__TracingCollectorEnabled` to true in the `TodoApi/appsettings.json` file or via enviroment variable to enable `.AddOtlpExporter` below `builder.Services.AddOpenTelemetryTracing`, in the `TodoApi/OpenTelemetryExtensions.cs` file
 1. Run Jaeger with Docker:
 
 ```
@@ -104,7 +107,7 @@ docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e COLLECTOR_OTL
 
 #### Logs
 
-1. Uncomment `.AddOtlpExporter` below `builder.Logging.AddOpenTelemetry`, in the `TodoApi/Extensions/OpenTelemetryExtensions.cs` file
+1. Set `OpenTelemetry__LoggingCollectorEnabled` to true in the `TodoApi/appsettings.json` file or via enviroment variable to enable `.AddOtlpExporter` below `builder.Logging.AddOpenTelemetry`, in the `TodoApi/Extensions/OpenTelemetryExtensions.cs` file
 1. Find a Vendor that supports OpenTelemetry-based logging.
 
 Vendor support for OpenTelemetry-based logging is currently very limited.
