@@ -53,7 +53,18 @@ To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [Tod
 
       Run `tye run` in the repository root and navigate to the tye dashboard (usually http://localhost:8000) to see both applications running.
 
-   - **Docker Compose** - Open your terminal, navigate to the root folder of this project and run `docker-compose up -d`. It will spin up both apps todoapi and todo-web-server plus jaeger and prometheus.
+   - **Docker Compose** - Open your terminal, navigate to the root folder of this project and run the following commands:
+   1. Build a docker image for the `TodoApi` directly from dotnet publish.
+      ```
+      dotnet publish ./TodoApi/TodoApi.csproj --os linux --arch x64 /t:PublishContainer -c Release
+      ```
+
+   1. Build a docker image for the `Todo.Web.Server` directly from dotnet publish.
+      ```
+      dotnet publish ./Todo.Web/Server/Todo.Web.Server.csproj --os linux --arch x64 /t:PublishContainer -c Release --self-contained true
+      ```
+
+   1. Now you may run `docker-compose up -d` to spin up both apps todoapi and todo-web-server plus jaeger and prometheus.
 
 
 ## Optional
