@@ -55,17 +55,36 @@ To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [Tod
       Run `tye run` in the repository root and navigate to the tye dashboard (usually http://localhost:8000) to see both applications running.
 
    - **Docker Compose** - Open your terminal, navigate to the root folder of this project and run the following commands:
-   1. Build a docker image for the `TodoApi` directly from dotnet publish.
-      ```
-      dotnet publish ./TodoApi/TodoApi.csproj --os linux --arch x64 /t:PublishContainer -c Release
-      ```
+      1. Build a docker image for the `TodoApi` directly from dotnet publish.
+         ```
+         dotnet publish ./TodoApi/TodoApi.csproj --os linux --arch x64 /t:PublishContainer -c Release
+         ```
 
-   1. Build a docker image for the `Todo.Web.Server` directly from dotnet publish.
-      ```
-      dotnet publish ./Todo.Web/Server/Todo.Web.Server.csproj --os linux --arch x64 /t:PublishContainer -c Release --self-contained true
-      ```
+      1. Build a docker image for the `Todo.Web.Server` directly from dotnet publish.
+         ```
+         dotnet publish ./Todo.Web/Server/Todo.Web.Server.csproj --os linux --arch x64 /t:PublishContainer -c Release --self-contained true
+         ```
 
-   1. Now you may run `docker-compose up -d` to spin up both apps todo-api and todo-web-server plus jaeger and prometheus.
+      1. Generate certificate and configure local machine so we can start our apps with https support using docker compose.
+
+         Windows using Linux containers
+         ```
+         set PASSWORD YourPasswordHere
+         dotnet dev-certs https -ep ${HOME}/.aspnet/https/todoapps.pfx -p $PASSWORD --trust
+         ```
+         macOS or Linux
+         ```
+         export PASSWORD=YourPasswordHere
+         dotnet dev-certs https -ep ~/.aspnet/https/todoapps.pfx -p $PASSWORD --trust
+         ```
+
+      1. Change these variables below in the `docker-compose.yml` file to match your https certificate and password.
+         - `ASPNETCORE_Kestrel__Certificates__Default__Password`
+         - `ASPNETCORE_Kestrel__Certificates__Default__Path`
+
+      1. Run `docker-compose up -d` to spin up both apps todo-api and todo-web-server plus jaeger and prometheus.
+
+      1. Navigate to the Todo Web app https://localhost:5003.
 
 
 ## Optional
