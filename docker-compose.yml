@@ -4,35 +4,39 @@ configs:
   prometheus_config:
     file: ./TodoApi/prometheus.yml
 
+x-common-variables: &common-variables
+   ASPNETCORE_ENVIRONMENT: Development
+   ASPNETCORE_URLS: https://+:443;http://+:80
+   ASPNETCORE_Kestrel__Certificates__Default__Password: YourPasswordHere
+   ASPNETCORE_Kestrel__Certificates__Default__Path: /https/certificate.pfx
+
 services:
   todo-api:
     image: todo-api
     pull_policy: if_not_present
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      <<: *common-variables
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4317
     ports:
       - "5000:80"
       - "5001:443"
     volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - ./.aspnet/https/:/https:ro
       - ./TodoApi/.db:/app/.db
+    container_name: todo-api
 
   todo-web-server:
     image: todo-web-server
     pull_policy: if_not_present
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - TodoApiUrl=http://todo-api
+      <<: *common-variables
+      TodoApiUrl: http://todo-api
     ports:
       - "5002:80"
       - "5003:443"
     volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+      - ./.aspnet/https/:/https:ro
+      - ./TodoApi/.db:/app/.db
     container_name: todo-web-server
 
   prometheus:
