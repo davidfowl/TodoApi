@@ -6,7 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ContainerImageName>todo-web-server</ContainerImageName>
     <ContainerImageTag>latest</ContainerImageTag>
-    <UserSecretsId>7019fce6-4c5b-45c3-9f24-5635eae3f449</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
