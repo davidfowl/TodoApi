@@ -21,9 +21,9 @@ services:
       - "5000:80"
       - "5001:443"
     volumes:
-      - ~/.aspnet/https:/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+      - ~/.aspnet/https:/https:ro
       - ./TodoApi/.db:/app/.db
     container_name: todo-api
 
@@ -37,9 +37,9 @@ services:
       - "5002:80"
       - "5003:443"
     volumes:
-      - ~/.aspnet/https:/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+      - ~/.aspnet/https:/https:ro
     container_name: todo-web-server
 
   prometheus:
