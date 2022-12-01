@@ -27,8 +27,9 @@ It showcases:
 
 ### Database
 1. Install the **dotnet-ef** tool: `dotnet tool install dotnet-ef -g`
-1. Run `mkdir .db` to create the local database folder.
-1. Navigate to the `TodoApi` folder and run `dotnet ef database update` to create the database.
+1. Navigate to the `TodoApi` folder.
+    1. Run `mkdir .db` to create the local database folder.
+    1. Run `dotnet ef database update` to create the database.
 1. Learn more about [dotnet-ef](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
 
 ### Running the application
