@@ -46,8 +46,8 @@ public static class AuthenticationExtensions
             {
                 providerCallback(authenticationBuilder, options =>
                 {
-                    options.ClientId = section["ClientId"]!;
-                    options.ClientSecret = section["ClientSecret"]!;
+                    options.ClientId = section[nameof(options.ClientId)]!;
+                    options.ClientSecret = section[nameof(options.ClientSecret)]!;
                     options.Events = new()
                     {
                         OnTicketReceived = async context =>
