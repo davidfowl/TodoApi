@@ -20,10 +20,7 @@ public static class AuthenticationExtensions
 
         // Add the default authentication cookie that will be used between the front end and
         // the backend.
-        authenticationBuilder.AddCookie(o =>
-        {
-            o.Cookie.SameSite = SameSiteMode.Strict;
-        });
+        authenticationBuilder.AddCookie();
 
         // This is the cookie that will store the user information from the social login provider
         authenticationBuilder.AddCookie(AuthConstants.SocialScheme);
