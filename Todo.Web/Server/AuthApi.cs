@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Todo.Web.Server;
 
@@ -34,24 +36,74 @@ public static class AuthApi
             return SignIn(userInfo, token);
         });
 
-        // Social login
-        group.MapGet("login/{provider}", (string provider) =>
-        {
-            // Trigger the social login flow
-            return Results.Challenge(authenticationSchemes: new[] { provider });
-        });
-
         group.MapPost("logout", () =>
         {
             return Results.SignOut(authenticationSchemes: new[] { CookieAuthenticationDefaults.AuthenticationScheme });
         })
         .RequireAuthorization();
 
+        // Social login
+        group.MapGet("login/{provider}", (string provider) =>
+        {
+            // Trigger the social login flow
+            return Results.Challenge(
+                properties: new() { RedirectUri = $"/auth/signin/{provider}" },
+                authenticationSchemes: new[] { provider });
+        });
+
+        group.MapGet("signin/{provider}", async (string provider, TodoClient client, HttpContext context) =>
+        {
+            // Grab the login information from the social login dance
+            var result = await context.AuthenticateAsync(AuthConstants.SocialScheme);
+
+            if (result.Succeeded)
+            {
+                var principal = result.Principal;
+
+                var id = principal.FindFirstValue(ClaimTypes.NameIdentifier)!;
+                var name = (principal.FindFirstValue(ClaimTypes.Email) ?? principal.FindFirstValue(ClaimTypes.Name))!;
+
+                var token = await client.GetOrCreateUserAsync(provider, new() { Username = name, ProviderKey = id });
+
+                if (token is not null)
+                {
+                    // Execute the result so we write the cookie to the response headers
+                    await SignIn(id, name, token).ExecuteAsync(context);
+                }
+            }
+
+            // Delete the social login cookie
+            await context.SignOutAsync(AuthConstants.SocialScheme);
+
+            // TODO: Handle the failure somehow
+
+            return Results.Redirect("/");
+        });
+
         return group;
     }
 
     private static IResult SignIn(UserInfo userInfo, string token)
     {
-        return AuthenticationHelpers.SignIn(userInfo.Username, userInfo.Username, token);
+        return SignIn(userInfo.Username, userInfo.Username, token);
+    }
+
+    private static IResult SignIn(string userId, string userName, string token)
+    {
+        var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
+        identity.AddClaim(new Claim(ClaimTypes.Name, userName));
+
+        var properties = new AuthenticationProperties();
+        var tokens = new[]
+        {
+            new AuthenticationToken { Name = TokenNames.AccessToken, Value = token }
+        };
+
+        properties.StoreTokens(tokens);
+
+        return Results.SignIn(new ClaimsPrincipal(identity),
+            properties: properties,
+            authenticationScheme: CookieAuthenticationDefaults.AuthenticationScheme);
     }
 }

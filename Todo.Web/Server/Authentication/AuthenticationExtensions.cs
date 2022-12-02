@@ -1,9 +1,13 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 
 namespace Todo.Web.Server;
+
+public class AuthConstants
+{
+    public static string SocialScheme { get; } = "Social";
+}
 
 public static class AuthenticationExtensions
 {
@@ -18,6 +22,9 @@ public static class AuthenticationExtensions
         {
             o.Cookie.SameSite = SameSiteMode.Strict;
         });
+
+        // This is the cookie that will store the user information from the social login provider
+        authenticationBuilder.AddCookie(AuthConstants.SocialScheme);
 
         // Add social auth providers based on configuration
         //{
@@ -48,42 +55,9 @@ public static class AuthenticationExtensions
                 {
                     options.ClientId = section[nameof(options.ClientId)]!;
                     options.ClientSecret = section[nameof(options.ClientSecret)]!;
-                    options.Events = new()
-                    {
-                        OnTicketReceived = async context =>
-                        {
-                            if (context.Principal is null)
-                            {
-                                context.Fail("Unable to resolve user information");
-                                return;
-                            }
 
-                            // REVIEW: We could use a temporary cookie and have the user fill in their
-                            // name after coming back from the redirect. Right now, we're using their email
-                            // as the user name and falling back to the name.
-
-                            // This also makes it hard to see user creation errors...
-
-                            var id = context.Principal.FindFirstValue(ClaimTypes.NameIdentifier)!;
-                            var name = (context.Principal.FindFirstValue(ClaimTypes.Email) ?? context.Principal.FindFirstValue(ClaimTypes.Name))!;
-
-                            var client = context.HttpContext.RequestServices.GetRequiredService<TodoClient>();
-
-                            var token = await client.GetOrCreateUserAsync(providerName, new() { Username = name, ProviderKey = id });
-
-                            if (token is not null)
-                            {
-                                var result = AuthenticationHelpers.SignIn(id, name, token);
-
-                                // Execute the result so we write the cookie to the response headers
-                                await result.ExecuteAsync(context.HttpContext);
-                            }
-
-                            context.HandleResponse();
-
-                            context.Response.Redirect("/");
-                        }
-                    };
+                    // This will save the information in the cookie
+                    options.SignInScheme = AuthConstants.SocialScheme;
                 });
             }
         }
