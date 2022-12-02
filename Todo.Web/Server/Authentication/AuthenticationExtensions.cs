@@ -46,6 +46,7 @@ public static class AuthenticationExtensions
         {
             ["GitHub"] = static (builder, configure) => builder.AddGitHub(configure),
             ["Google"] = static (builder, configure) => builder.AddGoogle(configure),
+            ["Microsoft"] = static (builder, configure) => builder.AddMicrosoftAccount(configure),
         };
 
         foreach (var (providerName, provider) in socialProviders)
