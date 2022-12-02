@@ -1,4 +1,7 @@
-﻿namespace TodoApi.Tests;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace TodoApi.Tests;
 
 public class UserApiTests
 {
@@ -59,6 +62,36 @@ public class UserApiTests
         response = await client.SendAsync(req);
 
         Assert.True(response.IsSuccessStatusCode);
+    }
+
+    [Fact]
+    public async Task CanGetATokenForExternalUser()
+    {
+        await using var application = new TodoApplication();
+        await using var db = application.CreateTodoDbContext();
+
+        var client = application.CreateClient();
+        var response = await client.PostAsJsonAsync("/users/token/Google", new ExternalUserInfo { Username = "todouser", ProviderKey = "1003" });
+
+        Assert.True(response.IsSuccessStatusCode);
+
+        var token = await response.Content.ReadFromJsonAsync<AuthToken>();
+
+        Assert.NotNull(token);
+
+        // Check that the token is indeed valid
+
+        var req = new HttpRequestMessage(HttpMethod.Get, "/todos");
+        req.Headers.Authorization = new("Bearer", token.Token);
+        response = await client.SendAsync(req);
+
+        Assert.True(response.IsSuccessStatusCode);
+
+        using var scope = application.Services.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TodoUser>>();
+        var user = await userManager.FindByLoginAsync("Google", "1003");
+        Assert.NotNull(user);
+        Assert.Equal("todouser", user.UserName);
     }
 
     [Fact]
