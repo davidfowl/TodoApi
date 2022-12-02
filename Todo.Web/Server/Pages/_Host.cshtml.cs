@@ -1,38 +1,20 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Todo.Web.Server.Pages;
 
 public class IndexModel : PageModel
 {
-    private readonly IAuthenticationSchemeProvider _schemeProvider;
+    private readonly SocialProviders _socialProviders;
 
-    public IndexModel(IAuthenticationSchemeProvider schemeProvider)
+    public IndexModel(SocialProviders socialProviders)
     {
-        _schemeProvider = schemeProvider;
+        _socialProviders = socialProviders;
     }
 
-    public string[] SocialProviders { get; set; } = default!;
+    public string[] ProviderNames { get; set; } = default!;
 
     public async Task OnGet()
     {
-        List<string>? providers = null;
-
-        var schemes = await _schemeProvider.GetAllSchemesAsync();
-        foreach (var s in schemes)
-        {
-            // We're assuming all schemes that aren't cookies are social
-            if (s.Name == CookieAuthenticationDefaults.AuthenticationScheme ||
-                s.Name == AuthConstants.SocialScheme)
-            {
-                continue;
-            }
-
-            providers ??= new();
-            providers.Add(s.Name);
-        }
-
-        SocialProviders = providers?.ToArray() ?? Array.Empty<string>();
+        ProviderNames = await _socialProviders.GetProviderNamesAsync();
     }
 }

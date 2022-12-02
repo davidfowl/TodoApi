@@ -62,6 +62,9 @@ public static class AuthenticationExtensions
             }
         }
 
+        // Add the service that resolves social providers so we can show them in the UI
+        builder.Services.AddSingleton<SocialProviders>();
+
         return builder;
     }
 }

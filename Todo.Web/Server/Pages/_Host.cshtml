@@ -24,7 +24,7 @@
         <main role="main" class="pb-3">
             <component type="typeof(Todo.Web.Client.TodoApp)" 
                        param-CurrentUser="@User.Identity!.Name" 
-                       param-SocialProviders="@Model.SocialProviders" 
+                       param-SocialProviders="@Model.ProviderNames" 
                        render-mode="WebAssembly" />
         </main>
     </div>
