@@ -12,9 +12,11 @@ public class IndexModel : PageModel
     }
 
     public string[] ProviderNames { get; set; } = default!;
+    public string? CurrentUserName { get; set; }
 
     public async Task OnGet()
     {
         ProviderNames = await _socialProviders.GetProviderNamesAsync();
+        CurrentUserName = User.Identity!.Name;
     }
 }
