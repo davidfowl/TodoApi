@@ -11,6 +11,8 @@ public class AuthConstants
 
 public static class AuthenticationExtensions
 {
+    private delegate void OAuthProvider(AuthenticationBuilder authenticationBuilder, Action<OAuthOptions> configure);
+
     public static WebApplicationBuilder AddAuthentication(this WebApplicationBuilder builder)
     {
         // Our default scheme is cookies
@@ -40,18 +42,18 @@ public static class AuthenticationExtensions
 
         // These are the list of social providers available to the application.
         // Many more are available from https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers
-        var socialProviders = new Dictionary<string, Action<AuthenticationBuilder, Action<OAuthOptions>>>
+        var socialProviders = new Dictionary<string, OAuthProvider>
         {
             ["GitHub"] = static (builder, configure) => builder.AddGitHub(configure),
             ["Google"] = static (builder, configure) => builder.AddGoogle(configure),
         };
 
-        foreach (var (providerName, providerCallback) in socialProviders)
+        foreach (var (providerName, provider) in socialProviders)
         {
             var section = builder.Configuration.GetSection($"Authentication:Schemes:{providerName}");
             if (section.Exists())
             {
-                providerCallback(authenticationBuilder, options =>
+                provider(authenticationBuilder, options =>
                 {
                     options.ClientId = section[nameof(options.ClientId)]!;
                     options.ClientSecret = section[nameof(options.ClientSecret)]!;
