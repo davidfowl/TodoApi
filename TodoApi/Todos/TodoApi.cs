@@ -62,12 +62,7 @@ internal static class TodoApi
                                                 updates.SetProperty(t => t.IsComplete, todo.IsComplete)
                                                        .SetProperty(t => t.Title, todo.Title));
 
-            if (rowsAffected == 0)
-            {
-                return TypedResults.NotFound();
-            }
-
-            return TypedResults.Ok();
+            return rowsAffected == 0 ? TypedResults.NotFound() : TypedResults.Ok();
         });
 
         group.MapDelete("/{id}", async Task<Results<NotFound, Ok>> (TodoDbContext db, int id, CurrentUser owner) =>
@@ -75,12 +70,7 @@ internal static class TodoApi
             var rowsAffected = await db.Todos.Where(t => t.Id == id && (t.OwnerId == owner.Id || owner.IsAdmin))
                                              .ExecuteDeleteAsync();
 
-            if (rowsAffected == 0)
-            {
-                return TypedResults.NotFound();
-            }
-
-            return TypedResults.Ok();
+            return rowsAffected == 0 ? TypedResults.NotFound() : TypedResults.Ok();
         });
 
         return group;
