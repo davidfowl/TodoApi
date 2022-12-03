@@ -11,7 +11,7 @@ public static class UsersApi
 
         group.WithTags("Users");
 
-        group.WithParameterValidation(typeof(UserInfo));
+        group.WithParameterValidation(typeof(UserInfo), typeof(ExternalUserInfo));
 
         group.MapPost("/", async Task<Results<Ok, ValidationProblem>> (UserInfo newUser, UserManager<TodoUser> userManager) =>
         {
