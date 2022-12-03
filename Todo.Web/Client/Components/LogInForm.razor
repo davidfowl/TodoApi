@@ -18,6 +18,13 @@
     </div>
 </EditForm>
 
+<div class="form-horizontal">
+    @foreach (var provider in SocialProviders)
+    {
+        <a class="btn btn-secondary m-1" role="button" href="auth/login/@provider">@provider</a>
+    }
+</div>
+
 @if (!string.IsNullOrEmpty(alertMessage))
 {
     <div class="alert alert-danger">@alertMessage</div>
@@ -35,6 +42,9 @@
     public string? Password { get; set; }
 
     [Parameter] public EventCallback<string> OnLoggedIn { get; set; }
+
+    [Parameter]
+    public string[] SocialProviders { get; set; } = Array.Empty<string>();
 
     async Task Login()
     {

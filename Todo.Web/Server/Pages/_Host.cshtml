@@ -1,10 +1,6 @@
 ﻿@page
-@using System.Security.Claims;
 @model Todo.Web.Server.Pages.IndexModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-
-@{
-}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +19,10 @@
 <body>
     <div class="container">
         <main role="main" class="pb-3">
-            <component type="typeof(Todo.Web.Client.TodoApp)" param-CurrentUser="@User.FindFirstValue(ClaimTypes.NameIdentifier)" render-mode="WebAssembly" />
+            <component type="typeof(Todo.Web.Client.TodoApp)" 
+                       param-CurrentUser="@Model.CurrentUserName"
+                       param-SocialProviders="@Model.ProviderNames" 
+                       render-mode="WebAssembly" />
         </main>
     </div>
 

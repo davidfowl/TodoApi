@@ -6,9 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ContainerImageName>todo-web-server</ContainerImageName>
     <ContainerImageTag>latest</ContainerImageTag>
+    <UserSecretsId>c3677e8f-17d8-492d-8844-36ade85166e5</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.0" />
     <PackageReference Include="Microsoft.NET.Build.Containers" Version="0.2.7" />
     <PackageReference Include="Yarp.ReverseProxy" Version="1.1.1" />
