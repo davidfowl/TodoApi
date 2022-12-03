@@ -45,7 +45,8 @@ public static class AuthApi
         // Social login
         group.MapGet("login/{provider}", (string provider) =>
         {
-            // Trigger the social login flow
+            // Trigger the social login flow by issuing a challenge with the provider name.
+            // This name maps to the registered authentication scheme names in AuthenticationExtensions.cs
             return Results.Challenge(
                 properties: new() { RedirectUri = $"/auth/signin/{provider}" },
                 authenticationSchemes: new[] { provider });
@@ -61,13 +62,16 @@ public static class AuthApi
                 var principal = result.Principal;
 
                 var id = principal.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+                // TODO: We should have the user pick a user name to complete the social login dance
+                // for now we'll prefer the email address
                 var name = (principal.FindFirstValue(ClaimTypes.Email) ?? principal.FindFirstValue(ClaimTypes.Name))!;
 
                 var token = await client.GetOrCreateUserAsync(provider, new() { Username = name, ProviderKey = id });
 
                 if (token is not null)
                 {
-                    // Execute the result so we write the cookie to the response headers
+                    // Write the login cookie
                     await SignIn(id, name, token).ExecuteAsync(context);
                 }
             }

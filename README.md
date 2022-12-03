@@ -112,6 +112,43 @@ Before executing any requests, you need to create a user and get an auth token.
 1. You should be able to use this token to make authenticated requests to the todo endpoints.
 1. Learn more about [user-jwts](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security?view=aspnetcore-7.0#using-dotnet-user-jwts-to-improve-development-time-testing)
 
+### Social authentication
+
+In addition to username and password, social authentication providers can be configured to work with this todo application. By default 
+it supports Github, Google, and Microsoft accounts.
+
+Instructions for setting up each of these providers can be found at:
+- [Github](https://docs.github.com/en/developers/apps/building-oauth-apps)
+- [Microsoft](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/microsoft-logins)
+- [Google](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins)
+
+Once you obtain the client id and client secret, the configuration for these providers must be added with the following schema:
+
+```JSON
+{
+    "Authentication": {
+        "Schemes": {
+            "<scheme>": {
+                "ClientId": "xxx",
+                "ClientSecret": "xxxx"
+            }
+        }
+    }
+}
+```
+
+Or using environment variables:
+
+```
+Authentication__Schemes__<scheme>__ClientId=xxx
+Authentication__Schemes__<scheme>__ClientSecret=xxx
+```
+
+Other providers can be found [here](https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers#providers). 
+These must be added to [AuthenticationExtensions](Todo.Web/Server/Authentication/AuthenticationExtensions.cs) as well.
+
+**NOTE: Don't store client secrets in configuration!**
+
 ### OpenTelemetry
 TodoApi uses OpenTelemetry to collect logs, metrics and spans.
 
