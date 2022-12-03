@@ -39,7 +39,6 @@ public static class UsersApi
 
         group.MapPost("/token/{provider}", async Task<Results<Ok<AuthToken>, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, ITokenService tokenService) =>
         {
-            // REVIEW: This feels a bit suspect since it's not wrapped in a transaction
             var user = await userManager.FindByLoginAsync(provider, userInfo.ProviderKey);
 
             var result = IdentityResult.Success;
