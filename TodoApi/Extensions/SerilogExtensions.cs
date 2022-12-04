@@ -1,10 +1,6 @@
-using System.Globalization;
-using System.Reflection;
 using Microsoft.Extensions.Options;
 using Serilog;
-using Serilog.Events;
 using Serilog.Exceptions;
-using Serilog.Sinks.Elasticsearch;
 
 namespace TodoApi;
 
@@ -12,13 +8,11 @@ public static class SerilogExtensions
 {
     public static WebApplicationBuilder AddSerilog(
         this WebApplicationBuilder builder,
-        string sectionName = "Serilog",
-        Action<LoggerConfiguration>? extraConfigure = null)
+        string sectionName = "Serilog")
     {
         builder.Services.AddOptions<SerilogOptions>()
             .BindConfiguration(sectionName)
             .ValidateDataAnnotations();
-
 
         builder.Host.UseSerilog((context, serviceProvider, loggerConfiguration) =>
         {
@@ -26,13 +20,6 @@ public static class SerilogExtensions
 
             // https://github.com/serilog/serilog-settings-configuration
             loggerConfiguration.ReadFrom.Configuration(context.Configuration, sectionName: sectionName);
-
-            extraConfigure?.Invoke(loggerConfiguration);
-
-            var levelString = context.Configuration.GetValue<string>($"{sectionName}:MinimumLevel:Default") ??
-                        nameof(LogEventLevel.Information);
-
-            Enum.TryParse<LogEventLevel>(levelString, true, out var logLevel);
 
             loggerConfiguration
                 .Enrich.WithProperty("Application", builder.Environment.ApplicationName)
@@ -45,10 +32,20 @@ public static class SerilogExtensions
             if (loggerOptions.UseConsole)
             {
                 // https://github.com/serilog/serilog-sinks-async
-                loggerConfiguration.WriteTo.Async(writeTo => writeTo.Console(
-                    logLevel,
-                    loggerOptions.LogTemplate
-                ));
+                loggerConfiguration.WriteTo.Async(writeTo =>
+                    writeTo.Console(outputTemplate: loggerOptions.LogTemplate));
+            }
+
+            if (!string.IsNullOrEmpty(loggerOptions.ElasticSearchUrl))
+            {
+                // https://github.com/serilog-contrib/serilog-sinks-elasticsearch
+                loggerConfiguration.WriteTo.Async(
+                    writeTo =>
+                        writeTo.Elasticsearch(new(new Uri(loggerOptions.ElasticSearchUrl))
+                        {
+                            AutoRegisterTemplate = true,
+                            IndexFormat = builder.Environment.ApplicationName
+                        }));
             }
 
             if (!string.IsNullOrEmpty(loggerOptions.SeqUrl))
@@ -75,7 +72,9 @@ public class SerilogOptions
     public bool UseConsole { get; set; } = true;
     public string? SeqUrl { get; set; } = default!;
     public string? ElasticSearchUrl { get; set; } = default!;
+
     public string LogTemplate { get; set; } =
-        "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u4}] {Message:lj}{NewLine}{Exception} {Properties:j}";
+        "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}";
+
     public string? LogPath { get; set; } = default!;
 }
