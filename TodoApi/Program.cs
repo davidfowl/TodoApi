@@ -45,8 +45,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Ass Serilog requests logging
-app.UseSerilogRequestLogging(opts
-    => opts.EnrichDiagnosticContext = RequestLogEnricher.EnrichFromRequest);
+app.UseSerilogRequestLogging();
 
 app.UseRateLimiter();
 
