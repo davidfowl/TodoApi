@@ -1,5 +1,4 @@
-﻿using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
+﻿using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -23,15 +22,16 @@ public static class OpenTelemetryExtensions
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
         var oltpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
 
-        builder.Logging.AddOpenTelemetry(logging =>
-        {
-            logging.SetResourceBuilder(resourceBuilder);
-
-            if (!string.IsNullOrWhiteSpace(oltpEndpoint))
-            {
-                logging.AddOtlpExporter();
-            }
-        });
+        //// Using serilog for logging
+        // builder.Logging.AddOpenTelemetry(logging =>
+        // {
+        //     logging.SetResourceBuilder(resourceBuilder);
+        //
+        //     if (!string.IsNullOrWhiteSpace(oltpEndpoint))
+        //     {
+        //         logging.AddOtlpExporter();
+        //     }
+        // });
 
         builder.Services.AddOpenTelemetryMetrics(metrics =>
         {
