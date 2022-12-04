@@ -16,4 +16,10 @@
     <ProjectReference Include="..\Shared\Todo.Web.Shared.csproj" />
   </ItemGroup>
 
+
+	<Target Name="BuildCSS" BeforeTargets="Compile">
+		<Exec Command="npx tailwindcss -i ./main.css -o ./wwwroot/css/tailwind.css" Condition=" '$(Configuration)' == 'Debug' " />
+		<Exec Command="npx tailwindcss -i ./main.css -o ./wwwroot/css/tailwind.css --minify" Condition=" '$(Configuration)' == 'Release' " />
+	</Target>
+
 </Project>

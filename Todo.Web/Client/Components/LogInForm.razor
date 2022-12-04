@@ -1,78 +1,120 @@
 ﻿@inject TodoClient Client
 
 <EditForm Model="@this" class="form-horizontal py-5" OnValidSubmit="@Login">
-    <DataAnnotationsValidator />
-    <div class="mb-3">
-        <label for="username" class="form-label">User name</label>
-        <InputText id="username" class="form-control" @bind-Value="Username" />
-        <ValidationMessage For="@(() => Username)" />
-    </div>
-    <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <InputText id="password" type="password" class="form-control" @bind-Value="Password" />
-        <ValidationMessage For="@(() => Password)" />
-    </div>
-    <div>
-        <button class="btn btn-primary">Login</button>
-        <button type="button" class="btn btn-secondary" @onclick="@Create">Create User</button>
-    </div>
-</EditForm>
+	<div class="items-center px-5 py-12 lg:px-20">
+		<div class="flex flex-col w-full max-w-md p-10 mx-auto my-6 transition duration-500 ease-in-out transform bg-white rounded-lg md:mt-0">
+			<div class="mt-8">
+				<DataAnnotationsValidator/>
+				<div class="mt-6">
+					<div class="space-y-6">
+						<div>
+							<label for="username" class="block text-sm font-medium text-neutral-600">User name</label>
+							<div class="mt-1">
+								<InputText id="username" class="block w-full px-5 py-3 text-base text-neutral-600 placeholder-gray-300 transition duration-500 ease-in-out transform border border-transparent rounded-lg bg-gray-50 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-300" @bind-Value="Username" />
+							</div>
+							<div class="text-red-600">
+								<ValidationMessage For="@(() => Username)" />
+							</div>
+						</div>
 
-<div class="form-horizontal">
-    @foreach (var provider in SocialProviders)
-    {
-        <a class="btn btn-secondary m-1" role="button" href="auth/login/@provider">@provider</a>
-    }
-</div>
+						<div class="space-y-1">
+							<label for="password" class="block text-sm font-medium text-neutral-600">Password</label>
+							<div class="mt-1">
+								<InputText type="password" id="password" class="block w-full px-5 py-3 text-base text-neutral-600 placeholder-gray-300 transition duration-500 ease-in-out transform border border-transparent rounded-lg bg-gray-50 focus:outline-none focus:border-transparent focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-300" @bind-Value="Password"/>
+							</div>
+							<div class="text-red-600">
+								<ValidationMessage For="@(() => Password)" />
+							</div>
+						</div>
+
+						<div class="flex items-center justify-between">
+							<div class="text-sm">
+								<button type="button" class="font-medium text-blue-600 hover:text-blue-500" @onclick="@Create">Create User</button>
+							</div>
+						</div>
+
+						<div>
+							<button type="submit" class="flex items-center justify-center w-full px-10 py-4 text-base font-medium text-center text-white transition duration-500 ease-in-out transform bg-blue-600 rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Login</button>
+						</div>
+					</div>
+					@if (SocialProviders.Length > 0)
+					{
+						<div class="relative my-4">
+							<div class="absolute inset-0 flex items-center">
+								<div class="w-full border-t border-gray-300"></div>
+							</div>
+							<div class="relative flex justify-center text-sm">
+								<span class="px-2 text-neutral-600 bg-white"> Or continue with </span>
+							</div>
+						</div>
+						<div>
+							@foreach (var provider in SocialProviders)
+							{
+								<a class="w-full items-center block px-10 py-3.5 text-base font-medium text-center text-blue-600 transition duration-500 ease-in-out transform border-2 border-white shadow-md rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 cursor-pointer" role="button" href="auth/login/@provider">
+									@provider
+								</a>
+							}
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</EditForm>
 
 @if (!string.IsNullOrEmpty(alertMessage))
 {
-    <div class="alert alert-danger">@alertMessage</div>
+	<div class="flex bg-red-100 rounded-lg p-4 mb-4 text-sm text-red-700" role="alert">
+		<svg class="w-5 h-5 inline mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+		<div class="font-medium">
+			@alertMessage
+		</div>
+	</div>
 }
 
 @code {
-    string? alertMessage;
+	string? alertMessage;
 
-    [Required]
-    [StringLength(15)] 
-    public string? Username { get; set; }
+	[Required]
+	[StringLength(15)]
+	public string? Username { get; set; }
 
-    [Required] 
-    [StringLength(32, MinimumLength = 6, ErrorMessage = "The password must be between 6 and 32 characters long.")]
-    [RegularExpression("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[^a-zA-Z\\d]).*$", 
-        MatchTimeoutInMilliseconds = 1000,
-        ErrorMessage = "The password must contain a lower-case letter, an upper-case letter, a digit and a special character.")]
-    public string? Password { get; set; }
+	[Required]
+	[StringLength(32, MinimumLength = 6, ErrorMessage = "The password must be between 6 and 32 characters long.")]
+	[RegularExpression("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[^a-zA-Z\\d]).*$",
+		MatchTimeoutInMilliseconds = 1000,
+		ErrorMessage = "The password must contain a lower-case letter, an upper-case letter, a digit and a special character.")]
+	public string? Password { get; set; }
 
-    [Parameter] 
-    public EventCallback<string> OnLoggedIn { get; set; }
+	[Parameter]
+	public EventCallback<string> OnLoggedIn { get; set; }
 
-    [Parameter]
-    public string[] SocialProviders { get; set; } = Array.Empty<string>();
+	[Parameter]
+	public string[] SocialProviders { get; set; } = Array.Empty<string>();
 
-    async Task Login()
-    {
-        alertMessage = null;
-        if (await Client.LoginAsync(Username, Password))
-        {
-            await OnLoggedIn.InvokeAsync(Username);
-        }
-        else
-        {
-            alertMessage = "Login failed";
-        }
-    }
+	async Task Login()
+	{
+		alertMessage = null;
+		if (await Client.LoginAsync(Username, Password))
+		{
+			await OnLoggedIn.InvokeAsync(Username);
+		}
+		else
+		{
+			alertMessage = "Login failed";
+		}
+	}
 
-    async Task Create()
-    {
-        alertMessage = null;
-        if (await Client.CreateUserAsync(Username, Password))
-        {
-            await OnLoggedIn.InvokeAsync(Username);
-        }
-        else
-        {
-            alertMessage = "Failed to create user";
-        }
-    }
+	async Task Create()
+	{
+		alertMessage = null;
+		if (await Client.CreateUserAsync(Username, Password))
+		{
+			await OnLoggedIn.InvokeAsync(Username);
+		}
+		else
+		{
+			alertMessage = "Failed to create user";
+		}
+	}
 }

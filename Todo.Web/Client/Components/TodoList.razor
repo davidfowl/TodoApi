@@ -1,35 +1,42 @@
 ﻿@inject TodoClient Client
 
+
 @if (todos is null)
 {
-    <div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="spinner-border" role="status"></div>
-    </div>
+    // https://tailwindcomponents.com/component/centered-spinner
+    <div class="absolute right-1/2 bottom-1/2  transform translate-x-1/2 translate-y-1/2 ">
+		<div class="border-t-transparent border-solid animate-spin  rounded-full border-blue-400 border-2 h-12 w-12"></div>
+	</div>
 }
 else
 {
-    <h6 class="mb-3">Todo List</h6>
+	<div class="rounded-3xl text-white py-10 px-6 mx-auto mt-8 mb-6 max-w-xs sm:max-w-md bg-gradient-to-b bg-blue-600 from-indigo-500 to-blue-600">
+		<h6 class="mb-4 text-lg">Todo List</h6>
 
-    <EditForm @ref="@form" Model="@this" OnValidSubmit="@AddTodo" class="d-flex justify-content-center align-items-center mb-4">
-        <DataAnnotationsValidator />
-        <div class="form-outline flex-fill">
-            <InputText autofocus class="form-control form-control-lg" @bind-Value="@NewTodo" placeholder="Type a new todo item" />
-            <ValidationMessage For="@(() => NewTodo)" />
-        </div>
-    </EditForm>
+		<ul class="mt-8">
+			@foreach (var todo in todos)
+			{
+				<li class="bg-black/10 rounded-lg p-4 flex mb-3 last:mb-0 hover:scale-105 transition-all duration-150 ease-in-out" @key="@todo.Id">
+					<div class="flex-grow">
+						<input class="mr-2" type="checkbox" value="" aria-label="..."/>
+						@todo.Title
+					</div>
+					<a class="cursor-pointer hover:text-red-500 hover:scale-105 transition-all duration-150 ease-in-out" title="Remove item" @onclick="@(() => DeleteTodo(todo))">🗙</a>
+				</li>
+			}
+		</ul>
 
-    <ul class="list-group mb-0">
-        @foreach (var todo in todos)
-        {
-            <li class="list-group-item d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2" @key="@todo.Id">
-                <div class="d-flex align-items-center">
-                    <input class="form-check-input me-2" type="checkbox" value="" aria-label="..." />
-                    @todo.Title
-                </div>
-                <a data-mdb-toggle="tooltip" title="Remove item" style="text-decoration:none" @onclick="@(() => DeleteTodo(todo))">🗙</a>
-            </li>
-        }
-    </ul>
+		<EditForm @ref="@form" Model="@this" OnValidSubmit="@AddTodo" class="mb-4 mt-8">
+			<DataAnnotationsValidator/>
+			<div class="">
+				<InputText autofocus class="w-full rounded-xl bg-white/10 text-white outline-0 p-4 shadow focus:shadow-lg mt-4 transition-all duration-150 ease-in-out placeholder:text-blue-200" @bind-Value="@NewTodo" placeholder="Type a new todo item"/>
+				<ValidationMessage For="@(() => NewTodo)"/>
+			</div>
+			<input type="submit" class="my-5 p-5 bg-black text-white rounded-xl w-full hover:bg-opacity-60 transition border-0 capitalize flex items-center justify-center" value="Add new">
+		</EditForm>
+
+
+	</div>
 }
 
 @code {
@@ -39,7 +46,7 @@ else
     [Required]
     public string? NewTodo { get; set; }
 
-    [Parameter] 
+    [Parameter]
     public EventCallback OnForbidden { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -49,6 +56,7 @@ else
 
     async Task LoadTodos()
     {
+	    await System.Threading.Tasks.Task.Delay(1000);
         (var statusCode, todos) = await Client.GetTodosAsync();
 
         if (statusCode == HttpStatusCode.Forbidden || statusCode == HttpStatusCode.Unauthorized)
