@@ -52,29 +52,17 @@ public static class SerilogExtensions
             {
                 loggerConfiguration.WriteTo.Async(writeTo => writeTo.Seq(loggerOptions.SeqUrl));
             }
-
-            if (!string.IsNullOrEmpty(loggerOptions.LogPath))
-            {
-                loggerConfiguration.WriteTo.File(
-                    loggerOptions.LogPath,
-                    outputTemplate: loggerOptions.LogTemplate,
-                    rollingInterval: RollingInterval.Day,
-                    rollOnFileSizeLimit: true);
-            }
         });
 
         return builder;
     }
+    class SerilogOptions
+    {
+        public bool UseConsole { get; set; } = true;
+        public string? SeqUrl { get; set; } = default!;
+        public string? ElasticSearchUrl { get; set; } = default!;
+        public string LogTemplate { get; set; } =
+            "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}";
+    }
 }
 
-public class SerilogOptions
-{
-    public bool UseConsole { get; set; } = true;
-    public string? SeqUrl { get; set; } = default!;
-    public string? ElasticSearchUrl { get; set; } = default!;
-
-    public string LogTemplate { get; set; } =
-        "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}";
-
-    public string? LogPath { get; set; } = default!;
-}

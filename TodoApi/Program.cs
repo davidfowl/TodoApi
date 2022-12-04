@@ -44,7 +44,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Ass Serilog requests logging
+// Add Serilog requests logging
 app.UseSerilogRequestLogging();
 
 app.UseRateLimiter();
