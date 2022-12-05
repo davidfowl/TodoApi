@@ -60,8 +60,8 @@ public static class SerilogExtensions
     private sealed class SerilogOptions
     {
         public bool UseConsole { get; set; } = true;
-        public string? SeqUrl { get; set; } = default!;
-        public string? ElasticSearchUrl { get; set; } = default!;
+        public string? SeqUrl { get; set; };
+        public string? ElasticSearchUrl { get; set; };
         public string LogTemplate { get; set; } =
             "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} {Level} - {Message:lj}{NewLine}{Exception}";
     }
