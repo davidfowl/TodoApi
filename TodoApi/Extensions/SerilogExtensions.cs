@@ -10,9 +10,8 @@ public static class SerilogExtensions
         this WebApplicationBuilder builder,
         string sectionName = "Serilog")
     {
-        builder.Services.AddOptions<SerilogOptions>()
-            .BindConfiguration(sectionName)
-            .ValidateDataAnnotations();
+        var serilogOptions = new SerilogOptions();
+        builder.Configuration.GetSection(sectionName).Bind(serilogOptions);
 
         builder.Host.UseSerilog((context, serviceProvider, loggerConfiguration) =>
         {
