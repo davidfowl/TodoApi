@@ -56,7 +56,8 @@ public static class SerilogExtensions
 
         return builder;
     }
-    class SerilogOptions
+    
+    private sealed class SerilogOptions
     {
         public bool UseConsole { get; set; } = true;
         public string? SeqUrl { get; set; } = default!;
