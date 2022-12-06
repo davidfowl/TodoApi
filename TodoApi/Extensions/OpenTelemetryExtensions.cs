@@ -23,15 +23,14 @@ public static class OpenTelemetryExtensions
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
         var oltpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
 
-        builder.Logging.AddOpenTelemetry(logging =>
+        if (!string.IsNullOrWhiteSpace(oltpEndpoint))
         {
-            logging.SetResourceBuilder(resourceBuilder);
-
-            if (!string.IsNullOrWhiteSpace(oltpEndpoint))
+            builder.Logging.AddOpenTelemetry(logging =>
             {
-                logging.AddOtlpExporter();
-            }
-        });
+                logging.SetResourceBuilder(resourceBuilder)
+                    .AddOtlpExporter();
+            });
+        }
 
         builder.Services.AddOpenTelemetryMetrics(metrics =>
         {

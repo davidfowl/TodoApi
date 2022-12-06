@@ -1,8 +1,11 @@
-using Microsoft.EntityFrameworkCore;
+using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using TodoApi;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Serilog
+builder.AddSerilog();
 
 // Configure auth
 builder.Services.AddAuthentication().AddJwtBearer();
@@ -40,6 +43,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Add Serilog requests logging
+app.UseSerilogRequestLogging();
 
 app.UseRateLimiter();
 

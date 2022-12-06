@@ -182,9 +182,51 @@ docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e COLLECTOR_OTL
 1. Open [Jaeger in your browser](http://localhost:16686/)
 1. View the collected spans
 
-#### Logs
+### Logs
 
-1. Configure environment variable `OTEL_EXPORTER_OTLP_ENDPOINT` with the right endpoint URL to enable `.AddOtlpExporter` below `builder.Logging.AddOpenTelemetry`, in the `TodoApi/Extensions/OpenTelemetryExtensions.cs` file
-1. Find a Vendor that supports OpenTelemetry-based logging.
+This app using structured logging and for this purpose we use [Serilog](https://github.com/serilog/serilog-aspnetcore)
 
-Vendor support for OpenTelemetry-based logging is currently very limited.
+For setting up Serilog you should call `AddSerilog` on [SerilogExtensions](TodoApi/Extensions/SerilogExtensions.cs) class and Add `Serilog` section with appropriate [Options](TodoApi/Extensions/SerilogExtensions.cs#L95)
+
+```json
+  "Serilog": {
+    "ElasticSearchUrl": "http://localhost:9200",
+    "SeqUrl": "http://localhost:5341",
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "Microsoft.Hosting.Lifetime": "Information"
+      }
+    }
+  }
+```
+
+For collecting and searching logs there are 2 options: 
+- Seq
+- Elasticsearch and Kibana
+
+#### Seq
+For using seq use should enable it with setting `SeqUrl` in `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
+
+``` json
+  "Serilog": {
+     ...
+    "SeqUrl": "http://localhost:5341",
+     ...
+  },
+```
+Also we should run [seq server](docker-compose.yml#47) on docker-compose file, now seq is available on [http://localhost:8081](http://localhost:8081) and we can see logs out there.
+
+#### Elasticsearch and Kibana
+For using seq use should enable it with setting `ElasticSearchUrl` in `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
+
+```json
+  "Serilog": {
+     ...
+    "ElasticSearchUrl": "http://localhost:9200",
+     ...
+  }
+```
+Also we should run [Elasticsearch](docker-compose.yml#84) and [Kibana](docker-compose.yml#104) on docker-compose file, now we can see our logs on kibana url [http://localhost:5601](http://localhost:5601) and 
+index name `todoapi`.
