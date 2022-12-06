@@ -6,10 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Configure auth
 builder.Services.AddAuthentication().AddJwtBearer();
-builder.Services.AddAuthorizationBuilder().AddCurrentUserHandler();
+builder.Services.AddAuthorization();
 
-// Add the service to generate JWT tokens
-builder.Services.AddTokenService();
+// Adds all services annotated with [Service(ServiceLifetime)]
+builder.Services.AddServices();
 
 // Configure the database
 var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=.db/Todos.db";
@@ -18,9 +18,6 @@ builder.Services.AddSqlite<TodoDbContext>(connectionString);
 // Configure identity
 builder.Services.AddIdentityCore<TodoUser>()
                 .AddEntityFrameworkStores<TodoDbContext>();
-
-// State that represents the current user from the database *and* the request
-builder.Services.AddCurrentUser();
 
 // Configure Open API
 builder.Services.AddEndpointsApiExplorer();

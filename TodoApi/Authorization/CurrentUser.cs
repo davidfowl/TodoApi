@@ -3,6 +3,7 @@
 namespace TodoApi;
 
 // A scoped service that exposes the current user information
+[Service(ServiceLifetime.Scoped)]
 public class CurrentUser
 {
     public TodoUser? User { get; set; }

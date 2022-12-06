@@ -4,12 +4,6 @@ namespace TodoApi;
 
 public static class AuthorizationHandlerExtensions
 {
-    public static AuthorizationBuilder AddCurrentUserHandler(this AuthorizationBuilder builder)
-    {
-        builder.Services.AddScoped<IAuthorizationHandler, CheckCurrentUserAuthHandler>();
-        return builder;
-    }
-
     // Adds the current user requirement that will activate our authorization handler
     public static AuthorizationPolicyBuilder RequireCurrentUser(this AuthorizationPolicyBuilder builder)
     {
@@ -17,11 +11,15 @@ public static class AuthorizationHandlerExtensions
                       .AddRequirements(new CheckCurrentUserRequirement());
     }
 
-    private class CheckCurrentUserRequirement : IAuthorizationRequirement { }
+    // NOTE: the source generator requires accessing these types. 
+    // In this particular case, we might still preserve the explicit invocation via
+    // an IServiceCollection extension method as before if keeping these types private is preferred.
+    internal class CheckCurrentUserRequirement : IAuthorizationRequirement { }
 
     // This authorization handler verifies that the user exists even if there's
     // a valid token
-    private class CheckCurrentUserAuthHandler : AuthorizationHandler<CheckCurrentUserRequirement>
+    [Service(ServiceLifetime.Scoped)]
+    internal class CheckCurrentUserAuthHandler : AuthorizationHandler<CheckCurrentUserRequirement>
     {
         private readonly CurrentUser _currentUser;
         public CheckCurrentUserAuthHandler(CurrentUser currentUser) => _currentUser = currentUser;
