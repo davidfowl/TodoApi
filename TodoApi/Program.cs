@@ -38,14 +38,14 @@ builder.AddOpenTelemetry();
 
 var app = builder.Build();
 
+// Add Serilog requests logging
+app.UseSerilogRequestLogging();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-// Add Serilog requests logging
-app.UseSerilogRequestLogging();
 
 app.UseRateLimiter();
 
