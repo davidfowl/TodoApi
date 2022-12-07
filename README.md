@@ -27,14 +27,25 @@ It showcases:
 
 ### Database
 1. Install the **dotnet-ef** tool: `dotnet tool install dotnet-ef -g`
-1. Navigate to the `TodoApi` folder and run `dotnet ef database update` to create the database.
+1. Navigate to the `TodoApi` folder.
+    1. Run `mkdir .db` to create the local database folder.
+    1. Run `dotnet ef database update` to create the database.
 1. Learn more about [dotnet-ef](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
+
+### JWT 
+
+1. To initialize the keys for JWT generation, run `dotnet user-jwts` in to [TodoApi](TodoApi) folder:
+
+    ```
+    dotnet user-jwts create
+    ```
 
 ### Running the application
 To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [TodoApi](TodoApi). Below are different ways to run both applications:
    - **Visual Studio** - Setup multiple startup projects by right clicking on the solution and selecting Properties. Select `TodoApi` and `Todo.Web.Server` as startup projects.
 
       <img width="591" alt="image" src="https://user-images.githubusercontent.com/95136/204311327-479445c8-4f73-4845-b146-d56be8ceb9ab.png">
+
    - **Visual Studio Code** - Open up 2 terminal windows, one in [Todo.Web.Server](Todo.Web/Server/) and the other in [TodoApi](TodoApi/) run: 
    
       ```
@@ -49,7 +60,39 @@ To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [Tod
       dotnet tool install --global Microsoft.Tye --version 0.11.0-alpha.22111.1
       ```
 
-      Run `tye run` in the repository root and navigate to the tye dashboard (usually http://localhost:8080) to see both applications running.
+      Run `tye run` in the repository root and navigate to the tye dashboard (usually http://localhost:8000) to see both applications running.
+
+   - **Docker Compose** - Open your terminal, navigate to the root folder of this project and run the following commands:
+      1. Build a docker image for the `TodoApi` directly from dotnet publish.
+         ```
+         dotnet publish ./TodoApi/TodoApi.csproj --os linux --arch x64 /t:PublishContainer -c Release
+         ```
+
+      1. Build a docker image for the `Todo.Web.Server` directly from dotnet publish.
+         ```
+         dotnet publish ./Todo.Web/Server/Todo.Web.Server.csproj --os linux --arch x64 /t:PublishContainer -c Release --self-contained true
+         ```
+
+      1. Generate certificate and configure local machine so we can start our apps with https support using docker compose.
+
+         Windows using Linux containers
+         ```
+         set PASSWORD YourPasswordHere
+         dotnet dev-certs https -ep ${HOME}/.aspnet/https/todoapps.pfx -p $PASSWORD --trust
+         ```
+         macOS or Linux
+         ```
+         export PASSWORD=YourPasswordHere
+         dotnet dev-certs https -ep ~/.aspnet/https/todoapps.pfx -p $PASSWORD --trust
+         ```
+
+      1. Change these variables below in the `docker-compose.yml` file to match your https certificate and password.
+         - `ASPNETCORE_Kestrel__Certificates__Default__Password`
+         - `ASPNETCORE_Kestrel__Certificates__Default__Path`
+
+      1. Run `docker-compose up -d` to spin up both apps todo-api and todo-web-server plus jaeger and prometheus.
+
+      1. Navigate to the Todo Web app https://localhost:5003.
 
 
 ## Optional
@@ -77,6 +120,43 @@ Before executing any requests, you need to create a user and get an auth token.
 1. You should be able to use this token to make authenticated requests to the todo endpoints.
 1. Learn more about [user-jwts](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security?view=aspnetcore-7.0#using-dotnet-user-jwts-to-improve-development-time-testing)
 
+### Social authentication
+
+In addition to username and password, social authentication providers can be configured to work with this todo application. By default 
+it supports Github, Google, and Microsoft accounts.
+
+Instructions for setting up each of these providers can be found at:
+- [Github](https://docs.github.com/en/developers/apps/building-oauth-apps)
+- [Microsoft](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/microsoft-logins)
+- [Google](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/social/google-logins)
+
+Once you obtain the client id and client secret, the configuration for these providers must be added with the following schema:
+
+```JSON
+{
+    "Authentication": {
+        "Schemes": {
+            "<scheme>": {
+                "ClientId": "xxx",
+                "ClientSecret": "xxxx"
+            }
+        }
+    }
+}
+```
+
+Or using environment variables:
+
+```
+Authentication__Schemes__<scheme>__ClientId=xxx
+Authentication__Schemes__<scheme>__ClientSecret=xxx
+```
+
+Other providers can be found [here](https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers#providers). 
+These must be added to [AuthenticationExtensions](Todo.Web/Server/Authentication/AuthenticationExtensions.cs) as well.
+
+**NOTE: Don't store client secrets in configuration!**
+
 ### OpenTelemetry
 TodoApi uses OpenTelemetry to collect logs, metrics and spans.
 
@@ -92,7 +172,7 @@ docker run -d -p 9090:9090 --name prometheus -v $PWD/prometheus.yml:/etc/prometh
 
 #### Spans
 
-1. Uncomment `.AddOtlpExporter` below `builder.Services.AddOpenTelemetryTracing`, in the `TodoApi/OpenTelemetryExtensions.cs` file
+1. Configure environment variable `OTEL_EXPORTER_OTLP_ENDPOINT` with the right endpoint URL to enable `.AddOtlpExporter` below `builder.Services.AddOpenTelemetryTracing`, in the `TodoApi/OpenTelemetryExtensions.cs` file
 1. Run Jaeger with Docker:
 
 ```
@@ -102,9 +182,51 @@ docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e COLLECTOR_OTL
 1. Open [Jaeger in your browser](http://localhost:16686/)
 1. View the collected spans
 
-#### Logs
+### Logs
 
-1. Uncomment `.AddOtlpExporter` below `builder.Logging.AddOpenTelemetry`, in the `TodoApi/Extensions/OpenTelemetryExtensions.cs` file
-1. Find a Vendor that supports OpenTelemetry-based logging.
+This app using structured logging and for this purpose we use [Serilog](https://github.com/serilog/serilog-aspnetcore)
 
-Vendor support for OpenTelemetry-based logging is currently very limited.
+For setting up Serilog you should call `AddSerilog` on [SerilogExtensions](TodoApi/Extensions/SerilogExtensions.cs) class and Add `Serilog` section with appropriate [Options](TodoApi/Extensions/SerilogExtensions.cs#L95)
+
+```json
+  "Serilog": {
+    "ElasticSearchUrl": "http://localhost:9200",
+    "SeqUrl": "http://localhost:5341",
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "Microsoft.Hosting.Lifetime": "Information"
+      }
+    }
+  }
+```
+
+For collecting and searching logs there are 2 options: 
+- Seq
+- Elasticsearch and Kibana
+
+#### Seq
+For using seq use should enable it with setting `SeqUrl` in `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
+
+``` json
+  "Serilog": {
+     ...
+    "SeqUrl": "http://localhost:5341",
+     ...
+  },
+```
+Also we should run [seq server](docker-compose.yml#47) on docker-compose file, now seq is available on [http://localhost:8081](http://localhost:8081) and we can see logs out there.
+
+#### Elasticsearch and Kibana
+For using seq use should enable it with setting `ElasticSearchUrl` in `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
+
+```json
+  "Serilog": {
+     ...
+    "ElasticSearchUrl": "http://localhost:9200",
+     ...
+  }
+```
+Also we should run [Elasticsearch](docker-compose.yml#84) and [Kibana](docker-compose.yml#104) on docker-compose file, now we can see our logs on kibana url [http://localhost:5601](http://localhost:5601) and 
+index name `todoapi`.
