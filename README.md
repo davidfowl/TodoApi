@@ -217,7 +217,7 @@ For using seq, we should enable it with setting `SeqUrl` value in the `Serilog` 
 Also we should run [seq server](docker-compose.yml#47) on docker-compose file, now seq is available on [http://localhost:8081](http://localhost:8081) and we can see logs out there.
 
 #### Elasticsearch and Kibana
-For using elasticsearch and kibana, we use should enable it with setting `ElasticSearchUrl` value in the `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
+For using elasticsearch and kibana, we should enable it with setting `ElasticSearchUrl` value in the `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
 
 ```json
   "Serilog": {
