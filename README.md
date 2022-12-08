@@ -184,14 +184,12 @@ docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e COLLECTOR_OTL
 
 ### Logs
 
-This app using structured logging and for this purpose we use [Serilog](https://github.com/serilog/serilog-aspnetcore)
+This app using `structured logging` and for this purpose we use [Serilog](https://github.com/serilog/serilog-aspnetcore)
 
 For setting up Serilog you should call `AddSerilog` on [SerilogExtensions](TodoApi/Extensions/SerilogExtensions.cs) class and Add `Serilog` section with appropriate [Options](TodoApi/Extensions/SerilogExtensions.cs#L95)
 
 ```json
   "Serilog": {
-    "ElasticSearchUrl": "http://localhost:9200",
-    "SeqUrl": "http://localhost:5341",
     "MinimumLevel": {
       "Default": "Information",
       "Override": {
@@ -202,12 +200,12 @@ For setting up Serilog you should call `AddSerilog` on [SerilogExtensions](TodoA
   }
 ```
 
-For collecting and searching logs there are 2 options: 
-- Seq
-- Elasticsearch and Kibana
+For collecting and searching logs there are 2 `optional` way, based on `your needs` in the production environment: 
+- Seq (Not Free in commercial use)
+- Elasticsearch and Kibana (Free)
 
 #### Seq
-For using seq use should enable it with setting `SeqUrl` in `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
+For using seq, we should enable it with setting `SeqUrl` value in the `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
 
 ``` json
   "Serilog": {
@@ -219,7 +217,7 @@ For using seq use should enable it with setting `SeqUrl` in `Serilog` section of
 Also we should run [seq server](docker-compose.yml#47) on docker-compose file, now seq is available on [http://localhost:8081](http://localhost:8081) and we can see logs out there.
 
 #### Elasticsearch and Kibana
-For using seq use should enable it with setting `ElasticSearchUrl` in `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
+For using elasticsearch and kibana, we should enable it with setting `ElasticSearchUrl` value in the `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
 
 ```json
   "Serilog": {
