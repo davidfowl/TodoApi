@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <!-- https://github.com/dotnet/sdk/issues/11253 -->
-  <Target Name="EnsureRestoreCli" BeforeTargets="Build">
+  <Target Name="EnsureRestoreCli" BeforeTargets="BeforeBuild">
 	<Exec Command="dotnet tool restore" />
   </Target>
 
