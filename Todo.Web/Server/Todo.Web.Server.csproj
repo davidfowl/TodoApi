@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
     <ContainerImageName>todo-web-server</ContainerImageName>
     <ContainerImageTag>latest</ContainerImageTag>
     <UserSecretsId>c3677e8f-17d8-492d-8844-36ade85166e5</UserSecretsId>
