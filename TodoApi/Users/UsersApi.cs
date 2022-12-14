@@ -65,13 +65,4 @@ public static class UsersApi
 
         return group;
     }
-
-    internal static Action<IdentityOptions> PasswordRequirements => options => options.Password = new PasswordOptions
-    {
-        RequireDigit = true,
-        RequireLowercase = true,
-        RequireNonAlphanumeric = true,
-        RequireUppercase = true,
-        RequiredLength = 6
-    };
 }

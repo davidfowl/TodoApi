@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using TodoApi;
@@ -19,8 +20,14 @@ var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Da
 builder.Services.AddSqlite<TodoDbContext>(connectionString);
 
 // Configure identity
-builder.Services.AddIdentityCore<TodoUser>(UsersApi.PasswordRequirements)
-.AddEntityFrameworkStores<TodoDbContext>();
+builder.Services.AddIdentityCore<TodoUser>(options => options.Password = new PasswordOptions
+{
+    RequireDigit = true,
+    RequireLowercase = true,
+    RequireNonAlphanumeric = true,
+    RequireUppercase = true,
+    RequiredLength = 6
+}).AddEntityFrameworkStores<TodoDbContext>();
 
 // State that represents the current user from the database *and* the request
 builder.Services.AddCurrentUser();
