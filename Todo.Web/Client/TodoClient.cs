@@ -11,15 +11,23 @@ public class TodoClient
         _client = client;
     }
 
-    public async Task<bool> AddTodoAsync(string? title)
+    public async Task<TodoItem?> AddTodoAsync(string? title)
     {
         if (string.IsNullOrEmpty(title))
         {
-            return false;
+            return null;
         }
 
+        TodoItem? createdTodo = null;
+
         var response = await _client.PostAsJsonAsync("todos", new TodoItem { Title = title });
-        return response.IsSuccessStatusCode;
+
+        if (response.IsSuccessStatusCode)
+        {
+            createdTodo = await response.Content.ReadFromJsonAsync<TodoItem>();
+        }
+
+        return createdTodo;
     }
 
     public async Task<bool> DeleteTodoAsync(int id)
@@ -28,15 +36,15 @@ public class TodoClient
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<(HttpStatusCode, TodoItem[]?)> GetTodosAsync()
+    public async Task<(HttpStatusCode, List<TodoItem>?)> GetTodosAsync()
     {
         var response = await _client.GetAsync("todos");
         var statusCode = response.StatusCode;
-        TodoItem[]? todos = null;
+        List<TodoItem>? todos = null;
 
         if (response.IsSuccessStatusCode)
         {
-            todos = await response.Content.ReadFromJsonAsync<TodoItem[]>();
+            todos = await response.Content.ReadFromJsonAsync<List<TodoItem>>();
         }
 
         return (statusCode, todos);

@@ -3,10 +3,7 @@ using Todo.Web.Server;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure auth with the front end
-builder.Services.AddAuthentication().AddCookie(o =>
-{
-    o.Cookie.SameSite = SameSiteMode.Strict;
-});
+builder.AddAuthentication();
 builder.Services.AddAuthorizationBuilder();
 
 // Add razor pages so we can render the Blazor WASM todo component

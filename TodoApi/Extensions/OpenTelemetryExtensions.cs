@@ -1,4 +1,5 @@
-﻿using OpenTelemetry.Metrics;
+﻿using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -20,11 +21,16 @@ public static class OpenTelemetryExtensions
     public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
+        var oltpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
 
-        builder.Logging.AddOpenTelemetry(logging =>
+        if (!string.IsNullOrWhiteSpace(oltpEndpoint))
         {
-            logging.SetResourceBuilder(resourceBuilder)/*.AddOtlpExporter()*/;
-        });
+            builder.Logging.AddOpenTelemetry(logging =>
+            {
+                logging.SetResourceBuilder(resourceBuilder)
+                    .AddOtlpExporter();
+            });
+        }
 
         builder.Services.AddOpenTelemetryMetrics(metrics =>
         {
@@ -49,10 +55,14 @@ public static class OpenTelemetryExtensions
         builder.Services.AddOpenTelemetryTracing(tracing =>
         {
             tracing.SetResourceBuilder(resourceBuilder)
-                   //.AddOtlpExporter()
                    .AddAspNetCoreInstrumentation()
                    .AddHttpClientInstrumentation()
                    .AddEntityFrameworkCoreInstrumentation();
+
+            if (!string.IsNullOrWhiteSpace(oltpEndpoint))
+            {
+                tracing.AddOtlpExporter();
+            }
         });
 
         return builder;

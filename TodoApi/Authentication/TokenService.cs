@@ -47,7 +47,7 @@ public sealed class TokenService : ITokenService
 
         var section = bearerSection.GetSection("SigningKeys:0");
 
-        _issuer = bearerSection["ValidIssuer"] ?? throw new InvalidOperationException("Issuer is not specifed");
+        _issuer = bearerSection["ValidIssuer"] ?? throw new InvalidOperationException("Issuer is not specified");
         var signingKeyBase64 = section["Value"] ?? throw new InvalidOperationException("Signing key is not specified");
 
         var signingKeyBytes = Convert.FromBase64String(signingKeyBase64);

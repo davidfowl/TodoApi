@@ -5,7 +5,7 @@ namespace TodoApi;
 
 public class TodoDbContext : IdentityDbContext<TodoUser>
 {
-    public TodoDbContext(DbContextOptions options) : base(options) { }
+    public TodoDbContext(DbContextOptions<TodoDbContext> options) : base(options) { }
 
     public DbSet<Todo> Todos => Set<Todo>();
 

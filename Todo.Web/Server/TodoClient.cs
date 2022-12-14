@@ -20,12 +20,7 @@ public class TodoClient
 
         var token = await response.Content.ReadFromJsonAsync<AuthToken>();
 
-        if (token is null)
-        {
-            return null;
-        }
-
-        return token.Token;
+        return token?.Token;
     }
 
     public async Task<string?> CreateUserAsync(UserInfo userInfo)
@@ -37,7 +32,20 @@ public class TodoClient
             return null;
         }
 
-        // TODO: Make this a single call on the backend
         return await GetTokenAsync(userInfo);
+    }
+
+    public async Task<string?> GetOrCreateUserAsync(string provider, ExternalUserInfo userInfo)
+    {
+        var response = await _client.PostAsJsonAsync($"users/token/{provider}", userInfo);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        var token = await response.Content.ReadFromJsonAsync<AuthToken>();
+
+        return token?.Token;
     }
 }
