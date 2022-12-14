@@ -13,11 +13,16 @@
 }
 else
 {
-    <LogInForm OnLoggedIn="@HandleLogin" />
+    <LogInForm OnLoggedIn="@HandleLogin" SocialProviders="@SocialProviders" />
 }
 
 @code {
-    [Parameter] public string? CurrentUser { get; set; }
+    [Parameter] 
+    public string? CurrentUser { get; set; }
+
+    [Parameter]
+    public string[] SocialProviders { get; set; } = Array.Empty<string>();
+
 
     void HandleLogin(string newUsername)
     {
