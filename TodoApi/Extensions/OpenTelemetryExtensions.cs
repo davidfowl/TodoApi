@@ -21,9 +21,9 @@ public static class OpenTelemetryExtensions
     public static WebApplicationBuilder AddOpenTelemetry(this WebApplicationBuilder builder)
     {
         var resourceBuilder = ResourceBuilder.CreateDefault().AddService(builder.Environment.ApplicationName);
-        var oltpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
+        var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
 
-        if (!string.IsNullOrWhiteSpace(oltpEndpoint))
+        if (!string.IsNullOrWhiteSpace(otlpEndpoint))
         {
             builder.Logging.AddOpenTelemetry(logging =>
             {
@@ -59,7 +59,7 @@ public static class OpenTelemetryExtensions
                    .AddHttpClientInstrumentation()
                    .AddEntityFrameworkCoreInstrumentation();
 
-            if (!string.IsNullOrWhiteSpace(oltpEndpoint))
+            if (!string.IsNullOrWhiteSpace(otlpEndpoint))
             {
                 tracing.AddOtlpExporter();
             }
