@@ -3,7 +3,7 @@
   "extensions": [
     "ms-dotnettools.csharp"
   ],
-  "postCreateCommand": "init.sh",
+  "postCreateCommand": "chmod +x .devcontainer/init.sh && .devcontainer/init.sh",
   "forwardPorts": [
     5000,
     5001
