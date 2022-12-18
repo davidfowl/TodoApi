@@ -50,7 +50,7 @@ public static class AuthApi
         })
         .RequireAuthorization();
 
-        // Social login
+        // External login
         group.MapGet("login/{provider}", (string provider) =>
         {
             // Trigger the external login flow by issuing a challenge with the provider name.
