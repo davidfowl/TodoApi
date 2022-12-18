@@ -47,7 +47,7 @@ public static class AuthenticationExtensions
             ["Google"] = static (builder, configure) => builder.AddGoogle(configure),
             ["Microsoft"] = static (builder, configure) => builder.AddMicrosoftAccount(configure),
             ["Auth0"] = static (builder, configure) => builder.AddAuth0WebAppAuthentication(configure)
-                                                              // .WithAccessToken(configure),
+                                                              .WithAccessToken(configure),
         };
 
         foreach (var (providerName, provider) in externalProviders)
@@ -95,6 +95,30 @@ public static class AuthenticationExtensions
                     // Use named options to configure the underlying OpenIdConnectOptions's sign in scheme instead.
                     o.SignInScheme = AuthConstants.ExternalScheme;
                 });
+        }
+    }
+
+    private static readonly string ExternalProviderKey = "ExternalProviderName";
+    private static readonly string HasExternalTokenKey = "ExternalToken";
+
+    public static string? GetExternalProvider(this AuthenticationProperties properties) =>
+        properties.GetString(ExternalProviderKey);
+
+    public static void SetExternalProvider(this AuthenticationProperties properties, string providerName) =>
+        properties.SetString(ExternalProviderKey, providerName);
+
+    public static bool HasExternalToken(this AuthenticationProperties properties) =>
+        properties.GetString(HasExternalTokenKey) is not null;
+
+    public static void SetHasExternalToken(this AuthenticationProperties properties, bool hasToken)
+    {
+        if (hasToken)
+        {
+            properties.SetString(HasExternalTokenKey, "1");
+        }
+        else
+        {
+            properties.Items.Remove(HasExternalTokenKey);
         }
     }
 }

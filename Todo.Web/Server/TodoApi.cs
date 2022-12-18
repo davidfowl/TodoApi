@@ -13,8 +13,19 @@ public static class TodoApi
 
         var transform = static async ValueTask (HttpContext context, HttpRequestMessage req) =>
         {
-            var accessToken = await context.GetTokenAsync(TokenNames.AccessToken);
+            var result = await context.AuthenticateAsync();
+
+            var properties = result.Properties!;
+
+            var accessToken = properties.GetTokenValue(TokenNames.AccessToken);
             req.Headers.Authorization = new("Bearer", accessToken);
+
+            if (properties.HasExternalToken() && properties.GetExternalProvider() is string externalProvider)
+            {
+                // Set the external provider name as the scheme so we can do auth
+                // on the backend with the right configuration
+                req.Headers.TryAddWithoutValidation("X-Auth-Scheme", externalProvider);
+            }
         };
 
         // Use this HttpClient for all proxied requests

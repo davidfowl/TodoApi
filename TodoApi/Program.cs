@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddSerilog();
 
 // Configure auth
-builder.Services.AddAuthentication().AddJwtBearer();
+builder.AddAuthentication();
 builder.Services.AddAuthorizationBuilder().AddCurrentUserHandler();
 
 // Add the service to generate JWT tokens

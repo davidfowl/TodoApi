@@ -6,8 +6,6 @@ namespace Todo.Web.Server;
 
 public static class AuthApi
 {
-    private static readonly string ExternalProviderKey = "ExternalProviderName";
-
     public static RouteGroupBuilder MapAuth(this IEndpointRouteBuilder routes)
     {
         var group = routes.MapGroup("/auth");
@@ -43,11 +41,11 @@ public static class AuthApi
             await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             // TODO: Support remote logout
-            // var result = await context.AuthenticateAsync();
             // If this is an external login then use it
-            //if (result.Properties?.Items.TryGetValue(ExternalProviderKey, out var externalProviderName) == true)
+            //var result = await context.AuthenticateAsync();
+            //if (result.Properties?.GetExternalProvider() is string providerName)
             //{
-            //    await context.SignOutAsync(externalProviderName, new() { RedirectUri = "/" });
+            //    await context.SignOutAsync(providerName, new() { RedirectUri = "/" });
             //}
         })
         .RequireAuthorization();
@@ -82,7 +80,7 @@ public static class AuthApi
                 if (token is not null)
                 {
                     // Write the login cookie
-                    await SignIn(id, name, token, provider).ExecuteAsync(context);
+                    await SignIn(id, name, token, provider, result.Properties.GetTokens()).ExecuteAsync(context);
                 }
             }
 
@@ -99,10 +97,10 @@ public static class AuthApi
 
     private static IResult SignIn(UserInfo userInfo, string token)
     {
-        return SignIn(userInfo.Username, userInfo.Username, token, providerName: null);
+        return SignIn(userInfo.Username, userInfo.Username, token, providerName: null, authTokens: Enumerable.Empty<AuthenticationToken>());
     }
 
-    private static IResult SignIn(string userId, string userName, string token, string? providerName)
+    private static IResult SignIn(string userId, string userName, string token, string? providerName, IEnumerable<AuthenticationToken> authTokens)
     {
         var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
         identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
@@ -113,10 +111,15 @@ public static class AuthApi
         // Store the external provider name so we can do remote sign out
         if (providerName is not null)
         {
-            properties.Items[ExternalProviderKey] = providerName;
+            properties.SetExternalProvider(providerName);
         }
 
-        var tokens = new[]
+        if (authTokens.Any())
+        {
+            properties.SetHasExternalToken(true);
+        }
+
+        var tokens = authTokens.Any() ? authTokens : new[]
         {
             new AuthenticationToken { Name = TokenNames.AccessToken, Value = token }
         };
