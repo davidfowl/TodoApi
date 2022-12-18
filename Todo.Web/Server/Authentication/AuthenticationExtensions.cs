@@ -46,17 +46,14 @@ public static class AuthenticationExtensions
             ["GitHub"] = static (builder, configure) => builder.AddGitHub(configure),
             ["Google"] = static (builder, configure) => builder.AddGoogle(configure),
             ["Microsoft"] = static (builder, configure) => builder.AddMicrosoftAccount(configure),
-            ["Auth0"] = static (builder, configure) =>
-            {
-                builder.AddAuth0WebAppAuthentication(configure);
-                // TODO: Support tokens from auth0 natively
-                // .WithAccessToken(configure);
-            },
+            ["Auth0"] = static (builder, configure) => builder.AddAuth0WebAppAuthentication(configure)
+                                                              // .WithAccessToken(configure),
         };
 
         foreach (var (providerName, provider) in externalProviders)
         {
             var section = builder.Configuration.GetSection($"Authentication:Schemes:{providerName}");
+
             if (section.Exists())
             {
                 provider(authenticationBuilder, options =>
@@ -73,9 +70,14 @@ public static class AuthenticationExtensions
                     {
                         // Skip the cookie handler since we already add it
                         auth0WebAppOptions.SkipCookieMiddleware = true;
-                        SetAuth0SignInScheme(builder);
                     }
                 });
+
+                if (providerName is "Auth0")
+                {
+                    // Set this up once
+                    SetAuth0SignInScheme(builder);
+                }
             }
         }
 
