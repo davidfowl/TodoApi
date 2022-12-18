@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Todo.Web.Server;
 
-public class SocialProviders
+public class ExternalProviders
 {
     private readonly IAuthenticationSchemeProvider _schemeProvider;
     private Task<string[]>? _providerNames;
 
-    public SocialProviders(IAuthenticationSchemeProvider schemeProvider)
+    public ExternalProviders(IAuthenticationSchemeProvider schemeProvider)
     {
         _schemeProvider = schemeProvider;
     }
@@ -28,7 +28,7 @@ public class SocialProviders
         {
             // We're assuming all schemes that aren't cookies are social
             if (s.Name == CookieAuthenticationDefaults.AuthenticationScheme ||
-                s.Name == AuthConstants.SocialScheme)
+                s.Name == AuthConstants.ExternalScheme)
             {
                 continue;
             }

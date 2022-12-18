@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="7.0.0" />
+    <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.0" />

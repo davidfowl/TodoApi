@@ -1,17 +1,18 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using Auth0.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Todo.Web.Server;
 
 public class AuthConstants
 {
-    public static string SocialScheme { get; } = "Social";
+    public static string ExternalScheme { get; } = "External";
 }
 
 public static class AuthenticationExtensions
 {
-    private delegate void OAuthProvider(AuthenticationBuilder authenticationBuilder, Action<OAuthOptions> configure);
+    private delegate void ExternalAuthProvider(AuthenticationBuilder authenticationBuilder, Action<object> configure);
 
     public static WebApplicationBuilder AddAuthentication(this WebApplicationBuilder builder)
     {
@@ -22,49 +23,76 @@ public static class AuthenticationExtensions
         // the backend.
         authenticationBuilder.AddCookie();
 
-        // This is the cookie that will store the user information from the social login provider
-        authenticationBuilder.AddCookie(AuthConstants.SocialScheme);
+        // This is the cookie that will store the user information from the external login provider
+        authenticationBuilder.AddCookie(AuthConstants.ExternalScheme);
 
-        // Add social auth providers based on configuration
+        // Add external auth providers based on configuration
         //{
         //    "Authentication": {
         //        "Schemes": {
         //            "<scheme>": {
         //                "ClientId": "xxx",
         //                "ClientSecret": "xxxx"
+        //                etc..
         //            }
         //        }
         //    }
         //}
 
-        // These are the list of social providers available to the application.
+        // These are the list of external providers available to the application.
         // Many more are available from https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers
-        var socialProviders = new Dictionary<string, OAuthProvider>
+        var externalProviders = new Dictionary<string, ExternalAuthProvider>
         {
             ["GitHub"] = static (builder, configure) => builder.AddGitHub(configure),
             ["Google"] = static (builder, configure) => builder.AddGoogle(configure),
             ["Microsoft"] = static (builder, configure) => builder.AddMicrosoftAccount(configure),
+            ["Auth0"] = static (builder, configure) =>
+            {
+                builder.AddAuth0WebAppAuthentication(configure);
+                // TODO: Support tokens from auth0 natively
+                // .WithAccessToken(configure);
+            },
         };
 
-        foreach (var (providerName, provider) in socialProviders)
+        foreach (var (providerName, provider) in externalProviders)
         {
             var section = builder.Configuration.GetSection($"Authentication:Schemes:{providerName}");
             if (section.Exists())
             {
                 provider(authenticationBuilder, options =>
                 {
-                    options.ClientId = section[nameof(options.ClientId)]!;
-                    options.ClientSecret = section[nameof(options.ClientSecret)]!;
+                    // Bind this section to the specified options
+                    section.Bind(options);
 
-                    // This will save the information in the cookie
-                    options.SignInScheme = AuthConstants.SocialScheme;
+                    // This will save the information in the external cookie
+                    if (options is RemoteAuthenticationOptions remoteAuthenticationOptions)
+                    {
+                        remoteAuthenticationOptions.SignInScheme = AuthConstants.ExternalScheme;
+                    }
+                    else if (options is Auth0WebAppOptions auth0WebAppOptions)
+                    {
+                        // Skip the cookie handler since we already add it
+                        auth0WebAppOptions.SkipCookieMiddleware = true;
+                        SetAuth0SignInScheme(builder);
+                    }
                 });
             }
         }
 
-        // Add the service that resolves social providers so we can show them in the UI
-        builder.Services.AddSingleton<SocialProviders>();
+        // Add the service that resolves external providers so we can show them in the UI
+        builder.Services.AddSingleton<ExternalProviders>();
 
         return builder;
+
+        static void SetAuth0SignInScheme(WebApplicationBuilder builder)
+        {
+            builder.Services.AddOptions<OpenIdConnectOptions>(Auth0Constants.AuthenticationScheme)
+                .PostConfigure(o =>
+                {
+                    // The Auth0 APIs don't let you set the sign in scheme, it defaults to the default sign in scheme.
+                    // Use named options to configure the underlying OpenIdConnectOptions's sign in scheme instead.
+                    o.SignInScheme = AuthConstants.ExternalScheme;
+                });
+        }
     }
 }

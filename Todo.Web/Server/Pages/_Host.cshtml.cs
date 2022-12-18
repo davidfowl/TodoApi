@@ -4,9 +4,9 @@ namespace Todo.Web.Server.Pages;
 
 public class IndexModel : PageModel
 {
-    private readonly SocialProviders _socialProviders;
+    private readonly ExternalProviders _socialProviders;
 
-    public IndexModel(SocialProviders socialProviders)
+    public IndexModel(ExternalProviders socialProviders)
     {
         _socialProviders = socialProviders;
     }
