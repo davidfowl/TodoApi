@@ -152,10 +152,79 @@ Authentication__Schemes__<scheme>__ClientId=xxx
 Authentication__Schemes__<scheme>__ClientSecret=xxx
 ```
 
+Or using user secrets:
+
+```
+dotnet user-secrets set Authentication:Schemes:<scheme>:ClientId xxx
+dotnet user-secrets set Authentication:Schemes:<scheme>:ClientSecret xxx
+```
+
 Other providers can be found [here](https://github.com/aspnet-contrib/AspNet.Security.OAuth.Providers#providers). 
 These must be added to [AuthenticationExtensions](Todo.Web/Server/Authentication/AuthenticationExtensions.cs) as well.
 
 **NOTE: Don't store client secrets in configuration!**
+
+### External Authentication servers
+
+Much like social authentication, this application also supports external [Open ID connect (OIDC) servers](https://en.wikipedia.org/wiki/OpenID). External authentication
+is treated like social authentication provider but that also produce access tokens that can be used with the [TodoAPI](TodoAPI). This
+needs to be configured like a social provider in the [Todo.Web.Server](Todo.Web/Server) application and an additional authentication scheme
+needs to be configured in the [TodoAPI](TodoAPI) to accept JWT tokens issued by the auth server.
+
+Here's what the flow looks like:
+
+![image](https://user-images.githubusercontent.com/95136/208310479-808ea1ed-db48-49d1-b466-3ba33a08bcbc.png)
+
+Here's how you would configure authentication:
+
+```JSON
+{
+  "Authentication": {
+    "Schemes": {
+      "<scheme>": {
+      }
+    }
+  }
+}
+```
+
+**NOTE: Don't store client secrets in configuration!**
+
+#### Auth0
+
+This sample has **Auth0** configured as an OIDC server. It can be configured with the following schema:
+
+```JSON
+{
+  "Authentication": {
+    "Schemes": {
+      "Auth0": {
+        "Audience": "<audience>",
+        "Domain": "<domain>",
+        "ClientId": "<client id>",
+        "ClientSecret": "<client secret>"
+      }
+    }
+  }
+}
+```
+
+Here's an example of configuring the [TodoAPI](TodoAPI):
+
+```JSON
+{
+  "Authentication": {
+    "Schemes": {
+      "Auth0": {
+        "ValidAudiences": [ "<your audience here>" ],
+        "Authority": "<your authority here>"
+      }
+    }
+  }
+}
+```
+
+Learn more about the Auth0 .NET SDK [here](https://github.com/auth0/auth0-aspnetcore-authentication).
 
 ### OpenTelemetry
 TodoApi uses OpenTelemetry to collect logs, metrics and spans.

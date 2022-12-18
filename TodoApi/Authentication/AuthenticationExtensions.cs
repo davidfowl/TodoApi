@@ -31,6 +31,17 @@ public static class AuthenticationExtensions
 
         if (section.Exists())
         {
+            // This is what the auth0 configuration looks like:
+            //{
+            //    "Authentication": {
+            //        "Schemes": {
+            //            "Auth0": {
+            //                "ValidAudiences": [ "<your audience here>" ],
+            //                "Authority": "<your authority here>"
+            //            }
+            //        }
+            //    }
+            //}
             authenticationBuilder.AddJwtBearer("Auth0", options =>
             {
                 options.Events = new()
@@ -40,7 +51,7 @@ public static class AuthenticationExtensions
                         if (context.Principal?.Identity is ClaimsIdentity identity)
                         {
                             // Add this claim in memory so that we can look up the user by provider name
-                            identity.AddClaim(new("scheme", "Auth0"));
+                            identity.AddClaim(new("provider", "Auth0"));
                         }
 
                         return Task.CompletedTask;
