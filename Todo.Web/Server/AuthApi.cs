@@ -12,7 +12,7 @@ public static class AuthApi
 
         group.MapPost("register", async (UserInfo userInfo, TodoClient client) =>
         {
-            // Retrieve the access token give the user info
+            // Retrieve the access token given the user info
             var token = await client.CreateUserAsync(userInfo);
 
             if (token is null)
