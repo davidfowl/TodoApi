@@ -275,7 +275,6 @@ Here are some examples about how to configure Seq to work with the [Seq sink](ht
     ...
     "WriteTo": [
         ...
-        // REF: 
         {
             "Name": "Seq",
             "Args": {
@@ -308,7 +307,6 @@ Here are some examples about how to configure Elasticsearch and Kibana to work w
 "Serilog": {
     "Using": [ "Serilog.Sinks.Seq" ],
     ...
-    // Available Sinks (aka. Destinations to recieve logging data): 
     "WriteTo": [
         ...
         {
