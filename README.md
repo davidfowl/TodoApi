@@ -253,47 +253,90 @@ docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e COLLECTOR_OTL
 
 ### Logs
 
-This app using `structured logging` and for this purpose we use [Serilog](https://github.com/serilog/serilog-aspnetcore)
+This app uses `structured logging` and for this purpose we use [Serilog](https://github.com/serilog/serilog-aspnetcore)
 
-For setting up Serilog you should call `AddSerilog` on [SerilogExtensions](TodoApi/Extensions/SerilogExtensions.cs) class and Add `Serilog` section with appropriate [Options](TodoApi/Extensions/SerilogExtensions.cs#L95)
+All the settings can be handled via configuration sources, like the `appsettings.json` files or environment variables like Azure App Settings 'Configuration Settings'.
 
-```json
-  "Serilog": {
-    "MinimumLevel": {
-      "Default": "Information",
-      "Override": {
-        "Microsoft": "Warning",
-        "Microsoft.Hosting.Lifetime": "Information"
-      }
-    }
-  }
-```
+For collecting and searching logs, Serilog requires "sinks" (which is their terminology for a log-destination). They have a [comprehensive list of available sinks](https://github.com/serilog/serilog/wiki/Provided-Sinks) like Seq, DataDog, NewRelic, Application Insights, Rolling Log files plus heaps more.
 
-For collecting and searching logs there are 2 `optional` way, based on `your needs` in the production environment: 
-- Seq (Not Free in commercial use)
+By default, the Console "Sink" has already been added - which means all logging is sent to your Console.
+
+Some suggestions you might be interested in are:
+- Seq (Free for development or an individual. Not free for 2+ people)
 - Elasticsearch and Kibana (Free)
 
 #### Seq
-For using seq, we should enable it with setting `SeqUrl` value in the `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
+Here are some examples about how to configure Seq to work with the [Seq sink](https://github.com/datalust/serilog-sinks-seq) depending on the configuration source you wish to use:
 
+📝 **`appsettings.json` Configuration source**
 ``` json
-  "Serilog": {
-     ...
-    "SeqUrl": "http://localhost:5341",
-     ...
-  },
+"Serilog": {
+    "Using": [ "Serilog.Sinks.Seq" ],
+    ...
+    "WriteTo": [
+        ...
+        // REF: 
+        {
+            "Name": "Seq",
+            "Args": {
+                "serverUrl": "http://localhost:8081",
+                "restrictedToMinimumLevel": "Information"
+            }
+        }
+    ]
+}
 ```
-Also we should run [seq server](docker-compose.yml#47) on docker-compose file, now seq is available on [http://localhost:8081](http://localhost:8081) and we can see logs out there.
+
+📝 **Environmental variables configuration source**
+
+NOTE: `WriteTo:2` == the 2nd array-item in the `WriteTo` array list. The first item might be the Console, if you still want to have that. Just change the number `2` to whatever sink number this is, in your list of sinks.
+
+```
+"Serilog:Using:1" : "Serilog.Sinks.Seq"
+"Serilog:WriteTo:2:Name" : "Seq"
+"Serilog:WriteTo:2:Args:serverUrl" : "http://localhost:8081"
+"Serilog:WriteTo:2:Args:restrictedToMinimumLevel" : "Information"
+```
+
+Lastly you should run [Seq server](docker-compose.yml#47) from the docker-compose file. Seq is available on [http://localhost:8081](http://localhost:8081) and you can see logs output there.
 
 #### Elasticsearch and Kibana
-For using elasticsearch and kibana, we should enable it with setting `ElasticSearchUrl` value in the `Serilog` section of [appsettings.json](TodoApi/appsettings.json):
+Here are some examples about how to configure Elasticsearch and Kibana to work with the [Serilog Elasticsearch sink](https://github.com/serilog-contrib/serilog-sinks-elasticsearch) depending on the configuration source you wish to use:
 
-```json
-  "Serilog": {
-     ...
-    "ElasticSearchUrl": "http://localhost:9200",
-     ...
-  }
+📝 **`appsettings.json` Configuration source**
+``` json
+"Serilog": {
+    "Using": [ "Serilog.Sinks.Seq" ],
+    ...
+    // Available Sinks (aka. Destinations to recieve logging data): 
+    "WriteTo": [
+        ...
+        {
+            "Name": "Elasticsearch",
+            "Args": {
+                "NodeUris": "http://localhost:9200",
+                "AutoRegisterTemplate": "true",
+                "AutoRegisterTemplateVersion": "ESv7",
+                "IndexFormat": "todoapi",
+                "TypeName": null
+            }
+        }
+    ]
+}
 ```
-Also we should run [Elasticsearch](docker-compose.yml#84) and [Kibana](docker-compose.yml#104) on docker-compose file, now we can see our logs on kibana url [http://localhost:5601](http://localhost:5601) and 
+
+📝 **Environmental variables configuration source**
+
+NOTE: `WriteTo:2` == see above for info about what this is and how to change it.
+
+```
+"Serilog:Using:1" : "Serilog.Sinks.Elasticsearch"
+"Serilog:WriteTo:2:Name" : "Elasticsearch"
+"Serilog:WriteTo:2:Args:NodeUris" : "http://localhost:9200"
+"Serilog:WriteTo:2:Args:AutoRegisterTemplate" : "ESv7"
+"Serilog:WriteTo:2:Args:IndexFormat" : "todoapi"
+"Serilog:WriteTo:2:Args:TypeName" : null
+```
+
+Lastly you should run [Elasticsearch](docker-compose.yml#84) and [Kibana](docker-compose.yml#104) from the docker-compose file. Kibana exposes the log info on [http://localhost:5601](http://localhost:5601) and and 
 index name `todoapi`.
