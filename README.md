@@ -305,7 +305,7 @@ Here are some examples about how to configure Elasticsearch and Kibana to work w
 📝 **`appsettings.json` Configuration source**
 ``` json
 "Serilog": {
-    "Using": [ "Serilog.Sinks.Seq" ],
+    "Using": [ "Serilog.Sinks.Elasticsearch" ],
     ...
     "WriteTo": [
         ...
