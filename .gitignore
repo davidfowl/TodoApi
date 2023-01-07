@@ -298,3 +298,4 @@ __pycache__/
 *.db-shm
 *.db-wal
 /.tye
+/.elastic-data
