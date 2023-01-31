@@ -6,7 +6,16 @@ This is a Todo application that features:
 - [**Todo.Web**](Todo.Web) - An ASP.NET Core hosted Blazor WASM front end application
 - [**TodoApi**](TodoApi) - An ASP.NET Core REST API backend using minimal APIs
 
-![image](https://user-images.githubusercontent.com/95136/204161352-bc54ccb7-32cf-49ba-a6f7-f46d0f2d204f.png)
+```mermaid
+graph LR
+    Frontend[Frontend<br/>Blazor WASM]
+    BackendForFrontend[Backend for Frontend<br/>ASP.NET Core]
+    Backend[Backend<br/>ASP.NET Core]
+    Database[SQLite]
+    Frontend --> |HTTP <br/> Cookies| BackendForFrontend
+    BackendForFrontend --> |HTTP<br/>JWS| Backend
+    Backend --> Database
+```
 
 It showcases:
 - Blazor WebAssembly
@@ -173,7 +182,21 @@ needs to be configured in the [TodoAPI](TodoAPI) to accept JWT tokens issued by 
 
 Here's what the flow looks like:
 
-![image](https://user-images.githubusercontent.com/95136/208310479-808ea1ed-db48-49d1-b466-3ba33a08bcbc.png)
+```mermaid
+graph TD
+    Frontend
+    BackendForFrontend[Backend for<br/>Frontend]
+    Backend
+    Database
+    ExternalOidcServer[External OIDC<br/>Server]
+    Frontend --> |Cookies| BackendForFrontend
+    BackendForFrontend --> |JWT| Backend
+    Backend --> |Validate JWT| ExternalOidcServer
+    Backend --> Database
+    ExternalOidcServer --> Database
+    BackendForFrontend --> |Authorization Code<br/>Flow With PKCE| ExternalOidcServer
+    ExternalOidcServer --> |Issue JWT Token| BackendForFrontend
+```
 
 Here's how you would configure authentication:
 
