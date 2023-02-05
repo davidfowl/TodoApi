@@ -29,7 +29,7 @@ public static class OpenTelemetryExtensions
             builder.Logging.AddOpenTelemetry(logging =>
             {
                 logging.SetResourceBuilder(resourceBuilder)
-                    .AddOtlpExporter();
+                       .AddOtlpExporter();
             });
         }
 
@@ -37,35 +37,34 @@ public static class OpenTelemetryExtensions
             .WithMetrics(metrics =>
             {
                 metrics.SetResourceBuilder(resourceBuilder)
-                    .AddPrometheusExporter()
-                    .AddAspNetCoreInstrumentation()
-                    .AddRuntimeInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddEventCountersInstrumentation(c =>
-                    {
-                        // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
-                        c.AddEventSources(
-                            "Microsoft.AspNetCore.Hosting",
-                            "Microsoft-AspNetCore-Server-Kestrel",
-                            "System.Net.Http",
-                            "System.Net.Sockets",
-                            "System.Net.NameResolution",
-                            "System.Net.Security");
-
-                    });
-            }).WithTracing(tracing =>
+                       .AddPrometheusExporter()
+                       .AddAspNetCoreInstrumentation()
+                       .AddRuntimeInstrumentation()
+                       .AddHttpClientInstrumentation()
+                       .AddEventCountersInstrumentation(c =>
+                       {
+                           // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
+                           c.AddEventSources(
+                               "Microsoft.AspNetCore.Hosting",
+                               "Microsoft-AspNetCore-Server-Kestrel",
+                               "System.Net.Http",
+                               "System.Net.Sockets",
+                               "System.Net.NameResolution",
+                               "System.Net.Security");
+                       });
+            })
+            .WithTracing(tracing =>
             {
                 tracing.SetResourceBuilder(resourceBuilder)
-                    .AddAspNetCoreInstrumentation()
-                    .AddHttpClientInstrumentation()
-                    .AddEntityFrameworkCoreInstrumentation();
+                       .AddAspNetCoreInstrumentation()
+                       .AddHttpClientInstrumentation()
+                       .AddEntityFrameworkCoreInstrumentation();
 
                 if (!string.IsNullOrWhiteSpace(otlpEndpoint))
                 {
                     tracing.AddOtlpExporter();
 
                 }
-
             });
 
         return builder;
