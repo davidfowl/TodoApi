@@ -1,4 +1,5 @@
-﻿using OpenTelemetry.Logs;
+﻿using OpenTelemetry;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -32,38 +33,40 @@ public static class OpenTelemetryExtensions
             });
         }
 
-        builder.Services.AddOpenTelemetryMetrics(metrics =>
-        {
-            metrics.SetResourceBuilder(resourceBuilder)
-                   .AddPrometheusExporter()
-                   .AddAspNetCoreInstrumentation()
-                   .AddRuntimeInstrumentation()
-                   .AddHttpClientInstrumentation()
-                   .AddEventCountersInstrumentation(c =>
-                   {
-                       // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
-                       c.AddEventSources(
-                           "Microsoft.AspNetCore.Hosting",
-                           "Microsoft-AspNetCore-Server-Kestrel",
-                           "System.Net.Http",
-                           "System.Net.Sockets",
-                           "System.Net.NameResolution",
-                           "System.Net.Security");
-                   });
-        });
-
-        builder.Services.AddOpenTelemetryTracing(tracing =>
-        {
-            tracing.SetResourceBuilder(resourceBuilder)
-                   .AddAspNetCoreInstrumentation()
-                   .AddHttpClientInstrumentation()
-                   .AddEntityFrameworkCoreInstrumentation();
-
-            if (!string.IsNullOrWhiteSpace(otlpEndpoint))
+        builder.Services.AddOpenTelemetry()
+            .WithMetrics(metrics =>
             {
-                tracing.AddOtlpExporter();
-            }
-        });
+                metrics.SetResourceBuilder(resourceBuilder)
+                    .AddPrometheusExporter()
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEventCountersInstrumentation(c =>
+                    {
+                        // https://learn.microsoft.com/en-us/dotnet/core/diagnostics/available-counters
+                        c.AddEventSources(
+                            "Microsoft.AspNetCore.Hosting",
+                            "Microsoft-AspNetCore-Server-Kestrel",
+                            "System.Net.Http",
+                            "System.Net.Sockets",
+                            "System.Net.NameResolution",
+                            "System.Net.Security");
+
+                    });
+            }).WithTracing(tracing =>
+            {
+                tracing.SetResourceBuilder(resourceBuilder)
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddEntityFrameworkCoreInstrumentation();
+
+                if (!string.IsNullOrWhiteSpace(otlpEndpoint))
+                {
+                    tracing.AddOtlpExporter();
+
+                }
+
+            });
 
         return builder;
     }
