@@ -40,13 +40,11 @@ public static class AuthApi
         {
             await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
-            // TODO: Support remote logout
-            // If this is an external login then use it
-            //var result = await context.AuthenticateAsync();
-            //if (result.Properties?.GetExternalProvider() is string providerName)
-            //{
-            //    await context.SignOutAsync(providerName, new() { RedirectUri = "/" });
-            //}
+            var result = await context.AuthenticateAsync();
+            if (result.Properties?.GetExternalProvider() is not null)
+            {
+                await context.SignOutAsync(AuthConstants.ExternalScheme, new() { RedirectUri = "/" });
+            }
         })
         .RequireAuthorization();
 
