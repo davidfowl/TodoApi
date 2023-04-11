@@ -28,7 +28,8 @@ public static class OpenApiExtensions
                 {
                     [scheme] = new List<string>()
                 }
-            }
+            },
+            RequestBody = operation.RequestBody
         });
     }
 
