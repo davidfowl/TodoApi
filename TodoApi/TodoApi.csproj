@@ -14,6 +14,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0" />
     <PackageReference Include="Microsoft.NET.Build.Containers" Version="0.2.7" />
+    <PackageReference Include="Microsoft.OpenApi" Version="1.6.4-preview2" />
     <PackageReference Include="MiniValidation" Version="0.6.0-pre.20220527.55" />
     <PackageReference Include="Serilog.AspNetCore" Version="6.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
