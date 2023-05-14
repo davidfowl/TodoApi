@@ -10,7 +10,7 @@ public static class AuthApi
     {
         var group = routes.MapGroup("/auth");
 
-        group.MapPost("register", async (UserInfo userInfo, TodoClient client) =>
+        group.MapPost("register", async (UserInfo userInfo, AuthClient client) =>
         {
             // Retrieve the access token given the user info
             var token = await client.CreateUserAsync(userInfo);
@@ -23,7 +23,7 @@ public static class AuthApi
             return SignIn(userInfo, token);
         });
 
-        group.MapPost("login", async (UserInfo userInfo, TodoClient client) =>
+        group.MapPost("login", async (UserInfo userInfo, AuthClient client) =>
         {
             // Retrieve the access token give the user info
             var token = await client.GetTokenAsync(userInfo);
@@ -60,7 +60,7 @@ public static class AuthApi
                 authenticationSchemes: new[] { provider });
         });
 
-        group.MapGet("signin/{provider}", async (string provider, TodoClient client, HttpContext context) =>
+        group.MapGet("signin/{provider}", async (string provider, AuthClient client, HttpContext context) =>
         {
             // Grab the login information from the external login dance
             var result = await context.AuthenticateAsync(AuthConstants.ExternalScheme);

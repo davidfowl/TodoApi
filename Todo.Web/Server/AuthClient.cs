@@ -1,10 +1,10 @@
 ﻿namespace Todo.Web.Server;
 
-public class TodoClient
+public class AuthClient
 {
     private readonly HttpClient _client;
 
-    public TodoClient(HttpClient client)
+    public AuthClient(HttpClient client)
     {
         _client = client;
     }
