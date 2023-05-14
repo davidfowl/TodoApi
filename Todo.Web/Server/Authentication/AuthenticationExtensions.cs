@@ -99,26 +99,10 @@ public static class AuthenticationExtensions
     }
 
     private static readonly string ExternalProviderKey = "ExternalProviderName";
-    private static readonly string HasExternalTokenKey = "ExternalToken";
 
     public static string? GetExternalProvider(this AuthenticationProperties properties) =>
         properties.GetString(ExternalProviderKey);
 
     public static void SetExternalProvider(this AuthenticationProperties properties, string providerName) =>
         properties.SetString(ExternalProviderKey, providerName);
-
-    public static bool HasExternalToken(this AuthenticationProperties properties) =>
-        properties.GetString(HasExternalTokenKey) is not null;
-
-    public static void SetHasExternalToken(this AuthenticationProperties properties, bool hasToken)
-    {
-        if (hasToken)
-        {
-            properties.SetString(HasExternalTokenKey, "1");
-        }
-        else
-        {
-            properties.Items.Remove(HasExternalTokenKey);
-        }
-    }
 }

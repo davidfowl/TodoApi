@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Yarp.ReverseProxy.Forwarder;
+using Yarp.ReverseProxy.Transforms;
+using Yarp.ReverseProxy.Transforms.Builder;
 
 namespace Todo.Web.Server;
 
@@ -11,32 +13,19 @@ public static class TodoApi
 
         group.RequireAuthorization();
 
-        var transform = static async ValueTask (HttpContext context, HttpRequestMessage req) =>
+
+        var transformBuilder = routes.ServiceProvider.GetRequiredService<ITransformBuilder>();
+        var transform = transformBuilder.Create(b =>
         {
-            var result = await context.AuthenticateAsync();
-
-            var properties = result.Properties!;
-
-            var accessToken = properties.GetTokenValue(TokenNames.AccessToken);
-            req.Headers.Authorization = new("Bearer", accessToken);
-
-            if (properties.HasExternalToken() && properties.GetExternalProvider() is string externalProvider)
+            b.AddRequestTransform(async c =>
             {
-                // Set the external provider name as the scheme so we can do auth
-                // on the backend with the right configuration
-                req.Headers.TryAddWithoutValidation("X-Auth-Scheme", externalProvider);
-            }
-        };
+                var accessToken = await c.HttpContext.GetTokenAsync(TokenNames.AccessToken);
 
-        // Use this HttpClient for all proxied requests
-        var client = new HttpMessageInvoker(new SocketsHttpHandler());
-
-        group.Map("{*path}", async (IHttpForwarder forwarder, HttpContext context) =>
-        {
-            await forwarder.SendAsync(context, todoUrl, client, transform);
-
-            return Results.Empty;
+                c.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
+            });
         });
+
+        group.MapForwarder("{*path}", todoUrl, new ForwarderRequestConfig(), transform);
 
         return group;
     }

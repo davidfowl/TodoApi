@@ -80,7 +80,7 @@ public static class AuthApi
                 if (token is not null)
                 {
                     // Write the login cookie
-                    await SignIn(id, name, token, provider, result.Properties.GetTokens()).ExecuteAsync(context);
+                    await SignIn(id, name, token, provider).ExecuteAsync(context);
                 }
             }
 
@@ -97,10 +97,10 @@ public static class AuthApi
 
     private static IResult SignIn(UserInfo userInfo, string token)
     {
-        return SignIn(userInfo.Username, userInfo.Username, token, providerName: null, authTokens: Enumerable.Empty<AuthenticationToken>());
+        return SignIn(userInfo.Username, userInfo.Username, token, providerName: null);
     }
 
-    private static IResult SignIn(string userId, string userName, string token, string? providerName, IEnumerable<AuthenticationToken> authTokens)
+    private static IResult SignIn(string userId, string userName, string token, string? providerName)
     {
         var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
         identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
@@ -114,12 +114,7 @@ public static class AuthApi
             properties.SetExternalProvider(providerName);
         }
 
-        if (authTokens.Any())
-        {
-            properties.SetHasExternalToken(true);
-        }
-
-        var tokens = authTokens.Any() ? authTokens : new[]
+        var tokens = new[]
         {
             new AuthenticationToken { Name = TokenNames.AccessToken, Value = token }
         };

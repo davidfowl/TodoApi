@@ -30,15 +30,11 @@ public static class CurrentUserExtensions
             // to set the current user without adding custom middleware.
             _currentUser.Principal = principal;
 
-            var loginProvider = principal.FindFirstValue("provider");
-
             if (principal.FindFirstValue(ClaimTypes.NameIdentifier) is { Length: > 0 } name)
             {
                 // Resolve the user manager and see if the current user is a valid user in the database
                 // we do this once and store it on the current user.
-                _currentUser.User = loginProvider is null
-                    ? await _userManager.FindByNameAsync(name)
-                    : await _userManager.FindByLoginAsync(loginProvider, name);
+                _currentUser.User = await _userManager.FindByNameAsync(name);
             }
 
             return principal;
