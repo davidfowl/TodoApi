@@ -1,5 +1,3 @@
-using Swashbuckle.AspNetCore.SwaggerGen;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure auth
