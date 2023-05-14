@@ -13,7 +13,6 @@ public static class TodoApi
 
         group.RequireAuthorization();
 
-
         var transformBuilder = routes.ServiceProvider.GetRequiredService<ITransformBuilder>();
         var transform = transformBuilder.Create(b =>
         {
