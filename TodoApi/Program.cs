@@ -22,8 +22,7 @@ builder.Services.AddCurrentUser();
 
 // Configure Open API
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.Configure<SwaggerGeneratorOptions>(o => o.InferSecuritySchemes = true);
+builder.Services.AddSwaggerGen(o => o.InferSecuritySchemes());
 
 // Configure rate limiting
 builder.Services.AddRateLimiting();
