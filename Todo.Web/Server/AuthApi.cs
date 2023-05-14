@@ -63,7 +63,7 @@ public static class AuthApi
         group.MapGet("signin/{provider}", async (string provider, AuthClient client, HttpContext context) =>
         {
             // Grab the login information from the external login dance
-            var result = await context.AuthenticateAsync(AuthConstants.ExternalScheme);
+            var result = await context.AuthenticateAsync(AuthenticatonSchemes.ExternalScheme);
 
             if (result.Succeeded)
             {
@@ -85,7 +85,7 @@ public static class AuthApi
             }
 
             // Delete the external cookie
-            await context.SignOutAsync(AuthConstants.ExternalScheme);
+            await context.SignOutAsync(AuthenticatonSchemes.ExternalScheme);
 
             // TODO: Handle the failure somehow
 

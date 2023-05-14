@@ -5,11 +5,6 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Todo.Web.Server;
 
-public class AuthConstants
-{
-    public static string ExternalScheme { get; } = "External";
-}
-
 public static class AuthenticationExtensions
 {
     private delegate void ExternalAuthProvider(AuthenticationBuilder authenticationBuilder, Action<object> configure);
@@ -24,7 +19,7 @@ public static class AuthenticationExtensions
         authenticationBuilder.AddCookie();
 
         // This is the cookie that will store the user information from the external login provider
-        authenticationBuilder.AddCookie(AuthConstants.ExternalScheme);
+        authenticationBuilder.AddCookie(AuthenticatonSchemes.ExternalScheme);
 
         // Add external auth providers based on configuration
         //{
@@ -64,7 +59,7 @@ public static class AuthenticationExtensions
                     // This will save the information in the external cookie
                     if (options is RemoteAuthenticationOptions remoteAuthenticationOptions)
                     {
-                        remoteAuthenticationOptions.SignInScheme = AuthConstants.ExternalScheme;
+                        remoteAuthenticationOptions.SignInScheme = AuthenticatonSchemes.ExternalScheme;
                     }
                     else if (options is Auth0WebAppOptions auth0WebAppOptions)
                     {
@@ -93,7 +88,7 @@ public static class AuthenticationExtensions
                 {
                     // The Auth0 APIs don't let you set the sign in scheme, it defaults to the default sign in scheme.
                     // Use named options to configure the underlying OpenIdConnectOptions's sign in scheme instead.
-                    o.SignInScheme = AuthConstants.ExternalScheme;
+                    o.SignInScheme = AuthenticatonSchemes.ExternalScheme;
                 });
         }
     }
