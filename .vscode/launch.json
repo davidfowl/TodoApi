@@ -1,11 +1,35 @@
 {
     "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "Web and API",
+            "configurations": ["TodoApi", "Todo.Web (Server)"]
+        }
+    ],
     "configurations": [
+        {
+            "name": "Todo.Web (Server)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/Todo.Web/Server/bin/Debug/net7.0/Todo.Web.Server.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Todo.Web/Server",
+            "launchSettingsProfile": "https",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
         {
             // Use IntelliSense to find out which attributes exist for C# debugging
             // Use hover for the description of the existing attributes
             // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-            "name": ".NET Core Launch (web)",
+            "name": "TodoApi",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -19,7 +43,7 @@
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
             },
-            "launchSettingsProfile": "http",
+            "launchSettingsProfile": "https",
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
             }

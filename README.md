@@ -46,7 +46,10 @@ To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [Tod
 
       <img width="591" alt="image" src="https://user-images.githubusercontent.com/95136/204311327-479445c8-4f73-4845-b146-d56be8ceb9ab.png">
 
-   - **Visual Studio Code** - Open up 2 terminal windows, one in [Todo.Web.Server](Todo.Web/Server/) and the other in [TodoApi](TodoApi/) run: 
+   - **Visual Studio Code** - A `compound` launch definition is provided in the `launch.json` file, use the 'Run and Debug' view and select 'Web and API' and start that profile.
+   
+    
+   - **Terminal/CLI** - Open up 2 terminal windows, one in [Todo.Web.Server](Todo.Web/Server/) and the other in [TodoApi](TodoApi/) run: 
    
       ```
       dotnet watch run -lp https
