@@ -48,6 +48,8 @@ To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [Tod
 
    - **Visual Studio Code** - A `compound` launch definition is provided in the `launch.json` file, use the 'Run and Debug' view and select 'Web and API' and start that profile.
    
+      ![image](https://github.com/timheuer/TodoApi/assets/4821/dfa83682-86c4-45ae-965b-fa6f6a6f07a9)
+
     
    - **Terminal/CLI** - Open up 2 terminal windows, one in [Todo.Web.Server](Todo.Web/Server/) and the other in [TodoApi](TodoApi/) run: 
    
