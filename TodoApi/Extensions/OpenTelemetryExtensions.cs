@@ -29,7 +29,7 @@ public static class OpenTelemetryExtensions
             builder.Logging.AddOpenTelemetry(logging =>
             {
                 logging.SetResourceBuilder(resourceBuilder)
-                       .AddOtlpExporter(c => c.Endpoint = new Uri(otlpEndpoint));
+                        .AddOtlpExporter(c => c.Endpoint = new Uri(otlpEndpoint));
             });
         }
 
@@ -55,6 +55,9 @@ public static class OpenTelemetryExtensions
             })
             .WithTracing(tracing =>
             {
+                //we need to use AlwaysSampler to record spans
+                //from Todo.Web.Server, because there it no opentelemetry
+                //instrumentation
                 tracing.SetResourceBuilder(resourceBuilder)
                         .SetSampler(new AlwaysOnSampler())
                        .AddAspNetCoreInstrumentation()
