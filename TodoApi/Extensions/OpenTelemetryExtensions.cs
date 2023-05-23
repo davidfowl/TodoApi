@@ -1,4 +1,4 @@
-﻿using OpenTelemetry;
+﻿         using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -29,7 +29,7 @@ public static class OpenTelemetryExtensions
             builder.Logging.AddOpenTelemetry(logging =>
             {
                 logging.SetResourceBuilder(resourceBuilder)
-                       .AddOtlpExporter();
+                       .AddOtlpExporter(c => c.Endpoint = new Uri(otlpEndpoint));
             });
         }
 
@@ -56,14 +56,14 @@ public static class OpenTelemetryExtensions
             .WithTracing(tracing =>
             {
                 tracing.SetResourceBuilder(resourceBuilder)
+                        .SetSampler(new AlwaysOnSampler())
                        .AddAspNetCoreInstrumentation()
                        .AddHttpClientInstrumentation()
                        .AddEntityFrameworkCoreInstrumentation();
 
                 if (!string.IsNullOrWhiteSpace(otlpEndpoint))
                 {
-                    tracing.AddOtlpExporter();
-
+                    tracing.AddOtlpExporter(c => c.Endpoint = new Uri(otlpEndpoint));
                 }
             })
             .StartWithHost();
