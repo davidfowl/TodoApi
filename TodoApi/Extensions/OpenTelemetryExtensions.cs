@@ -55,11 +55,11 @@ public static class OpenTelemetryExtensions
             })
             .WithTracing(tracing =>
             {
-                //we need to use AlwaysSampler to record spans
-                //from Todo.Web.Server, because there it no opentelemetry
-                //instrumentation
+                // We need to use AlwaysSampler to record spans
+                // from Todo.Web.Server, because there it no OpenTelemetry
+                // instrumentation
                 tracing.SetResourceBuilder(resourceBuilder)
-                        .SetSampler(new AlwaysOnSampler())
+                       .SetSampler(new AlwaysOnSampler())
                        .AddAspNetCoreInstrumentation()
                        .AddHttpClientInstrumentation()
                        .AddEntityFrameworkCoreInstrumentation();
