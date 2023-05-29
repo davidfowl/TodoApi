@@ -29,7 +29,7 @@ public static class OpenTelemetryExtensions
             builder.Logging.AddOpenTelemetry(logging =>
             {
                 logging.SetResourceBuilder(resourceBuilder)
-                        .AddOtlpExporter(c => c.Endpoint = new Uri(otlpEndpoint));
+                        .AddOtlpExporter();
             });
         }
 
@@ -66,7 +66,7 @@ public static class OpenTelemetryExtensions
 
                 if (!string.IsNullOrWhiteSpace(otlpEndpoint))
                 {
-                    tracing.AddOtlpExporter(c => c.Endpoint = new Uri(otlpEndpoint));
+                    tracing.AddOtlpExporter();
                 }
             })
             .StartWithHost();
