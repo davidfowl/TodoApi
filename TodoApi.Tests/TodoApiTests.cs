@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-
 namespace TodoApi.Tests;
 
 public class TodoApiTests

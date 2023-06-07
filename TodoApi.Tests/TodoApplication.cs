@@ -1,15 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
-namespace TodoApi.Tests;
+﻿namespace TodoApi.Tests;
 
 internal class TodoApplication : WebApplicationFactory<Program>
 {

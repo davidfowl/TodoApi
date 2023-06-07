@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace TodoApi.Tests;
+﻿namespace TodoApi.Tests;
 
 public class UserApiTests
 {

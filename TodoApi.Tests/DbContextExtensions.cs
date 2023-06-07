@@ -1,8 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
-namespace TodoApi.Tests;
+﻿namespace TodoApi.Tests;
 
 internal static class DbContextExtensions
 {
