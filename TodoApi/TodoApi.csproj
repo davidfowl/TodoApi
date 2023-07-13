@@ -12,7 +12,6 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
-    <PackageReference Include="Microsoft.NET.Build.Containers" />
     <PackageReference Include="Microsoft.OpenApi" />
     <PackageReference Include="MiniValidation" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
