@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
 namespace TodoApi;
@@ -25,7 +27,7 @@ public static class UsersApi
             return TypedResults.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
         });
 
-        group.MapPost("/token", async Task<Results<BadRequest, Ok<AuthToken>>> (UserInfo userInfo, UserManager<TodoUser> userManager, ITokenService tokenService) =>
+        group.MapPost("/token", async Task<Results<BadRequest, SignInHttpResult>> (UserInfo userInfo, UserManager<TodoUser> userManager) =>
         {
             var user = await userManager.FindByNameAsync(userInfo.Username);
 
@@ -34,10 +36,12 @@ public static class UsersApi
                 return TypedResults.BadRequest();
             }
 
-            return TypedResults.Ok(new AuthToken(tokenService.GenerateToken(user.UserName!)));
+            ClaimsPrincipal principal = CreateClaimsPrincipal(user);
+
+            return TypedResults.SignIn(principal, authenticationScheme: BearerTokenDefaults.AuthenticationScheme);
         });
 
-        group.MapPost("/token/{provider}", async Task<Results<Ok<AuthToken>, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, ITokenService tokenService) =>
+        group.MapPost("/token/{provider}", async Task<Results<SignInHttpResult, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager) =>
         {
             var user = await userManager.FindByLoginAsync(provider, userInfo.ProviderKey);
 
@@ -57,12 +61,22 @@ public static class UsersApi
 
             if (result.Succeeded)
             {
-                return TypedResults.Ok(new AuthToken(tokenService.GenerateToken(user.UserName!)));
+                ClaimsPrincipal principal = CreateClaimsPrincipal(user);
+
+                return TypedResults.SignIn(principal, authenticationScheme: BearerTokenDefaults.AuthenticationScheme);
             }
 
             return TypedResults.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
         });
 
         return group;
+    }
+
+    private static ClaimsPrincipal CreateClaimsPrincipal(TodoUser user)
+    {
+        return new ClaimsPrincipal(
+            new ClaimsIdentity(new[] {
+                new Claim(ClaimTypes.NameIdentifier, user.UserName!) }, 
+                BearerTokenDefaults.AuthenticationScheme));
     }
 }

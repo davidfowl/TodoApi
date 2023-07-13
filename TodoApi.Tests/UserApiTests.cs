@@ -1,4 +1,6 @@
-﻿namespace TodoApi.Tests;
+﻿using System.Text.Json.Serialization;
+
+namespace TodoApi.Tests;
 
 public class UserApiTests
 {
@@ -119,7 +121,7 @@ public class UserApiTests
 
         var token = await response.Content.ReadFromJsonAsync<AuthToken>();
 
-        Assert.NotNull(token);
+        Assert.NotNull(token?.Token);
 
         // Check that the token is indeed valid
 
@@ -147,5 +149,11 @@ public class UserApiTests
         var response = await client.PostAsJsonAsync("/users/token", new UserInfo { Username = "todouser", Password = "prd1" });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    class AuthToken
+    {
+        [JsonPropertyName("access_token")]
+        public string? Token { get; set; }
     }
 }

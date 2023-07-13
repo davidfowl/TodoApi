@@ -1,4 +1,6 @@
-﻿namespace TodoApi.Tests;
+﻿using Microsoft.AspNetCore.DataProtection;
+
+namespace TodoApi.Tests;
 
 internal class TodoApplication : WebApplicationFactory<Program>
 {
@@ -25,7 +27,7 @@ internal class TodoApplication : WebApplicationFactory<Program>
         return CreateDefaultClient(new AuthHandler(req =>
         {
             var token = CreateToken(id, isAdmin);
-            req.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }));
     }
 
@@ -52,21 +54,10 @@ internal class TodoApplication : WebApplicationFactory<Program>
                 o.Password.RequireLowercase = false;
                 o.Password.RequireUppercase = false;
             });
-        });
 
-        // We need to configure signing keys for CI scenarios where
-        // there's no user-jwts tool
-        var keyBytes = new byte[32];
-        RandomNumberGenerator.Fill(keyBytes);
-        var base64Key = Convert.ToBase64String(keyBytes);
-
-        builder.ConfigureAppConfiguration(config =>
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Authentication:Schemes:Bearer:SigningKeys:0:Issuer"] = "dotnet-user-jwts",
-                ["Authentication:Schemes:Bearer:SigningKeys:0:Value"] = base64Key
-            });
+            // Since tests run in parallel, it's possible multiple servers will startup,
+            // we use an ephemeral key provider and repository to avoid filesystem contention issues
+            services.AddSingleton<IDataProtectionProvider, EphemeralDataProtectionProvider>();
         });
 
         return base.CreateHost(builder);
