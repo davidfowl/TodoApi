@@ -1,5 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.Extensions.Options;
@@ -23,24 +22,17 @@ public interface ITokenService
 
 public sealed class TokenService : ITokenService
 {
-    private BearerTokenOptions _options;
+    private readonly BearerTokenOptions _options;
 
     public TokenService(IOptionsMonitor<BearerTokenOptions> options)
     {
         // We're reading the authentication configuration for the Bearer scheme
-        _options = options.Get(BearerTokenDefaults.AuthenticationScheme);
+        _options = options.Get(AuthenticationHelper.BearerTokenScheme);
     }
 
     public string GenerateToken(string username, bool isAdmin = false)
     {
-        var identity = new ClaimsIdentity(BearerTokenDefaults.AuthenticationScheme);
-
-        identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, username));
-
-        if (isAdmin)
-        {
-            identity.AddClaim(new Claim(ClaimTypes.Role, "admin"));
-        }
+        var claimsPrincipal = AuthenticationHelper.CreateClaimsPrincipal(username, isAdmin);
 
         var utcNow = (_options.TimeProvider ?? TimeProvider.System).GetUtcNow();
 
@@ -49,10 +41,10 @@ public sealed class TokenService : ITokenService
             ExpiresUtc = utcNow + _options.BearerTokenExpiration
         };
 
-        var ticket = CreateBearerTicket(new ClaimsPrincipal(identity), properties);
+        var ticket = CreateBearerTicket(claimsPrincipal, properties);
 
         static AuthenticationTicket CreateBearerTicket(ClaimsPrincipal user, AuthenticationProperties properties)
-                => new(user, properties, $"{BearerTokenDefaults.AuthenticationScheme}:AccessToken");
+                => new(user, properties, $"{AuthenticationHelper.BearerTokenScheme}:AccessToken");
 
         return _options.BearerTokenProtector.Protect(ticket);
     }

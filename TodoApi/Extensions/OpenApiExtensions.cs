@@ -1,22 +1,24 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.OpenApi.Models;
 
 namespace TodoApi;
 
 public static class OpenApiExtensions
 {
-    // Adds the JWT security scheme to the Open API description
+    // Adds the security scheme to the Open API description
     public static IEndpointConventionBuilder AddOpenApiSecurityRequirement(this IEndpointConventionBuilder builder)
     {
+        const string schemeName = "Bearer";
+
         var scheme = new OpenApiSecurityScheme()
         {
             Type = SecuritySchemeType.Http,
-            Name = JwtBearerDefaults.AuthenticationScheme,
-            Scheme = JwtBearerDefaults.AuthenticationScheme,
+            Name = schemeName,
+            Scheme = schemeName,
             Reference = new()
             {
                 Type = ReferenceType.SecurityScheme,
-                Id = JwtBearerDefaults.AuthenticationScheme
+                Id = schemeName
             }
         };
 

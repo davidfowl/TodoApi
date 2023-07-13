@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.BearerToken;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
 namespace TodoApi;
@@ -36,9 +34,9 @@ public static class UsersApi
                 return TypedResults.BadRequest();
             }
 
-            ClaimsPrincipal principal = CreateClaimsPrincipal(user);
+            var principal = AuthenticationHelper.CreateClaimsPrincipal(user.UserName!);
 
-            return TypedResults.SignIn(principal, authenticationScheme: BearerTokenDefaults.AuthenticationScheme);
+            return TypedResults.SignIn(principal);
         });
 
         group.MapPost("/token/{provider}", async Task<Results<SignInHttpResult, ValidationProblem, Ok<AccessTokenResponse>>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager) =>
@@ -61,22 +59,14 @@ public static class UsersApi
 
             if (result.Succeeded)
             {
-                ClaimsPrincipal principal = CreateClaimsPrincipal(user);
+                var principal = AuthenticationHelper.CreateClaimsPrincipal(user.UserName!);
 
-                return TypedResults.SignIn(principal, authenticationScheme: BearerTokenDefaults.AuthenticationScheme);
+                return TypedResults.SignIn(principal);
             }
 
             return TypedResults.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
         });
 
         return group;
-    }
-
-    private static ClaimsPrincipal CreateClaimsPrincipal(TodoUser user)
-    {
-        return new ClaimsPrincipal(
-            new ClaimsIdentity(new[] {
-                new Claim(ClaimTypes.NameIdentifier, user.UserName!) }, 
-                BearerTokenDefaults.AuthenticationScheme));
     }
 }
