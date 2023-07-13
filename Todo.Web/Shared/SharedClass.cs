@@ -1,5 +1,6 @@
 /* Shared classes can be referenced by both the Client and Server */
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 public class TodoItem
 {
@@ -27,4 +28,4 @@ public class ExternalUserInfo
     public string ProviderKey { get; set; } = default!;
 }
 
-public record AuthToken(string Token);
+public record AuthToken([property:JsonPropertyName("access_token")]string Token);

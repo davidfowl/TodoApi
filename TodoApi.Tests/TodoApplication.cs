@@ -58,6 +58,8 @@ internal class TodoApplication : WebApplicationFactory<Program>
             // Since tests run in parallel, it's possible multiple servers will startup,
             // we use an ephemeral key provider and repository to avoid filesystem contention issues
             services.AddSingleton<IDataProtectionProvider, EphemeralDataProtectionProvider>();
+
+            services.AddTokenService();
         });
 
         return base.CreateHost(builder);

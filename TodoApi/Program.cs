@@ -4,9 +4,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddAuthentication();
 builder.Services.AddAuthorizationBuilder().AddCurrentUserHandler();
 
-// Add the service to generate JWT tokens
-builder.Services.AddTokenService();
-
 // Configure the database
 var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=.db/Todos.db";
 builder.Services.AddSqlite<TodoDbContext>(connectionString);
