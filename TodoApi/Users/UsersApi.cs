@@ -27,7 +27,7 @@ public static class UsersApi
             return TypedResults.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
         });
 
-        group.MapPost("/token", async Task<Results<BadRequest, SignInHttpResult>> (UserInfo userInfo, UserManager<TodoUser> userManager) =>
+        group.MapPost("/token", async Task<Results<BadRequest, SignInHttpResult, Ok<AccessTokenResponse>>> (UserInfo userInfo, UserManager<TodoUser> userManager) =>
         {
             var user = await userManager.FindByNameAsync(userInfo.Username);
 
@@ -41,7 +41,7 @@ public static class UsersApi
             return TypedResults.SignIn(principal, authenticationScheme: BearerTokenDefaults.AuthenticationScheme);
         });
 
-        group.MapPost("/token/{provider}", async Task<Results<SignInHttpResult, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager) =>
+        group.MapPost("/token/{provider}", async Task<Results<SignInHttpResult, ValidationProblem, Ok<AccessTokenResponse>>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager) =>
         {
             var user = await userManager.FindByLoginAsync(provider, userInfo.ProviderKey);
 
