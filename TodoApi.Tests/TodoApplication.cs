@@ -71,7 +71,7 @@ internal class TodoApplication : WebApplicationFactory<Program>
 
         // Read the user JWTs configuration for testing so unit tests can generate
         // JWT tokens.
-        var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
+        var tokenService = scope.ServiceProvider.GetRequiredService<TokenService>();
 
         return await tokenService.GenerateTokenAsync(id, isAdmin);
     }

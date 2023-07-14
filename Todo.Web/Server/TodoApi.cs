@@ -16,6 +16,7 @@ public static class TodoApi
 
         group.RequireAuthorization();
 
+        // TODO: Remove when new YARP is released, see https://github.com/microsoft/reverse-proxy/issues/2131
         var transformBuilder = routes.ServiceProvider.GetRequiredService<ITransformBuilder>();
         var transform = transformBuilder.Create(b =>
         {

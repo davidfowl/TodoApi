@@ -3,10 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TodoApi;
 
-public class TodoDbContext : IdentityDbContext<TodoUser>
+public class TodoDbContext(DbContextOptions<TodoDbContext> options) : IdentityDbContext<TodoUser>(options)
 {
-    public TodoDbContext(DbContextOptions<TodoDbContext> options) : base(options) { }
-
     public DbSet<Todo> Todos => Set<Todo>();
 
     protected override void OnModelCreating(ModelBuilder builder)

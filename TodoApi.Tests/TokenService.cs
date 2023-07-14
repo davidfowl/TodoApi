@@ -10,18 +10,11 @@ public static class AuthenticationServiceExtensions
     public static IServiceCollection AddTokenService(this IServiceCollection services)
     {
         // Wire up the token service
-        return services.AddScoped<ITokenService, TokenService>();
+        return services.AddScoped<TokenService>();
     }
 }
 
-public interface ITokenService
-{
-    // Generate a token for the specified user name and admin role
-    Task<string> GenerateTokenAsync(string username, bool isAdmin = false);
-}
-
-public sealed class TokenService(SignInManager<TodoUser> signInManager,
-                    IOptionsMonitor<BearerTokenOptions> options) : ITokenService
+public sealed class TokenService(SignInManager<TodoUser> signInManager, IOptionsMonitor<BearerTokenOptions> options)
 {
     private readonly BearerTokenOptions _options = options.Get(IdentityConstants.BearerScheme);
 

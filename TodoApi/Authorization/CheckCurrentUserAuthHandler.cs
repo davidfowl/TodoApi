@@ -21,15 +21,12 @@ public static class AuthorizationHandlerExtensions
 
     // This authorization handler verifies that the user exists even if there's
     // a valid token
-    private class CheckCurrentUserAuthHandler : AuthorizationHandler<CheckCurrentUserRequirement>
+    private class CheckCurrentUserAuthHandler(CurrentUser currentUser) : AuthorizationHandler<CheckCurrentUserRequirement>
     {
-        private readonly CurrentUser _currentUser;
-        public CheckCurrentUserAuthHandler(CurrentUser currentUser) => _currentUser = currentUser;
-
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CheckCurrentUserRequirement requirement)
         {
             // TODO: Check user if the user is locked out as well
-            if (_currentUser.User is not null)
+            if (currentUser.User is not null)
             {
                 context.Succeed(requirement);
             }
