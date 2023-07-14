@@ -27,7 +27,7 @@ public sealed class TokenService : ITokenService
     public TokenService(IOptionsMonitor<BearerTokenOptions> options)
     {
         // We're reading the authentication configuration for the Bearer scheme
-        _options = options.Get(AuthenticationHelper.BearerTokenScheme);
+        _options = options.Get(AuthenticationConstants.BearerTokenScheme);
     }
 
     public string GenerateToken(string username, bool isAdmin = false)
@@ -44,7 +44,7 @@ public sealed class TokenService : ITokenService
         var ticket = CreateBearerTicket(claimsPrincipal, properties);
 
         static AuthenticationTicket CreateBearerTicket(ClaimsPrincipal user, AuthenticationProperties properties)
-                => new(user, properties, $"{AuthenticationHelper.BearerTokenScheme}:AccessToken");
+                => new(user, properties, $"{AuthenticationConstants.BearerTokenScheme}:AccessToken");
 
         return _options.BearerTokenProtector.Protect(ticket);
     }

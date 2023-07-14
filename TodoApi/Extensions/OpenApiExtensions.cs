@@ -11,12 +11,12 @@ public static class OpenApiExtensions
         var scheme = new OpenApiSecurityScheme()
         {
             Type = SecuritySchemeType.Http,
-            Name = AuthenticationHelper.BearerTokenScheme,
-            Scheme = AuthenticationHelper.BearerTokenScheme,
+            Name = AuthenticationConstants.BearerTokenScheme,
+            Scheme = AuthenticationConstants.BearerTokenScheme,
             Reference = new()
             {
                 Type = ReferenceType.SecurityScheme,
-                Id = AuthenticationHelper.BearerTokenScheme
+                Id = AuthenticationConstants.BearerTokenScheme
             }
         };
 
