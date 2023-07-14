@@ -32,7 +32,7 @@ public static class OpenApiExtensions
             {
                 new()
                 {
-                    [BearerScheme] = []
+                    [BearerScheme] = Array.Empty<string>()
                 }
             }
         });
