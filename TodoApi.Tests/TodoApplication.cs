@@ -17,16 +17,16 @@ internal class TodoApplication : WebApplicationFactory<Program>
     {
         using var scope = Services.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TodoUser>>();
-        var newUser = new TodoUser { UserName = username };
+        var newUser = new TodoUser { Id = username, UserName = username };
         var result = await userManager.CreateAsync(newUser, password ?? Guid.NewGuid().ToString());
         Assert.True(result.Succeeded);
     }
 
     public HttpClient CreateClient(string id, bool isAdmin = false)
     {
-        return CreateDefaultClient(new AuthHandler(req =>
+        return CreateDefaultClient(new AuthHandler(async req =>
         {
-            var token = CreateToken(id, isAdmin);
+            var token = await CreateTokenAsync(id, isAdmin);
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }));
     }
@@ -65,13 +65,15 @@ internal class TodoApplication : WebApplicationFactory<Program>
         return base.CreateHost(builder);
     }
 
-    private string CreateToken(string id, bool isAdmin = false)
+    private async Task<string> CreateTokenAsync(string id, bool isAdmin = false)
     {
+        await using var scope = Services.CreateAsyncScope();
+
         // Read the user JWTs configuration for testing so unit tests can generate
         // JWT tokens.
-        var tokenService = Services.GetRequiredService<ITokenService>();
+        var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
 
-        return tokenService.GenerateToken(id, isAdmin);
+        return await tokenService.GenerateTokenAsync(id, isAdmin);
     }
 
     protected override void Dispose(bool disposing)
@@ -80,19 +82,12 @@ internal class TodoApplication : WebApplicationFactory<Program>
         base.Dispose(disposing);
     }
 
-    private sealed class AuthHandler : DelegatingHandler
+    private sealed class AuthHandler(Func<HttpRequestMessage, Task> onRequest) : DelegatingHandler
     {
-        private readonly Action<HttpRequestMessage> _onRequest;
-
-        public AuthHandler(Action<HttpRequestMessage> onRequest)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            _onRequest = onRequest;
-        }
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            _onRequest(request);
-            return base.SendAsync(request, cancellationToken);
+            await onRequest(request);
+            return await base.SendAsync(request, cancellationToken);
         }
     }
 }

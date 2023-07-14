@@ -11,7 +11,7 @@ public class AuthClient
 
     public async Task<string?> GetTokenAsync(UserInfo userInfo)
     {
-        var response = await _client.PostAsJsonAsync("users/token", userInfo);
+        var response = await _client.PostAsJsonAsync("users/login", userInfo);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -25,7 +25,7 @@ public class AuthClient
 
     public async Task<string?> CreateUserAsync(UserInfo userInfo)
     {
-        var response = await _client.PostAsJsonAsync("users", userInfo);
+        var response = await _client.PostAsJsonAsync("users/register", userInfo);
 
         if (!response.IsSuccessStatusCode)
         {

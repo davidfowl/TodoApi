@@ -1,10 +1,12 @@
-﻿namespace TodoApi;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace TodoApi;
 
 public static class AuthenticationExtensions
 {
     public static WebApplicationBuilder AddAuthentication(this WebApplicationBuilder builder)
     {
-        builder.Services.AddAuthentication().AddBearerToken(AuthenticationConstants.BearerTokenScheme);
+        builder.Services.AddAuthentication().AddIdentityBearerToken<TodoUser>();
 
         return builder;
     }

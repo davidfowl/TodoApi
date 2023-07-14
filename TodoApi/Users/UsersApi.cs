@@ -11,35 +11,12 @@ public static class UsersApi
 
         group.WithTags("Users");
 
-        group.WithParameterValidation(typeof(UserInfo), typeof(ExternalUserInfo));
+        group.WithParameterValidation(typeof(ExternalUserInfo));
 
-        group.MapPost("/", async Task<Results<Ok, ValidationProblem>> (UserInfo newUser, UserManager<TodoUser> userManager) =>
-        {
-            var result = await userManager.CreateAsync(new() { UserName = newUser.Username }, newUser.Password);
+        group.MapIdentityApi<TodoUser>();
 
-            if (result.Succeeded)
-            {
-                return TypedResults.Ok();
-            }
-
-            return TypedResults.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
-        });
-
-        group.MapPost("/token", async Task<Results<BadRequest, SignInHttpResult, Ok<AccessTokenResponse>>> (UserInfo userInfo, UserManager<TodoUser> userManager) =>
-        {
-            var user = await userManager.FindByNameAsync(userInfo.Username);
-
-            if (user is null || !await userManager.CheckPasswordAsync(user, userInfo.Password))
-            {
-                return TypedResults.BadRequest();
-            }
-
-            var principal = AuthenticationHelper.CreateClaimsPrincipal(user.UserName!);
-
-            return TypedResults.SignIn(principal);
-        });
-
-        group.MapPost("/token/{provider}", async Task<Results<SignInHttpResult, ValidationProblem, Ok<AccessTokenResponse>>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager) =>
+        // External login
+        group.MapPost("/token/{provider}", async Task<Results<SignInHttpResult, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, IUserClaimsPrincipalFactory<TodoUser> claimsPrincipalFactory) =>
         {
             var user = await userManager.FindByLoginAsync(provider, userInfo.ProviderKey);
 
@@ -59,7 +36,7 @@ public static class UsersApi
 
             if (result.Succeeded)
             {
-                var principal = AuthenticationHelper.CreateClaimsPrincipal(user.UserName!);
+                var principal = await claimsPrincipalFactory.CreateAsync(user);
 
                 return TypedResults.SignIn(principal);
             }

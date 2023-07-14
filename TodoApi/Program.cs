@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Identity;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure auth
@@ -10,7 +12,8 @@ builder.Services.AddSqlite<TodoDbContext>(connectionString);
 
 // Configure identity
 builder.Services.AddIdentityCore<TodoUser>()
-                .AddEntityFrameworkStores<TodoDbContext>();
+                .AddEntityFrameworkStores<TodoDbContext>()
+                .AddApiEndpoints();
 
 // State that represents the current user from the database *and* the request
 builder.Services.AddCurrentUser();

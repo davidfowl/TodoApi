@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.BearerToken;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
 
 namespace TodoApi;
 
@@ -11,12 +10,12 @@ public static class OpenApiExtensions
         var scheme = new OpenApiSecurityScheme()
         {
             Type = SecuritySchemeType.Http,
-            Name = AuthenticationConstants.BearerTokenScheme,
-            Scheme = AuthenticationConstants.BearerTokenScheme,
+            Name = "Bearer",
+            Scheme = "Bearer",
             Reference = new()
             {
                 Type = ReferenceType.SecurityScheme,
-                Id = AuthenticationConstants.BearerTokenScheme
+                Id =  "Bearer",
             }
         };
 
