@@ -32,7 +32,7 @@ public static class OpenApiExtensions
             {
                 new()
                 {
-                    [BearerScheme] = new List<string>()
+                    [BearerScheme] = []
                 }
             }
         });
@@ -46,15 +46,15 @@ public static class OpenApiExtensions
              {
                  Description = "Success",
                  Content =
-                {
-                    ["application/json"] = new OpenApiMediaType
-                    {
-                        Schema = new OpenApiSchema
-                        {
-                            Reference = new OpenApiReference { Type = ReferenceType.Schema, Id = schemaReference }
-                        }
-                    }
-                }
+                 {
+                     ["application/json"] = new OpenApiMediaType
+                     {
+                         Schema = new OpenApiSchema
+                         {
+                             Reference = new OpenApiReference { Type = ReferenceType.Schema, Id = schemaReference }
+                         }
+                     }
+                 }
              };
 
              operation.Responses.Add("200", response);
