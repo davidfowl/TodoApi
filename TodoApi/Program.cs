@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure auth
-builder.AddAuthentication();
+builder.Services.AddAuthentication().AddIdentityBearerToken<TodoUser>();
 builder.Services.AddAuthorizationBuilder().AddCurrentUserHandler();
 
 // Configure the database
