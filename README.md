@@ -15,7 +15,7 @@ It showcases:
 - OpenAPI
 - User management with ASP.NET Core Identity
 - Cookie authentication
-- JWT authentication
+- Bearer authentication
 - Proxying requests from the front end application server using YARP's IHttpForwarder
 - Rate Limiting
 - Writing integration tests for your REST API
@@ -31,14 +31,6 @@ It showcases:
     1. Run `mkdir .db` to create the local database folder.
     1. Run `dotnet ef database update` to create the database.
 1. Learn more about [dotnet-ef](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
-
-### JWT 
-
-1. To initialize the keys for JWT generation, run `dotnet user-jwts` in to [TodoApi](TodoApi) folder:
-
-    ```
-    dotnet user-jwts create
-    ```
 
 ### Running the application
 To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [TodoApi](TodoApi). Below are different ways to run both applications:
@@ -117,13 +109,18 @@ Before executing any requests, you need to create a user and get an auth token.
       "password": "<put a password here>"
     }
     ```
-1. To get a token for the above user run `dotnet user-jwts` to create a JWT token with the same user name specified above e.g:
+1. To get a token for the above user, hit the `/users/token` endpoint with the above user name and password. The response will look like this:
 
+    ```json
+    {
+      "token_type": "Bearer",
+      "access_token": "string",
+      "expires_in": <seconds>,
+      "refresh_token": "string"
+    }
     ```
-    dotnet user-jwts create -n myuser
-    ```
+
 1. You should be able to use this token to make authenticated requests to the todo endpoints.
-1. Learn more about [user-jwts](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/minimal-apis/security?view=aspnetcore-7.0#using-dotnet-user-jwts-to-improve-development-time-testing)
 
 ### Social authentication
 
