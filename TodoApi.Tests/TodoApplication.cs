@@ -24,11 +24,7 @@ internal class TodoApplication : WebApplicationFactory<Program>
 
     public HttpClient CreateClient(string id, bool isAdmin = false)
     {
-        return CreateDefaultClient(new AuthHandler(async req =>
-        {
-            var token = await CreateTokenAsync(id, isAdmin);
-            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }));
+        return CreateDefaultClient(new AuthHandler(Services, id, isAdmin));
     }
 
     protected override IHost CreateHost(IHostBuilder builder)
@@ -65,28 +61,25 @@ internal class TodoApplication : WebApplicationFactory<Program>
         return base.CreateHost(builder);
     }
 
-    private async Task<string> CreateTokenAsync(string id, bool isAdmin = false)
-    {
-        await using var scope = Services.CreateAsyncScope();
-
-        // Read the user JWTs configuration for testing so unit tests can generate
-        // JWT tokens.
-        var tokenService = scope.ServiceProvider.GetRequiredService<TokenService>();
-
-        return await tokenService.GenerateTokenAsync(id, isAdmin);
-    }
-
     protected override void Dispose(bool disposing)
     {
         _sqliteConnection?.Dispose();
         base.Dispose(disposing);
     }
 
-    private sealed class AuthHandler(Func<HttpRequestMessage, Task> onRequest) : DelegatingHandler
+    private sealed class AuthHandler(IServiceProvider services, string id, bool isAdmin) : DelegatingHandler
     {
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            await onRequest(request);
+            await using var scope = services.CreateAsyncScope();
+
+            // Generate tokens
+            var tokenService = scope.ServiceProvider.GetRequiredService<TokenService>();
+
+            var token = await tokenService.GenerateTokenAsync(id, isAdmin);
+
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             return await base.SendAsync(request, cancellationToken);
         }
     }
