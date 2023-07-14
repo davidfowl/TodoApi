@@ -6,21 +6,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAuthentication().AddIdentityBearerToken<TodoUser>();
 builder.Services.AddAuthorizationBuilder().AddCurrentUserHandler();
 
-// Configure the database
-var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=.db/Todos.db";
-builder.Services.AddSqlite<TodoDbContext>(connectionString);
-
 // Configure identity
 builder.Services.AddIdentityCore<TodoUser>()
                 .AddEntityFrameworkStores<TodoDbContext>()
                 .AddApiEndpoints();
+
+// Configure the database
+var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=.db/Todos.db";
+builder.Services.AddSqlite<TodoDbContext>(connectionString);
 
 // State that represents the current user from the database *and* the request
 builder.Services.AddCurrentUser();
 
 // Configure Open API
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(o => o.InferSecuritySchemes());
+builder.Services.AddSwaggerGen(o => o.AddOpenApiSecurity());
 
 // Configure rate limiting
 builder.Services.AddRateLimiting();

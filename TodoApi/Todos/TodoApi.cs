@@ -14,7 +14,7 @@ internal static class TodoApi
         // Add security requirements, all incoming requests to this API *must*
         // be authenticated with a valid user.
         group.RequireAuthorization(pb => pb.RequireCurrentUser())
-             .AddOpenApiSecurityRequirement();
+             .AddOpenApiSecurity();
 
         // Rate limit all of the APIs
         group.RequirePerUserRateLimit();
