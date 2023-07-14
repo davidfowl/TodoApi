@@ -20,23 +20,14 @@ public interface ITokenService
     Task<string> GenerateTokenAsync(string username, bool isAdmin = false);
 }
 
-public sealed class TokenService : ITokenService
+public sealed class TokenService(SignInManager<TodoUser> signInManager,
+                    IOptionsMonitor<BearerTokenOptions> options) : ITokenService
 {
-    private readonly IUserClaimsPrincipalFactory<TodoUser> _claimsPrincipalFactory;
-    private readonly BearerTokenOptions _options;
-
-    public TokenService(IUserClaimsPrincipalFactory<TodoUser> claimsPrincipalFactory, 
-                        IOptionsMonitor<BearerTokenOptions> options)
-    {
-        _claimsPrincipalFactory = claimsPrincipalFactory;
-
-        // We're reading the authentication configuration for the Bearer scheme
-        _options = options.Get(IdentityConstants.BearerScheme);
-    }
+    private readonly BearerTokenOptions _options = options.Get(IdentityConstants.BearerScheme);
 
     public async Task<string> GenerateTokenAsync(string username, bool isAdmin = false)
     {
-        var claimsPrincipal = await _claimsPrincipalFactory.CreateAsync(new TodoUser { Id = username, UserName = username });
+        var claimsPrincipal = await signInManager.CreateUserPrincipalAsync(new TodoUser { Id = username, UserName = username });
 
         if (isAdmin)
         {

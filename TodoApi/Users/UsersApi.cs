@@ -15,8 +15,10 @@ public static class UsersApi
 
         group.MapIdentityApi<TodoUser>();
 
+        // The MapIdentityApi doesn't expose an external login endpoint so we keep this one
+        // also, the identity
         // External login
-        group.MapPost("/token/{provider}", async Task<Results<SignInHttpResult, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, IUserClaimsPrincipalFactory<TodoUser> claimsPrincipalFactory) =>
+        group.MapPost("/token/{provider}", async Task<Results<SignInHttpResult, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, SignInManager<TodoUser> signInManager) =>
         {
             var user = await userManager.FindByLoginAsync(provider, userInfo.ProviderKey);
 
@@ -36,13 +38,16 @@ public static class UsersApi
 
             if (result.Succeeded)
             {
-                var principal = await claimsPrincipalFactory.CreateAsync(user);
+                var principal = await signInManager.CreateUserPrincipalAsync(user);
 
                 return TypedResults.SignIn(principal);
             }
 
             return TypedResults.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
-        });
+        })
+        // Add the open API response for 200 since AccessTokenResponse
+        // is internal and we don't want to duplicate it.
+        .Produces("AccessTokenResponse");
 
         return group;
     }

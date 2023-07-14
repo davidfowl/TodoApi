@@ -31,4 +31,27 @@ public static class OpenApiExtensions
         });
     }
 
+    public static IEndpointConventionBuilder Produces(this IEndpointConventionBuilder builder, string schemaReference)
+    {
+        return builder.WithOpenApi(o =>
+         {
+             var response = new OpenApiResponse
+             {
+                 Description = "Success",
+                 Content =
+                {
+                    ["application/json"] = new OpenApiMediaType
+                    {
+                        Schema = new OpenApiSchema
+                        {
+                            Reference = new OpenApiReference { Type = ReferenceType.Schema, Id = schemaReference }
+                        }
+                    }
+                }
+             };
+
+             o.Responses.Add("200", response);
+             return new(o);
+         });
+    }
 }
