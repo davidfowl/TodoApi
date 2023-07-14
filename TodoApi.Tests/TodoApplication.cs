@@ -55,7 +55,7 @@ internal class TodoApplication : WebApplicationFactory<Program>
             // we use an ephemeral key provider and repository to avoid filesystem contention issues
             services.AddSingleton<IDataProtectionProvider, EphemeralDataProtectionProvider>();
 
-            services.AddTokenService();
+            services.AddScoped<TokenService>();
         });
 
         return base.CreateHost(builder);

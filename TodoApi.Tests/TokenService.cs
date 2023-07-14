@@ -5,15 +5,6 @@ using Microsoft.Extensions.Options;
 
 namespace TodoApi;
 
-public static class AuthenticationServiceExtensions
-{
-    public static IServiceCollection AddTokenService(this IServiceCollection services)
-    {
-        // Wire up the token service
-        return services.AddScoped<TokenService>();
-    }
-}
-
 public sealed class TokenService(SignInManager<TodoUser> signInManager, IOptionsMonitor<BearerTokenOptions> options)
 {
     private readonly BearerTokenOptions _options = options.Get(IdentityConstants.BearerScheme);
@@ -27,17 +18,18 @@ public sealed class TokenService(SignInManager<TodoUser> signInManager, IOptions
             ((ClaimsIdentity?)claimsPrincipal.Identity)?.AddClaim(new(ClaimTypes.Role, "admin"));
         }
 
-        var utcNow = (_options.TimeProvider ?? TimeProvider.System).GetUtcNow();
+        // This is copied from https://github.com/dotnet/aspnetcore/blob/238dabc8bf7a6d9485d420db01d7942044b218ee/src/Security/Authentication/BearerToken/src/BearerTokenHandler.cs#L66
+        var timeProvider = _options.TimeProvider ?? TimeProvider.System;
+
+        var utcNow = timeProvider.GetUtcNow();
 
         var properties = new AuthenticationProperties
         {
             ExpiresUtc = utcNow + _options.BearerTokenExpiration
         };
 
-        var ticket = CreateBearerTicket(claimsPrincipal, properties);
-
-        static AuthenticationTicket CreateBearerTicket(ClaimsPrincipal user, AuthenticationProperties properties)
-                => new(user, properties, $"{IdentityConstants.BearerScheme}:AccessToken");
+        var ticket = new AuthenticationTicket(
+            claimsPrincipal, properties, $"{IdentityConstants.BearerScheme}:AccessToken");
 
         return _options.BearerTokenProtector.Protect(ticket);
     }
