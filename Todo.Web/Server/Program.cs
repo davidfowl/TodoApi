@@ -1,3 +1,4 @@
+using Todo.Web.Client;
 using Todo.Web.Server;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,8 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddAuthentication();
 builder.Services.AddAuthorizationBuilder();
 
-// Add razor pages so we can render the Blazor WASM todo component
-builder.Services.AddRazorPages();
+// Must add client services
+builder.Services.AddScoped<TodoClient>();
+
+builder.Services.AddRazorComponents()
+                .AddWebAssemblyComponents();
 
 // Add the forwarder to make sending requests to the backend easier
 builder.Services.AddHttpForwarder();
@@ -36,15 +40,10 @@ else
 }
 
 app.UseHttpsRedirection();
-app.UseBlazorFrameworkFiles();
 app.UseStaticFiles();
 
-app.UseRouting();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapFallbackToPage("/_Host");
+app.MapRazorComponents<App>()
+   .AddWebAssemblyRenderMode();
 
 // Configure the APIs
 app.MapAuth();

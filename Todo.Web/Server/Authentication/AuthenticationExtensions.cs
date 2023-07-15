@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Todo.Web.Server;
 
@@ -78,6 +79,10 @@ public static class AuthenticationExtensions
 
         // Add the service that resolves external providers so we can show them in the UI
         builder.Services.AddSingleton<ExternalProviders>();
+
+        // Blazor auth services
+        builder.Services.AddSingleton<AuthenticationStateProvider, HttpAuthenticationStateProvider>();
+        builder.Services.AddHttpContextAccessor();
 
         return builder;
 
