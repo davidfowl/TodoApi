@@ -18,7 +18,7 @@
 <body>
     <div class="container">
         <main role="main" class="pb-3">
-            <TodoApp CurrentUser="@_userName" SocialProviders="@_providerNames" @rendermode="@RenderMode.WebAssembly" />
+            <TodoApp CurrentUser="@userName" SocialProviders="@providerNames" @rendermode="@RenderMode.WebAssembly" />
         </main>
     </div>
 
@@ -34,13 +34,13 @@
 </html>
 
 @code {
-    string[] _providerNames = Array.Empty<string>();
-    string? _userName;
+    string[] providerNames = Array.Empty<string>();
+    string? userName;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await authStateProvider.GetAuthenticationStateAsync();
-        _userName = authState?.User.Identity?.Name;
-        _providerNames = await providers.GetProviderNamesAsync() ?? Array.Empty<string>();
+        userName = authState?.User.Identity?.Name;
+        providerNames = await providers.GetProviderNamesAsync() ?? Array.Empty<string>();
     }
 }
