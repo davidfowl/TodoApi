@@ -15,9 +15,8 @@ public static class UsersApi
 
         group.MapIdentityApi<TodoUser>();
 
-        // The MapIdentityApi doesn't expose an external login endpoint so we keep this one
-        // also, the identity
-        // External login
+        // The MapIdentityApi<T> doesn't expose an external login endpoint so we write this custom endpoint that follows
+        // a similar pattern
         group.MapPost("/token/{provider}", async Task<Results<SignInHttpResult, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, SignInManager<TodoUser> signInManager) =>
         {
             var user = await userManager.FindByLoginAsync(provider, userInfo.ProviderKey);
