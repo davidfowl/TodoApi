@@ -32,6 +32,12 @@ public class TodoClient(HttpClient client)
 
     public async Task<(HttpStatusCode, List<TodoItem>?)> GetTodosAsync()
     {
+        // This is a hack from hell to avoid having to know if this is running server or client side
+        if (client.BaseAddress is null)
+        {
+            return (HttpStatusCode.OK, new());
+        }
+
         var response = await client.GetAsync("todos");
         var statusCode = response.StatusCode;
         List<TodoItem>? todos = null;
