@@ -23,7 +23,7 @@ It showcases:
 ## Prerequisites
 
 ### .NET
-1. [Install .NET 7](https://dotnet.microsoft.com/en-us/download)
+1. [Install .NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 ### Database
 1. Install the **dotnet-ef** tool: `dotnet tool install dotnet-ef -g`
