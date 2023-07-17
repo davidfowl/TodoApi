@@ -17,7 +17,7 @@ public static class ValidationFilterExtensions
                 return;
             }
 
-            // Track the indicies of validatable parameters
+            // Track the indices of validatable parameters
             List<int>? parameterIndexesToValidate = null;
             foreach (var p in methodInfo.GetParameters())
             {
