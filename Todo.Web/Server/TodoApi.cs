@@ -7,12 +7,12 @@ namespace Todo.Web.Server;
 
 public static class TodoApi
 {
-    public static RouteGroupBuilder MapTodos(this IEndpointRouteBuilder routes, string todoUrl)
+    public static RouteGroupBuilder MapTodos(this IEndpointRouteBuilder routes, string todoUrl, string prefix)
     {
         // The todo API translates the authentication cookie between the browser the BFF into an 
         // access token that is sent to the todo API. We're using YARP to forward the request.
 
-        var group = routes.MapGroup("/todos");
+        var group = routes.MapGroup(prefix);
 
         group.RequireAuthorization();
 

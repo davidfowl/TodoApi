@@ -1,0 +1,60 @@
+﻿enum ApplyPolicy {
+  BEFORE_RESOLVER
+  AFTER_RESOLVER
+  VALIDATION
+}
+
+type Query {
+  todos: [Todo!]!
+  todo(id: ID!): Todo!
+}
+
+type Mutation {
+  addTodo(input: AddTodoInput!): AddTodoPayload!
+  setTodoIsComplete(input: SetTodoIsCompleteInput!): SetTodoIsCompletePayload!
+  setTodoTitleComplete(
+    input: SetTodoTitleCompleteInput!
+  ): SetTodoTitleCompletePayload!
+  deleteTodo(input: DeleteTodoInput!): DeleteTodoPayload!
+}
+
+type Todo {
+  id: Int!
+  title: String!
+  isComplete: Boolean!
+  ownerId: String!
+}
+
+input AddTodoInput {
+  title: String!
+}
+
+type AddTodoPayload {
+  todo: Todo
+}
+
+input SetTodoIsCompleteInput {
+  id: ID!
+  isComplete: Boolean!
+}
+
+type SetTodoIsCompletePayload {
+  todo: Todo
+}
+
+input SetTodoTitleCompleteInput {
+  id: ID!
+  title: String!
+}
+
+type SetTodoTitleCompletePayload {
+  todo: Todo
+}
+
+input DeleteTodoInput {
+  id: ID!
+}
+
+type DeleteTodoPayload {
+  boolean: Boolean
+}

@@ -1,3 +1,7 @@
+using TodoApi.GraphQL.Interceptors;
+using TodoApi.GraphQL.Types;
+using TodoApi.Todos;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure auth
@@ -17,6 +21,17 @@ builder.Services.AddIdentityCore<TodoUser>()
 
 // State that represents the current user from the database *and* the request
 builder.Services.AddCurrentUser();
+
+
+builder.Services
+    .AddGraphQLServer()
+    .AddAuthorization()
+    .AddMutationConventions()
+    .AddHttpRequestInterceptor<CurrentUserInterceptor>()
+    .AddProjections()
+    .RegisterDbContext<TodoDbContext>()
+    .AddQueryType<Query>()
+    .AddMutationType<Mutation>();
 
 // Configure Open API
 builder.Services.AddEndpointsApiExplorer();
@@ -41,6 +56,7 @@ app.UseRateLimiter();
 app.Map("/", () => Results.Redirect("/swagger"));
 
 // Configure the APIs
+app.MapGraphQL();
 app.MapTodos();
 app.MapUsers();
 
@@ -48,5 +64,6 @@ app.MapUsers();
 app.MapPrometheusScrapingEndpoint();
 // NOTE: This should only be exposed on an internal port!
 // .RequireHost("*:9100");
+
 
 app.Run();

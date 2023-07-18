@@ -1,39 +1,48 @@
-﻿@inject TodoClient Client
+﻿@using StrawberryShake
+@inject TodoClient Client
 
-@if (todos is null)
-{
-    <div class="d-flex justify-content-center align-items-center vh-100">
-        <div class="spinner-border" role="status"></div>
+<h6 class="mb-3">Todo List</h6>
+
+<EditForm @ref="@form" Model="@this" OnValidSubmit="@AddTodo" class="d-flex justify-content-center align-items-center mb-4">
+    <DataAnnotationsValidator />
+    <div class="form-outline flex-fill">
+        <InputText autofocus class="form-control form-control-lg" @bind-Value="@NewTodo" placeholder="Type a new todo item" />
+        <ValidationMessage For="@(() => NewTodo)" />
     </div>
-}
-else
-{
-    <h6 class="mb-3">Todo List</h6>
+</EditForm>
 
-    <EditForm @ref="@form" Model="@this" OnValidSubmit="@AddTodo" class="d-flex justify-content-center align-items-center mb-4">
-        <DataAnnotationsValidator />
-        <div class="form-outline flex-fill">
-            <InputText autofocus class="form-control form-control-lg" @bind-Value="@NewTodo" placeholder="Type a new todo item" />
-            <ValidationMessage For="@(() => NewTodo)" />
+<UseGetTodos Context="context">
+    <LoadingContent>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="spinner-border" role="status"></div>
         </div>
-    </EditForm>
-
-    <ul class="list-group mb-0">
-        @foreach (var todo in todos)
-        {
-            <li class="list-group-item d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2" @key="@todo.Id">
-                <div class="d-flex align-items-center">
-                    <input class="form-check-input me-2" type="checkbox" value="" aria-label="..." />
-                    @todo.Title
-                </div>
-                <a data-mdb-toggle="tooltip" title="Remove item" style="text-decoration:none" @onclick="@(() => DeleteTodo(todo))">🗙</a>
-            </li>
-        }
-    </ul>
-}
+    </LoadingContent>
+    <ChildContent>
+        <ul class="list-group mb-0">
+            @foreach (var todo in context.Todos)
+            {
+                async Task ChangeEvent(ChangeEventArgs eventArgs) => await OnTodoChange(eventArgs, todo);
+                
+                <li class="list-group-item d-flex justify-content-between align-items-center border-start-0 border-top-0 border-end-0 border-bottom rounded-0 mb-2" @key="@todo.Id">
+                    <div class="d-flex align-items-center">
+                        @if (todo.IsComplete)
+                        {
+                            <input class="form-check-input me-2" type="checkbox" checked aria-label="..." @onchange="ChangeEvent"/>
+                        }
+                        else
+                        {
+                            <input class="form-check-input me-2" type="checkbox" aria-label="..." @onchange="ChangeEvent"/>
+                        }
+                        @todo.Title
+                    </div>
+                    <a data-mdb-toggle="tooltip" title="Remove item" style="text-decoration:none" @onclick="@(() => DeleteTodo(todo))">🗙</a>
+                </li>
+            }
+        </ul>
+    </ChildContent>
+</UseGetTodos>
 
 @code {
-    List<TodoItem>? todos;
     EditForm? form;
 
     [Required]
@@ -42,37 +51,33 @@ else
     [Parameter] 
     public EventCallback OnForbidden { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadTodos();
-    }
-
-    async Task LoadTodos()
-    {
-        (var statusCode, todos) = await Client.GetTodosAsync();
-
-        if (statusCode == HttpStatusCode.Forbidden || statusCode == HttpStatusCode.Unauthorized)
-        {
-            await OnForbidden.InvokeAsync();
-        }
-    }
-
     async Task AddTodo()
     {
-        var createdTodo = await Client.AddTodoAsync(NewTodo);
-        if (createdTodo is not null)
+        if (string.IsNullOrWhiteSpace(NewTodo))
+        {
+            return;
+        }
+        var result = await Client.AddTodo.ExecuteAsync(new AddTodoInput { Title = NewTodo });
+        if (result.IsSuccessResult())
         {
             NewTodo = null;
             form!.EditContext!.MarkAsUnmodified();
-            todos!.Add(createdTodo);
+            await Client.GetTodos.ExecuteAsync();
         }
     }
 
-    async Task DeleteTodo(TodoItem todo)
+    async Task DeleteTodo(ITodoFragment todo)
     {
-        if (await Client.DeleteTodoAsync(todo.Id))
+        var result = await Client.DeleteTodo.ExecuteAsync(todo.Id.ToString());
+        if (result.IsSuccessResult())
         {
-            todos!.Remove(todo);
+            await Client.GetTodos.ExecuteAsync();
         }
+    }
+
+    async Task OnTodoChange(ChangeEventArgs eventArgs, ITodoFragment todo)
+    {
+        var value = (bool)Convert.ChangeType(eventArgs.Value, TypeCode.Boolean)!;
+        await Client.SetTodoIsComplete.ExecuteAsync(todo.Id.ToString(), value);
     }
 }

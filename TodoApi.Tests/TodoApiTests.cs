@@ -1,3 +1,5 @@
+using TodoApi.Todos;
+
 namespace TodoApi.Tests;
 
 public class TodoApiTests

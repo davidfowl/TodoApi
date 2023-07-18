@@ -1,0 +1,7 @@
+mutation SetTodoIsComplete($id: ID!, $isComplete: Boolean!){ 
+    setTodoIsComplete(input: { id: $id, isComplete: $isComplete }){ 
+        todo { 
+            ...TodoFragment
+        } 
+    }
+}

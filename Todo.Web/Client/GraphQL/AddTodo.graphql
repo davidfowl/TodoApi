@@ -1,0 +1,7 @@
+mutation AddTodo($input: AddTodoInput!) {
+  addTodo (input: $input) {
+      todo {
+          ...TodoFragment
+      }
+  }
+}

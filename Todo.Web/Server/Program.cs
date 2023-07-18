@@ -28,6 +28,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
+    app.UseHttpLogging();
 }
 else
 {
@@ -48,7 +49,8 @@ app.MapFallbackToPage("/_Host");
 
 // Configure the APIs
 app.MapAuth();
-app.MapTodos(todoUrl);
+app.MapTodos(todoUrl, "/todos");
+app.MapTodos(todoUrl, "/graphql");
 
 app.Run();
 
