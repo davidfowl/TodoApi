@@ -62,17 +62,12 @@
         {
             NewTodo = null;
             form!.EditContext!.MarkAsUnmodified();
-            await Client.GetTodos.ExecuteAsync();
         }
     }
 
     async Task DeleteTodo(ITodoFragment todo)
     {
         var result = await Client.DeleteTodo.ExecuteAsync(todo.Id.ToString());
-        if (result.IsSuccessResult())
-        {
-            await Client.GetTodos.ExecuteAsync();
-        }
     }
 
     async Task OnTodoChange(ChangeEventArgs eventArgs, ITodoFragment todo)
