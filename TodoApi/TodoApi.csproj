@@ -7,6 +7,8 @@
     <ContainerImageTag>latest</ContainerImageTag>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
     <PackageReference Include="HotChocolate.AspNetCore" Version="13.3.3" />
     <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.3.3" />

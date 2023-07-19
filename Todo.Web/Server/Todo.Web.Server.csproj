@@ -7,6 +7,8 @@
     <UserSecretsId>c3677e8f-17d8-492d-8844-36ade85166e5</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.GitHub" Version="7.0.2" />
     <PackageReference Include="Auth0.AspNetCore.Authentication" Version="1.2.0" />
