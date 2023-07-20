@@ -6,6 +6,7 @@ using Moq;
 using RichardSzalay.MockHttp;
 using StrawberryShake;
 using Todo.Web.Client.Components;
+using Todo.Web.Client.State;
 
 namespace Todo.Web.Client.Tests;
 
@@ -29,14 +30,30 @@ public class TodoListTests : TestContext
     [Fact]
     public void RendersTodoItems()
     {
+        /*
+        Services
+            .AddTodoClient()
+            .ConfigureHttpClient(
+                client => client.BaseAddress = new Uri("http://local.test"),
+                buider => buider.AddHttpMessageHandler<ProxyHttpMessageHandler>());
+
+        var accessor = Services.GetRequiredService<TodoClientStoreAccessor>();
+        accessor.EntityStore.Update(session =>
+        {
+            Console.WriteLine("sessions");
+        });
+        */
+
         var todos = _fixture.Build<GetTodos_Todos_Todo>().CreateMany().ToArray();
         var result = new GetTodosResult(todos);
         var resultFactory = new Mock<IOperationResultDataFactory<IGetTodosResult>>();
+
+        Services.AddSingleton(resultFactory.Object);
+
         resultFactory.Setup(z => z.Create(It.IsAny<IOperationResultDataInfo>(), default)).Returns(result);
         var operationResult = new OperationResult<IGetTodosResult>(result, default, resultFactory.Object, default);
 
         _getTodosQuery.Setup(z => z.ExecuteAsync(It.IsAny<CancellationToken>())).ReturnsAsync(operationResult);
-        
         // observable push?
 
         var page = RenderComponent<TodoList>();
