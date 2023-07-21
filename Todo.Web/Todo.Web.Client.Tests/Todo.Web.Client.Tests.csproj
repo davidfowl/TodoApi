@@ -32,5 +32,4 @@
     <ItemGroup>
       <ProjectReference Include="..\Client\Todo.Web.Client.csproj" />
     </ItemGroup>
-
 </Project>

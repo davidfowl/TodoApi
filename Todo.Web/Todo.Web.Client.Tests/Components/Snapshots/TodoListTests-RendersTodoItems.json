@@ -1,0 +1,24 @@
+{
+  "data": {
+    "todos": [
+      {
+        "__typename": "Todo",
+        "id": 11,
+        "isComplete": false,
+        "title": "todo 1"
+      },
+      {
+        "__typename": "Todo",
+        "id": 12,
+        "isComplete": false,
+        "title": "todo 2"
+      },
+      {
+        "__typename": "Todo",
+        "id": 13,
+        "isComplete": false,
+        "title": "todo 3"
+      }
+    ]
+  }
+}

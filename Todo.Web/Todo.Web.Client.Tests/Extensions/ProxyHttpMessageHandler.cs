@@ -1,4 +1,4 @@
-﻿namespace Todo.Web.Client.Tests;
+﻿namespace Todo.Web.Client.Tests.Extensions;
 
 internal sealed class ProxyHttpMessageHandler : DelegatingHandler
 {
@@ -12,11 +12,8 @@ internal sealed class ProxyHttpMessageHandler : DelegatingHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var response = await _handler(request, cancellationToken);
-        if (response == null)
-        {
-            throw new InvalidOperationException("Response required");
-        }
-        return response;
+        return response
+            ?? throw new InvalidOperationException("Response required");
     }
 
     public static Func<IServiceProvider, ProxyHttpMessageHandler> Create(Func<HttpRequestMessage, Task<HttpResponseMessage?>> handler)
