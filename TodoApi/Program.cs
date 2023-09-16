@@ -1,15 +1,10 @@
-using Microsoft.AspNetCore.Identity;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure auth
-builder.Services.AddAuthentication().AddIdentityBearerToken<TodoUser>();
+builder.Services.AddAuthentication().AddBearerToken("Identity.Bearer");
 builder.Services.AddAuthorizationBuilder().AddCurrentUserHandler();
 
-// Configure identity
-builder.Services.AddIdentityCore<TodoUser>()
-                .AddEntityFrameworkStores<TodoDbContext>()
-                .AddApiEndpoints();
+builder.Services.AddSharedKeys(builder.Configuration);
 
 // Configure the database
 var connectionString = builder.Configuration.GetConnectionString("Todos") ?? "Data Source=.db/Todos.db";
@@ -30,6 +25,17 @@ builder.AddOpenTelemetry();
 
 var app = builder.Build();
 
+await MakeDb(app.Services);
+
+async Task MakeDb(IServiceProvider sp)
+{
+    await using var scope = sp.CreateAsyncScope();
+
+    var db0 = scope.ServiceProvider.GetRequiredService<TodoDbContext>();
+
+    await db0.Database.EnsureCreatedAsync();
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -42,7 +48,6 @@ app.Map("/", () => Results.Redirect("/swagger"));
 
 // Configure the APIs
 app.MapTodos();
-app.MapUsers();
 
 // Configure the prometheus endpoint for scraping metrics
 app.MapPrometheusScrapingEndpoint();

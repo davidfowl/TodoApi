@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 
 namespace TodoApi;
 
@@ -13,7 +12,7 @@ public static class CurrentUserExtensions
         return services;
     }
 
-    private sealed class ClaimsTransformation(CurrentUser currentUser, UserManager<TodoUser> userManager) : IClaimsTransformation
+    private sealed class ClaimsTransformation(CurrentUser currentUser, TodoDbContext db) : IClaimsTransformation
     {
         public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
         {
@@ -25,7 +24,7 @@ public static class CurrentUserExtensions
             {
                 // Resolve the user manager and see if the current user is a valid user in the database
                 // we do this once and store it on the current user.
-                currentUser.User = await userManager.FindByIdAsync(id);
+                currentUser.User = await db.Users.FindAsync(id);
             }
 
             return principal;

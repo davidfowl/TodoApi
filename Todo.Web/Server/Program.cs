@@ -20,10 +20,14 @@ var todoUrl = builder.Configuration.GetServiceUri("todoapi")?.ToString() ??
               builder.Configuration["TodoApiUrl"] ?? 
               throw new InvalidOperationException("Todo API URL is not configured");
 
+var identityUrl = builder.Configuration.GetServiceUri("identityapi")?.ToString() ??
+                  builder.Configuration["IdentityApiUrl"] ??
+                  throw new InvalidOperationException("Todo API URL is not configured");
+
 // Configure the HttpClient for the backend API
 builder.Services.AddHttpClient<AuthClient>(client =>
 {
-    client.BaseAddress = new(todoUrl);
+    client.BaseAddress = new(identityUrl);
 });
 
 var app = builder.Build();

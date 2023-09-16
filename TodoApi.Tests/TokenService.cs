@@ -11,7 +11,7 @@ public sealed class TokenService(SignInManager<TodoUser> signInManager, IOptions
 
     public async Task<string> GenerateTokenAsync(string username, bool isAdmin = false)
     {
-        var claimsPrincipal = await signInManager.CreateUserPrincipalAsync(new TodoUser { Id = username, UserName = username });
+        var claimsPrincipal = await signInManager.CreateUserPrincipalAsync(new TodoUser { Id = username });
 
         if (isAdmin)
         {

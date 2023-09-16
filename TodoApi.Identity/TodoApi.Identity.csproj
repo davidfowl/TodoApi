@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\TodoApi\Extensions\OpenApiExtensions.cs" Link="Extensions\OpenApiExtensions.cs" />
+    <Compile Include="..\TodoApi\Extensions\RateLimitExtensions.cs" Link="Extensions\RateLimitExtensions.cs" />
+    <Compile Include="..\TodoApi\Filters\ValidationFilter.cs" Link="Filters\ValidationFilter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+	<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" />
+	<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.OpenApi" />
+    <PackageReference Include="MiniValidation" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Filters\" />
+	<InternalsVisibleTo Include="TodoApi.Identity.Tests" />
+  </ItemGroup>
+	
+</Project>

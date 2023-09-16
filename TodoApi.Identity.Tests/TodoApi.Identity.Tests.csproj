@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\TodoApi.Tests\DbContextExtensions.cs" Link="DbContextExtensions.cs" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="xunit" />
+		<PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
+		<PackageReference Include="coverlet.collector" PrivateAssets="all" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\TodoApi.Identity\TodoApi.Identity.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Using Include="System.Net.Http.Json" />
+		<Using Include="System.Net.Http" />
+		<Using Include="System.Net" />
+		<Using Include="Xunit" />
+	</ItemGroup>
+
+</Project>

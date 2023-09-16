@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <Compile Include="..\TodoApi.Identity\Extensions\DataProtectionExtensions.cs" Link="Extensions\DataProtectionExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+	<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="Microsoft.OpenApi" />
     <PackageReference Include="MiniValidation" />
@@ -22,7 +26,7 @@
     <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
     <PackageReference Include="OpenTelemetry.Instrumentation.EventCounters" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore"/>
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
     <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Process" />
