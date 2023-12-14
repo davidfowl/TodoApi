@@ -13,7 +13,7 @@ public class TodoItem
 public class UserInfo
 {
     [Required]
-    public string Username { get; set; } = default!;
+    public string Email { get; set; } = default!;
 
     [Required]
     public string Password { get; set; } = default!;
@@ -28,4 +28,4 @@ public class ExternalUserInfo
     public string ProviderKey { get; set; } = default!;
 }
 
-public record AuthToken([property:JsonPropertyName("access_token")]string Token);
+public record AuthToken([property: JsonPropertyName("accessToken")] string Token);

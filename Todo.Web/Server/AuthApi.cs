@@ -97,7 +97,7 @@ public static class AuthApi
 
     private static IResult SignIn(UserInfo userInfo, string token)
     {
-        return SignIn(userInfo.Username, userInfo.Username, token, providerName: null);
+        return SignIn(userInfo.Email, userInfo.Email, token, providerName: null);
     }
 
     private static IResult SignIn(string userId, string userName, string token, string? providerName)

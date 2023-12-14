@@ -57,7 +57,7 @@ public class TodoClient(HttpClient client)
             return false;
         }
 
-        var response = await client.PostAsJsonAsync("auth/login", new UserInfo { Username = username, Password = password });
+        var response = await client.PostAsJsonAsync("auth/login", new UserInfo { Email = username, Password = password });
         return response.IsSuccessStatusCode;
     }
 
@@ -68,7 +68,7 @@ public class TodoClient(HttpClient client)
             return false;
         }
 
-        var response = await client.PostAsJsonAsync("auth/register", new UserInfo { Username = username, Password = password });
+        var response = await client.PostAsJsonAsync("auth/register", new UserInfo { Email = username, Password = password });
         return response.IsSuccessStatusCode;
     }
 
