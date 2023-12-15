@@ -22,7 +22,6 @@ public static class TodoApi
             b.AddRequestTransform(async c =>
             {
                 var accessToken = await c.HttpContext.GetTokenAsync(TokenNames.AccessToken);
-                
                 c.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
             });
         });
