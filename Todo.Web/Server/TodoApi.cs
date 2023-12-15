@@ -16,7 +16,6 @@ public static class TodoApi
 
         group.RequireAuthorization();
 
-        // Proxy with auth and path transform
         group.MapForwarder("{*path}", todoUrl, new ForwarderRequestConfig(), b =>
         {
             b.AddRequestTransform(async c =>
