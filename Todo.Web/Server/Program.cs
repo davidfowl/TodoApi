@@ -11,7 +11,7 @@ builder.Services.AddAuthorizationBuilder();
 builder.Services.AddScoped<TodoClient>();
 
 builder.Services.AddRazorComponents()
-                .AddWebAssemblyComponents();
+                .AddInteractiveWebAssemblyComponents();
 
 // Add the forwarder to make sending requests to the backend easier
 builder.Services.AddHttpForwarder();
@@ -41,9 +41,10 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
-   .AddWebAssemblyRenderMode();
+   .AddInteractiveWebAssemblyRenderMode();
 
 // Configure the APIs
 app.MapAuth();

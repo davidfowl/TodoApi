@@ -113,10 +113,10 @@ Before executing any requests, you need to create a user and get an auth token.
 
     ```json
     {
-      "token_type": "Bearer",
-      "access_token": "string",
-      "expires_in": <seconds>,
-      "refresh_token": "string"
+      "tokenType": "Bearer",
+      "accessToken": "string",
+      "expiresIn": <seconds>,
+      "refreshToken": "string"
     }
     ```
 

@@ -16,19 +16,14 @@ public static class TodoApi
 
         group.RequireAuthorization();
 
-        // TODO: Remove when new YARP is released, see https://github.com/microsoft/reverse-proxy/issues/2131
-        var transformBuilder = routes.ServiceProvider.GetRequiredService<ITransformBuilder>();
-        var transform = transformBuilder.Create(b =>
+        group.MapForwarder("{*path}", todoUrl, new ForwarderRequestConfig(), b =>
         {
             b.AddRequestTransform(async c =>
             {
                 var accessToken = await c.HttpContext.GetTokenAsync(TokenNames.AccessToken);
-
                 c.ProxyRequest.Headers.Authorization = new("Bearer", accessToken);
             });
         });
-
-        group.MapForwarder("{*path}", todoUrl, new ForwarderRequestConfig(), transform);
 
         return group;
     }

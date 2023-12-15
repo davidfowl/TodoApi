@@ -11,14 +11,14 @@ public class UserApiTests
         await using var db = application.CreateTodoDbContext();
 
         var client = application.CreateClient();
-        var response = await client.PostAsJsonAsync("/users/register", new UserInfo { Username = "todouser", Password = "@pwd" });
+        var response = await client.PostAsJsonAsync("/users/register", new UserInfo { Email = "todouser@todoapp.com", Password = "@pwd" });
 
         Assert.True(response.IsSuccessStatusCode);
 
         var user = db.Users.Single();
         Assert.NotNull(user);
 
-        Assert.Equal("todouser", user.UserName);
+        Assert.Equal("todouser@todoapp.com", user.UserName);
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public class UserApiTests
         await using var db = application.CreateTodoDbContext();
 
         var client = application.CreateClient();
-        var response = await client.PostAsJsonAsync("/users/register", new UserInfo { Username = "todouser", Password = "" });
+        var response = await client.PostAsJsonAsync("/users/register", new UserInfo { Email = "todouser", Password = "" });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
 
@@ -40,7 +40,7 @@ public class UserApiTests
         // TODO: Follow up on the new errors
         // Assert.Equal(new[] { "The Password field is required." }, problemDetails.Errors["Password"]);
 
-        response = await client.PostAsJsonAsync("/users/register", new UserInfo { Username = "", Password = "password" });
+        response = await client.PostAsJsonAsync("/users/register", new UserInfo { Email = "", Password = "password" });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
 
@@ -92,7 +92,7 @@ public class UserApiTests
         await application.CreateUserAsync("todouser", "p@assw0rd1");
 
         var client = application.CreateClient();
-        var response = await client.PostAsJsonAsync("/users/login", new UserInfo { Username = "todouser", Password = "p@assw0rd1" });
+        var response = await client.PostAsJsonAsync("/users/login", new UserInfo { Email = "todouser", Password = "p@assw0rd1" });
 
         Assert.True(response.IsSuccessStatusCode);
 
@@ -147,14 +147,14 @@ public class UserApiTests
         await application.CreateUserAsync("todouser", "p@assw0rd1");
 
         var client = application.CreateClient();
-        var response = await client.PostAsJsonAsync("/users/login", new UserInfo { Username = "todouser", Password = "prd1" });
+        var response = await client.PostAsJsonAsync("/users/login", new UserInfo { Email = "todouser", Password = "prd1" });
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     class AuthToken
     {
-        [JsonPropertyName("access_token")]
+        [JsonPropertyName("accessToken")]
         public string? Token { get; set; }
     }
 }

@@ -3,7 +3,10 @@
     "compounds": [
         {
             "name": "Web and API",
-            "configurations": ["TodoApi", "Todo.Web (Server)"]
+            "configurations": [
+                "TodoApi",
+                "Todo.Web (Server)"
+            ]
         }
     ],
     "configurations": [
@@ -12,7 +15,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Todo.Web/Server/bin/Debug/net7.0/Todo.Web.Server.dll",
+            "program": "${workspaceFolder}/Todo.Web/Server/bin/Debug/net8.0/Todo.Web.Server.dll",
             "args": [],
             "cwd": "${workspaceFolder}/Todo.Web/Server",
             "launchSettingsProfile": "https",
@@ -34,7 +37,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/TodoApi/bin/Debug/net7.0/TodoApi.dll",
+            "program": "${workspaceFolder}/TodoApi/bin/Debug/net8.0/TodoApi.dll",
             "args": [],
             "cwd": "${workspaceFolder}/TodoApi",
             "stopAtEntry": false,

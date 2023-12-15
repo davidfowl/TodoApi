@@ -68,8 +68,7 @@ public static class OpenTelemetryExtensions
                 {
                     tracing.AddOtlpExporter();
                 }
-            })
-            .StartWithHost();
+            });
 
         return builder;
     }
