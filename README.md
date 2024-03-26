@@ -101,15 +101,15 @@ The Todo REST API can run standalone as well. You can run the [TodoApi](TodoApi)
 
 Before executing any requests, you need to create a user and get an auth token.
 
-1. To create a new user, run the application and POST a JSON payload to `/users` endpoint:
+1. To create a new user, run the application and POST a JSON payload to `/users/register` endpoint:
 
     ```json
     {
-      "username": "myuser",
+      "email": "myuser@contoso.com",
       "password": "<put a password here>"
     }
     ```
-1. To get a token for the above user, hit the `/users/token` endpoint with the above user name and password. The response will look like this:
+1. To get a token for the above user, hit the `/users/login` endpoint with the above user email and password. The response will look like this:
 
     ```json
     {
@@ -120,7 +120,7 @@ Before executing any requests, you need to create a user and get an auth token.
     }
     ```
 
-1. You should be able to use this token to make authenticated requests to the todo endpoints.
+1. You should be able to use the accessToken to make authenticated requests to the todo endpoints.
 
 ### Social authentication
 
