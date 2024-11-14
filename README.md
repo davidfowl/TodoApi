@@ -33,64 +33,8 @@ It showcases:
 1. Learn more about [dotnet-ef](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
 
 ### Running the application
-To run the application, run both the [Todo.Web/Server](Todo.Web/Server) and [TodoApi](TodoApi). Below are different ways to run both applications:
-   - **Visual Studio** - Setup multiple startup projects by right clicking on the solution and selecting Properties. Select `TodoApi` and `Todo.Web.Server` as startup projects.
 
-      <img width="591" alt="image" src="https://user-images.githubusercontent.com/95136/204311327-479445c8-4f73-4845-b146-d56be8ceb9ab.png">
-
-   - **Visual Studio Code** - A `compound` launch definition is provided in the `launch.json` file, use the 'Run and Debug' view and select 'Web and API' and start that profile.
-   
-      ![image](https://github.com/timheuer/TodoApi/assets/4821/dfa83682-86c4-45ae-965b-fa6f6a6f07a9)
-
-    
-   - **Terminal/CLI** - Open up 2 terminal windows, one in [Todo.Web.Server](Todo.Web/Server/) and the other in [TodoApi](TodoApi/) run: 
-   
-      ```
-      dotnet watch run -lp https
-      ```
-
-      This will run both applications with the `https` profile.
-
-   - **Tye** - Install the global tool using the following command: 
-   
-      ```
-      dotnet tool install --global Microsoft.Tye --version 0.11.0-alpha.22111.1
-      ```
-
-      Run `tye run` in the repository root and navigate to the tye dashboard (usually http://localhost:8000) to see both applications running.
-
-   - **Docker Compose** - Open your terminal, navigate to the root folder of this project and run the following commands:
-      1. Build a docker image for the `TodoApi` directly from dotnet publish.
-         ```
-         dotnet publish ./TodoApi/TodoApi.csproj --os linux --arch x64 /t:PublishContainer -c Release
-         ```
-
-      1. Build a docker image for the `Todo.Web.Server` directly from dotnet publish.
-         ```
-         dotnet publish ./Todo.Web/Server/Todo.Web.Server.csproj --os linux --arch x64 /t:PublishContainer -c Release --self-contained true
-         ```
-
-      1. Generate certificate and configure local machine so we can start our apps with https support using docker compose.
-
-         Windows using Linux containers
-         ```
-         set PASSWORD YourPasswordHere
-         dotnet dev-certs https -ep ${HOME}/.aspnet/https/todoapps.pfx -p $PASSWORD --trust
-         ```
-         macOS or Linux
-         ```
-         export PASSWORD=YourPasswordHere
-         dotnet dev-certs https -ep ~/.aspnet/https/todoapps.pfx -p $PASSWORD --trust
-         ```
-
-      1. Change these variables below in the `docker-compose.yml` file to match your https certificate and password.
-         - `ASPNETCORE_Kestrel__Certificates__Default__Password`
-         - `ASPNETCORE_Kestrel__Certificates__Default__Path`
-
-      1. Run `docker-compose up -d` to spin up both apps todo-api and todo-web-server plus jaeger and prometheus.
-
-      1. Navigate to the Todo Web app https://localhost:5003.
-
+To run the application, run the [TodoApi.AppHost](TodoApi.AppHost) project. This uses .NET Aspire to run both the [Todo.Web/Server](Todo.Web/Server) and [TodoApi](TodoApi).
 
 ## Optional
 
@@ -188,26 +132,6 @@ This sample has **Auth0** configured as an OIDC server. It can be configured wit
 Learn more about the Auth0 .NET SDK [here](https://github.com/auth0/auth0-aspnetcore-authentication).
 
 ### OpenTelemetry
-TodoApi uses OpenTelemetry to collect logs, metrics and spans.
 
-If you wish to view the collected telemetry, follow the steps below.
-
-#### Metrics
-1. Run Prometheus with Docker:
-```
-docker run -d -p 9090:9090 --name prometheus -v $PWD/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
-```
-1. Open [Prometheus in your browser](http://localhost:9090/)
-1. Query the collected metrics
-
-#### Spans
-
-1. Configure environment variable `OTEL_EXPORTER_OTLP_ENDPOINT` with the right endpoint URL to enable `.AddOtlpExporter` below `builder.Services.AddOpenTelemetryTracing`, in the `TodoApi/OpenTelemetryExtensions.cs` file
-1. Run Jaeger with Docker:
-
-```
-docker run -d --name jaeger -e COLLECTOR_ZIPKIN_HOST_PORT=:9411 -e COLLECTOR_OTLP_ENABLED=true -p 6831:6831/udp -p 6832:6832/udp -p 5778:5778 -p 16686:16686 -p 4317:4317 -p 4318:4318 -p 14250:14250 -p 14268:14268 -p 14269:14269 -p 9411:9411 jaegertracing/all-in-one:latest
-```
-
-1. Open [Jaeger in your browser](http://localhost:16686/)
-1. View the collected spans
+TodoApi uses OpenTelemetry to collect logs, metrics and spans. You can see this
+using the [Aspire Dashboard](https://aspiredashboard.com/).

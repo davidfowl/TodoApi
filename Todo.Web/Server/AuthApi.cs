@@ -57,7 +57,7 @@ public static class AuthApi
             // This name maps to the registered authentication scheme names in AuthenticationExtensions.cs
             return Results.Challenge(
                 properties: new() { RedirectUri = $"/auth/signin/{provider}" },
-                authenticationSchemes: new[] { provider });
+                authenticationSchemes: [provider]);
         });
 
         group.MapGet("signin/{provider}", async (string provider, AuthClient client, HttpContext context) =>

@@ -24,22 +24,21 @@
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.0" />
-    <PackageVersion Include="Yarp.ReverseProxy" Version="2.1.0" />
-    <PackageVersion Include="Microsoft.Tye.Extensions.Configuration" Version="0.10.0-alpha.21420.1" />
+    <PackageVersion Include="Yarp.ReverseProxy" Version="2.2.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.0" PrivateAssets="all" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="8.0.0" />
+	<PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0" />
+	<PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.0.0" />
+	<PackageVersion Include="Microsoft.Extensions.ServiceDiscovery.Yarp" Version="9.0.0" />
+	<PackageVersion Include="Aspire.Hosting.AppHost" Version="9.0.0" />
   </ItemGroup>
   <!-- OpenTelemetry -->
   <ItemGroup>
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.7.0" />
-    <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.7.0-rc.1" />
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.7.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.EventCounters" Version="1.5.1-alpha.1" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.7.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta.8" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.7.0" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Process" Version="0.5.0-beta.3" />
-    <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.5.1" />
+	<PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.9.0" />
+	<PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.9.0" />
+	<PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
+	<PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.9.0" />
+	<PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.9.0" />
   </ItemGroup>
 </Project>

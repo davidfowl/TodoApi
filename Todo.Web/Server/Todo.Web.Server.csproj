@@ -14,10 +14,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Yarp.ReverseProxy" />
-    <PackageReference Include="Microsoft.Tye.Extensions.Configuration" />
+	<PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\TodoApi.ServiceDefaults\TodoApi.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Client\Todo.Web.Client.csproj" />
     <ProjectReference Include="..\Shared\Todo.Web.Shared.csproj" />
   </ItemGroup>

@@ -23,7 +23,7 @@ public static class ValidationFilterExtensions
             {
                 if (typesToValidate.Contains(p.ParameterType))
                 {
-                    parameterIndexesToValidate ??= new();
+                    parameterIndexesToValidate ??= [];
                     parameterIndexesToValidate.Add(p.Position);
                 }
             }
@@ -58,17 +58,11 @@ public static class ValidationFilterExtensions
     }
 
     // Equivalent to the .Produces call to add metadata to endpoints
-    private sealed class ProducesResponseTypeMetadata : IProducesResponseTypeMetadata
+    private sealed class ProducesResponseTypeMetadata(Type type, int statusCode, string contentType) : 
+        IProducesResponseTypeMetadata
     {
-        public ProducesResponseTypeMetadata(Type type, int statusCode, string contentType)
-        {
-            Type = type;
-            StatusCode = statusCode;
-            ContentTypes = new[] { contentType };
-        }
-
-        public Type Type { get; }
-        public int StatusCode { get; }
-        public IEnumerable<string> ContentTypes { get; }
+        public Type Type { get; } = type;
+        public int StatusCode { get; } = statusCode;
+        public IEnumerable<string> ContentTypes { get; } = [contentType];
     }
 }
