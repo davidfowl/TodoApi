@@ -1,4 +1,4 @@
-﻿internal static class TodoApiEfMigrationsExtensions
+﻿internal static class Extensions
 {
     public static IResourceBuilder<ExecutableResource>? AddTodoDbMigration(this IDistributedApplicationBuilder builder)
     {
@@ -28,4 +28,7 @@
         // TODO: Support passing a connection string
         return builder.AddExecutable(name, "dotnet", projectDirectory, "ef", "database", "update", "--no-build");
     }
+
+    public static string GetProjectDirectory(this IResourceBuilder<ProjectResource> project) =>
+        Path.GetDirectoryName(project.Resource.GetProjectMetadata().ProjectPath)!;
 }
