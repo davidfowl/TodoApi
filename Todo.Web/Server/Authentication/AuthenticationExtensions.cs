@@ -20,7 +20,7 @@ public static class AuthenticationExtensions
         authenticationBuilder.AddCookie();
 
         // This is the cookie that will store the user information from the external login provider
-        authenticationBuilder.AddCookie(AuthenticatonSchemes.ExternalScheme);
+        authenticationBuilder.AddCookie(AuthenticationSchemes.ExternalScheme);
 
         // Add external auth providers based on configuration
         //{
@@ -60,7 +60,7 @@ public static class AuthenticationExtensions
                     // This will save the information in the external cookie
                     if (options is RemoteAuthenticationOptions remoteAuthenticationOptions)
                     {
-                        remoteAuthenticationOptions.SignInScheme = AuthenticatonSchemes.ExternalScheme;
+                        remoteAuthenticationOptions.SignInScheme = AuthenticationSchemes.ExternalScheme;
                     }
                     else if (options is Auth0WebAppOptions auth0WebAppOptions)
                     {
@@ -93,7 +93,7 @@ public static class AuthenticationExtensions
                 {
                     // The Auth0 APIs don't let you set the sign in scheme, it defaults to the default sign in scheme.
                     // Use named options to configure the underlying OpenIdConnectOptions's sign in scheme instead.
-                    o.SignInScheme = AuthenticatonSchemes.ExternalScheme;
+                    o.SignInScheme = AuthenticationSchemes.ExternalScheme;
                 });
         }
     }
