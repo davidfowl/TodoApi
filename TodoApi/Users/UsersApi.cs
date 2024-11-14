@@ -11,33 +11,13 @@ public static class UsersApi
 
         group.WithTags("Users");
 
-        group.WithParameterValidation(typeof(UserInfo), typeof(ExternalUserInfo));
+        group.WithParameterValidation(typeof(ExternalUserInfo));
 
-        group.MapPost("/", async Task<Results<Ok, ValidationProblem>> (UserInfo newUser, UserManager<TodoUser> userManager) =>
-        {
-            var result = await userManager.CreateAsync(new() { UserName = newUser.Username }, newUser.Password);
+        group.MapIdentityApi<TodoUser>();
 
-            if (result.Succeeded)
-            {
-                return TypedResults.Ok();
-            }
-
-            return TypedResults.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
-        });
-
-        group.MapPost("/token", async Task<Results<BadRequest, Ok<AuthToken>>> (UserInfo userInfo, UserManager<TodoUser> userManager, ITokenService tokenService) =>
-        {
-            var user = await userManager.FindByNameAsync(userInfo.Username);
-
-            if (user is null || !await userManager.CheckPasswordAsync(user, userInfo.Password))
-            {
-                return TypedResults.BadRequest();
-            }
-
-            return TypedResults.Ok(new AuthToken(tokenService.GenerateToken(user.UserName!)));
-        });
-
-        group.MapPost("/token/{provider}", async Task<Results<Ok<AuthToken>, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, ITokenService tokenService) =>
+        // The MapIdentityApi<T> doesn't expose an external login endpoint so we write this custom endpoint that follows
+        // a similar pattern
+        group.MapPost("/token/{provider}", async Task<Results<SignInHttpResult, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, SignInManager<TodoUser> signInManager) =>
         {
             var user = await userManager.FindByLoginAsync(provider, userInfo.ProviderKey);
 
@@ -57,11 +37,16 @@ public static class UsersApi
 
             if (result.Succeeded)
             {
-                return TypedResults.Ok(new AuthToken(tokenService.GenerateToken(user.UserName!)));
+                var principal = await signInManager.CreateUserPrincipalAsync(user);
+
+                return TypedResults.SignIn(principal);
             }
 
             return TypedResults.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
-        });
+        })
+        // Add the open API response for 200 since AccessTokenResponse
+        // is internal and we don't want to duplicate it.
+        .Produces("AccessTokenResponse");
 
         return group;
     }

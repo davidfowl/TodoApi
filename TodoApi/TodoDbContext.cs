@@ -3,10 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TodoApi;
 
-public class TodoDbContext : IdentityDbContext<TodoUser>
+public class TodoDbContext(DbContextOptions<TodoDbContext> options) : IdentityDbContext<TodoUser>(options)
 {
-    public TodoDbContext(DbContextOptions<TodoDbContext> options) : base(options) { }
-
     public DbSet<Todo> Todos => Set<Todo>();
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -15,7 +13,7 @@ public class TodoDbContext : IdentityDbContext<TodoUser>
                .HasOne<TodoUser>()
                .WithMany()
                .HasForeignKey(t => t.OwnerId)
-               .HasPrincipalKey(u => u.UserName);
+               .HasPrincipalKey(u => u.Id);
 
         base.OnModelCreating(builder);
     }

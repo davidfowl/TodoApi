@@ -1,4 +1,6 @@
-﻿namespace TodoApi.Tests;
+﻿using Microsoft.AspNetCore.DataProtection;
+
+namespace TodoApi.Tests;
 
 internal class TodoApplication : WebApplicationFactory<Program>
 {
@@ -15,18 +17,14 @@ internal class TodoApplication : WebApplicationFactory<Program>
     {
         using var scope = Services.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TodoUser>>();
-        var newUser = new TodoUser { UserName = username };
+        var newUser = new TodoUser { Id = username, UserName = username };
         var result = await userManager.CreateAsync(newUser, password ?? Guid.NewGuid().ToString());
         Assert.True(result.Succeeded);
     }
 
     public HttpClient CreateClient(string id, bool isAdmin = false)
     {
-        return CreateDefaultClient(new AuthHandler(req =>
-        {
-            var token = CreateToken(id, isAdmin);
-            req.Headers.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, token);
-        }));
+        return CreateDefaultClient(new AuthHandler(Services, id, isAdmin));
     }
 
     protected override IHost CreateHost(IHostBuilder builder)
@@ -52,33 +50,15 @@ internal class TodoApplication : WebApplicationFactory<Program>
                 o.Password.RequireLowercase = false;
                 o.Password.RequireUppercase = false;
             });
-        });
 
-        // We need to configure signing keys for CI scenarios where
-        // there's no user-jwts tool
-        var keyBytes = new byte[32];
-        RandomNumberGenerator.Fill(keyBytes);
-        var base64Key = Convert.ToBase64String(keyBytes);
+            // Since tests run in parallel, it's possible multiple servers will startup,
+            // we use an ephemeral key provider and repository to avoid filesystem contention issues
+            services.AddSingleton<IDataProtectionProvider, EphemeralDataProtectionProvider>();
 
-        builder.ConfigureAppConfiguration(config =>
-        {
-            config.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                ["Authentication:Schemes:Bearer:SigningKeys:0:Issuer"] = "dotnet-user-jwts",
-                ["Authentication:Schemes:Bearer:SigningKeys:0:Value"] = base64Key
-            });
+            services.AddScoped<TokenService>();
         });
 
         return base.CreateHost(builder);
-    }
-
-    private string CreateToken(string id, bool isAdmin = false)
-    {
-        // Read the user JWTs configuration for testing so unit tests can generate
-        // JWT tokens.
-        var tokenService = Services.GetRequiredService<ITokenService>();
-
-        return tokenService.GenerateToken(id, isAdmin);
     }
 
     protected override void Dispose(bool disposing)
@@ -87,19 +67,20 @@ internal class TodoApplication : WebApplicationFactory<Program>
         base.Dispose(disposing);
     }
 
-    private sealed class AuthHandler : DelegatingHandler
+    private sealed class AuthHandler(IServiceProvider services, string id, bool isAdmin) : DelegatingHandler
     {
-        private readonly Action<HttpRequestMessage> _onRequest;
-
-        public AuthHandler(Action<HttpRequestMessage> onRequest)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            _onRequest = onRequest;
-        }
+            await using var scope = services.CreateAsyncScope();
 
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            _onRequest(request);
-            return base.SendAsync(request, cancellationToken);
+            // Generate tokens
+            var tokenService = scope.ServiceProvider.GetRequiredService<TokenService>();
+
+            var token = await tokenService.GenerateTokenAsync(id, isAdmin);
+
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            return await base.SendAsync(request, cancellationToken);
         }
     }
 }

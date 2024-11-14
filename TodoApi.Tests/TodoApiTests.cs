@@ -239,9 +239,9 @@ public class TodoApiTests
         Assert.NotNull(todos);
 
         var todo = Assert.Single(todos);
-        
+
         //update the status
-        todo.IsComplete= true;
+        todo.IsComplete = true;
 
         var response = await client.PutAsJsonAsync($"todos/{todo.Id}", todo);
 
@@ -291,7 +291,7 @@ public class TodoApiTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
         // Verify the changes
-        todos = await  client.GetFromJsonAsync<List<TodoItem>>("/todos");
+        todos = await client.GetFromJsonAsync<List<TodoItem>>("/todos");
         Assert.NotNull(todos);
         var updatedTodo = Assert.Single(todos);
         Assert.NotNull(updatedTodo);

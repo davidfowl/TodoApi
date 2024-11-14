@@ -1,0 +1,46 @@
+﻿@using Todo.Web.Client;
+@inject ExternalProviders providers
+@inject AuthenticationStateProvider authStateProvider
+
+@page "/"
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Todo App</title>
+    <base href="/" />
+    <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css" />
+    <link href="css/app.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="container">
+        <main role="main" class="pb-3">
+            <TodoApp CurrentUser="@userName" SocialProviders="@providerNames" @rendermode="@RenderMode.InteractiveWebAssembly" />
+        </main>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.web.js" suppress-error="BL9992"></script>
+    <script src="bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
+
+@code {
+    string[] providerNames = Array.Empty<string>();
+    string? userName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authStateProvider.GetAuthenticationStateAsync();
+        userName = authState?.User.Identity?.Name;
+        providerNames = await providers.GetProviderNamesAsync() ?? Array.Empty<string>();
+    }
+}

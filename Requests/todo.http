@@ -1,29 +1,33 @@
+@TodoApi_HostAddress = http://localhost:5000
+
 ### Create a user
 @password = <put a password here>
 
-POST http://localhost:5000/users
+POST {{TodoApi_HostAddress}}/users/register
 Content-Type: application/json
 
 {
-    "username": "myuser",
+    "email": "myuser@contoso.com",
     "password": "{{password}}"
 }
 
-### Get a token
+### Log in to get a token
 
-POST http://localhost:5000/users/token
+POST {{TodoApi_HostAddress}}/users/login
 Content-Type: application/json
 
 {
-    "username": "myuser",
+    "email": "myuser@contoso.com",
     "password": "{{password}}"
 }
 
-@token = <put JWT token here>
+###
+
+@token = <put accessToken (JWT) token here>
 
 ### Create a todo
 
-POST http://localhost:5000/todos
+POST {{TodoApi_HostAddress}}/todos
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
@@ -33,9 +37,9 @@ Content-Type: application/json
 
 ### Get all todos
 
-GET http://localhost:5000/todos
+GET {{TodoApi_HostAddress}}/todos
 Authorization: Bearer {{token}}
 
 ### Delete a todo
-DELETE http://localhost:5000/todos/1
+DELETE {{TodoApi_HostAddress}}/todos/1
 Authorization: Bearer {{token}}

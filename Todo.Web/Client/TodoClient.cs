@@ -3,14 +3,8 @@ using System.Net.Http.Json;
 
 namespace Todo.Web.Client;
 
-public class TodoClient
+public class TodoClient(HttpClient client)
 {
-    private readonly HttpClient _client;
-    public TodoClient(HttpClient client)
-    {
-        _client = client;
-    }
-
     public async Task<TodoItem?> AddTodoAsync(string? title)
     {
         if (string.IsNullOrEmpty(title))
@@ -20,7 +14,7 @@ public class TodoClient
 
         TodoItem? createdTodo = null;
 
-        var response = await _client.PostAsJsonAsync("todos", new TodoItem { Title = title });
+        var response = await client.PostAsJsonAsync("todos", new TodoItem { Title = title });
 
         if (response.IsSuccessStatusCode)
         {
@@ -32,13 +26,19 @@ public class TodoClient
 
     public async Task<bool> DeleteTodoAsync(int id)
     {
-        var response = await _client.DeleteAsync($"todos/{id}");
+        var response = await client.DeleteAsync($"todos/{id}");
         return response.IsSuccessStatusCode;
     }
 
     public async Task<(HttpStatusCode, List<TodoItem>?)> GetTodosAsync()
     {
-        var response = await _client.GetAsync("todos");
+        // This is a hack from hell to avoid having to know if this is running server or client side
+        if (client.BaseAddress is null)
+        {
+            return (HttpStatusCode.OK, new());
+        }
+
+        var response = await client.GetAsync("todos");
         var statusCode = response.StatusCode;
         List<TodoItem>? todos = null;
 
@@ -57,7 +57,7 @@ public class TodoClient
             return false;
         }
 
-        var response = await _client.PostAsJsonAsync("auth/login", new UserInfo { Username = username, Password = password });
+        var response = await client.PostAsJsonAsync("auth/login", new UserInfo { Email = username, Password = password });
         return response.IsSuccessStatusCode;
     }
 
@@ -68,13 +68,13 @@ public class TodoClient
             return false;
         }
 
-        var response = await _client.PostAsJsonAsync("auth/register", new UserInfo { Username = username, Password = password });
+        var response = await client.PostAsJsonAsync("auth/register", new UserInfo { Email = username, Password = password });
         return response.IsSuccessStatusCode;
     }
 
     public async Task<bool> LogoutAsync()
     {
-        var response = await _client.PostAsync("auth/logout", content: null);
+        var response = await client.PostAsync("auth/logout", content: null);
         return response.IsSuccessStatusCode;
     }
 }

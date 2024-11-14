@@ -11,8 +11,8 @@ using TodoApi;
 namespace TodoApi.Migrations
 {
     [DbContext(typeof(TodoDbContext))]
-    [Migration("20221123165051_RemoveIsAdmin")]
-    partial class RemoveIsAdmin
+    [Migration("20230714032431_ForeignKeyChange")]
+    partial class ForeignKeyChange
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -221,7 +221,6 @@ namespace TodoApi.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("TEXT");
 
@@ -293,7 +292,6 @@ namespace TodoApi.Migrations
                     b.HasOne("TodoApi.TodoUser", null)
                         .WithMany()
                         .HasForeignKey("OwnerId")
-                        .HasPrincipalKey("UserName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -2,5 +2,5 @@
 
 public class TokenNames
 {
-    public static readonly string AccessToken = "access_token";
+    public static readonly string AccessToken = "accessToken";
 }
