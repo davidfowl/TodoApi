@@ -11,9 +11,12 @@ jobs:
 
     - name: Setup .NET SDK
       uses: actions/setup-dotnet@v3
+
+    - name: Restore dependencies
+      run: dotnet restore TodoApi.sln
  
     - name: dotnet build
-      run: dotnet build TodoApi.sln -c Release
+      run: dotnet build TodoApi.sln -c Release --no-restore
 
     - name: dotnet test
       run: dotnet test TodoApi.sln -c Release --no-build
