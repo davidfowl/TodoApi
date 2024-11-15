@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
 namespace TodoApi;
@@ -46,7 +47,7 @@ public static class UsersApi
         })
         // Add the open API response for 200 since AccessTokenResponse
         // is internal and we don't want to duplicate it.
-        .Produces("AccessTokenResponse");
+        .Produces<AccessTokenResponse>();
 
         return group;
     }
