@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +23,7 @@ builder.Services.AddSqlite<TodoDbContext>(connectionString);
 builder.Services.AddCurrentUser();
 
 // Configure Open API
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(o => o.AddOpenApiSecurity());
+builder.Services.AddOpenApi();
 
 // Configure rate limiting
 builder.Services.AddRateLimiting();
@@ -44,9 +44,10 @@ app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapScalarApiReference();
 }
+
+app.MapOpenApi();
 
 app.MapDefaultEndpoints();
 
