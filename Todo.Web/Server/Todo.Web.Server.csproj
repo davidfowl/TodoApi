@@ -1,12 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <ContainerImageName>todo-web-server</ContainerImageName>
     <ContainerImageTag>latest</ContainerImageTag>
     <UserSecretsId>c3677e8f-17d8-492d-8844-36ade85166e5</UserSecretsId>
-	<RazorLangVersion>8.0</RazorLangVersion>
+    <RazorLangVersion>8.0</RazorLangVersion>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="AspNet.Security.OAuth.GitHub" />
     <PackageReference Include="Auth0.AspNetCore.Authentication" />
@@ -14,13 +13,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="Yarp.ReverseProxy" />
-	<PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" />
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery.Yarp" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\TodoApi.ServiceDefaults\TodoApi.ServiceDefaults.csproj" />
     <ProjectReference Include="..\Client\Todo.Web.Client.csproj" />
     <ProjectReference Include="..\Shared\Todo.Web.Shared.csproj" />
   </ItemGroup>
-
 </Project>

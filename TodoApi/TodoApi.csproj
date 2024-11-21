@@ -1,11 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <UserSecretsId>e616b306-8ad0-4843-a0e0-79b3b5655c22</UserSecretsId>
     <ContainerImageName>todo-api</ContainerImageName>
     <ContainerImageTag>latest</ContainerImageTag>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
@@ -15,14 +14,11 @@
     <PackageReference Include="MiniValidation" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
-
   <ItemGroup>
     <Using Include="TodoApi" />
     <InternalsVisibleTo Include="TodoApi.Tests" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\TodoApi.ServiceDefaults\TodoApi.ServiceDefaults.csproj" />
   </ItemGroup>
-
 </Project>
