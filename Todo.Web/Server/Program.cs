@@ -40,9 +40,9 @@ else
 }
 
 app.UseHttpsRedirection();
-app.MapStaticAssets();
 app.UseAntiforgery();
 
+app.MapStaticAssets();
 app.MapRazorComponents<App>()
    .AddInteractiveWebAssemblyRenderMode();
 
