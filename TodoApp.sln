@@ -9,6 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Todo.Api.Tests", "Todo.Api.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7FAB2FEF-77C3-4519-AA2E-0CCCDFE1FC13}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yaml = .github\workflows\ci.yaml
 		Directory.Build.props = Directory.Build.props
 		Directory.Packages.props = Directory.Packages.props
 		global.json = global.json

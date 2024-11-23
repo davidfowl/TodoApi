@@ -13,10 +13,10 @@ jobs:
       uses: actions/setup-dotnet@v3
 
     - name: Restore dependencies
-      run: dotnet restore TodoApi.sln
+      run: dotnet restore TodoApp.sln
  
     - name: dotnet build
-      run: dotnet build TodoApi.sln -c Release --no-restore
+      run: dotnet build TodoApp.sln -c Release --no-restore
 
     - name: dotnet test
-      run: dotnet test TodoApi.sln -c Release --no-build
+      run: dotnet test TodoApp.sln -c Release --no-build
