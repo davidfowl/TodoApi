@@ -114,13 +114,9 @@ public static class AuthApi
             properties.SetExternalProvider(providerName);
         }
 
-        var tokens = new[]
-        {
+        properties.StoreTokens([
             new AuthenticationToken { Name = TokenNames.AccessToken, Value = token }
-        };
-
-        properties.StoreTokens(tokens);
-
+        ]);
 
         return Results.SignIn(new ClaimsPrincipal(identity),
             properties: properties,
