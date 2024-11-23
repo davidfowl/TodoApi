@@ -18,7 +18,7 @@ public static class UsersApi
 
         // The MapIdentityApi<T> doesn't expose an external login endpoint so we write this custom endpoint that follows
         // a similar pattern
-        group.MapPost("/token/{provider}", async Task<Results<SignInHttpResult, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, SignInManager<TodoUser> signInManager) =>
+        group.MapPost("/token/{provider}", async Task<Results<Ok<AccessTokenResponse>, SignInHttpResult, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, SignInManager<TodoUser> signInManager) =>
         {
             var user = await userManager.FindByLoginAsync(provider, userInfo.ProviderKey);
 
@@ -44,10 +44,7 @@ public static class UsersApi
             }
 
             return TypedResults.ValidationProblem(result.Errors.ToDictionary(e => e.Code, e => new[] { e.Description }));
-        })
-        // Add the open API response for 200 since AccessTokenResponse
-        // is internal and we don't want to duplicate it.
-        .Produces<AccessTokenResponse>();
+        });
 
         return group;
     }
