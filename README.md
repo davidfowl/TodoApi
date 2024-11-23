@@ -1,6 +1,6 @@
 ## Todo application with ASP.NET Core
 
-[![CI](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml/badge.svg)](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml)
+[![CI](https://github.com/davidfowl/TodoApp/actions/workflows/ci.yaml/badge.svg)](https://github.com/davidfowl/TodoApi/actions/workflows/ci.yaml)
 
 This is a Todo application that features:
 - [**Todo.Web**](Todo.Web) - An ASP.NET Core hosted Blazor WASM front end application
@@ -32,7 +32,7 @@ It showcases:
 
 ### Running the application
 
-To run the application, run the [TodoApi.AppHost](TodoApi.AppHost) project. This uses .NET Aspire to run both the [Todo.Web/Server](Todo.Web/Server) and [TodoApi](TodoApi).
+To run the application, run the [TodoApp.AppHost](TodoApp.AppHost) project. This uses .NET Aspire to run both the [Todo.Web/Server](Todo.Web/Server) and [Todo.Api](Todo.Api).
 
 ## Optional
 
@@ -131,5 +131,5 @@ Learn more about the Auth0 .NET SDK [here](https://github.com/auth0/auth0-aspnet
 
 ### OpenTelemetry
 
-TodoApi uses OpenTelemetry to collect logs, metrics and spans. You can see this
+This app uses OpenTelemetry to collect logs, metrics and spans. You can see this
 using the [Aspire Dashboard](https://aspiredashboard.com/).

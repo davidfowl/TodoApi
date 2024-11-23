@@ -22,9 +22,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Todo.Web.Client", "Todo.Web
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Todo.Web.Shared", "Todo.Web\Shared\Todo.Web.Shared.csproj", "{272942F6-94E8-4D6B-8AD8-C4CCA305836D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApi.AppHost", "TodoApi.AppHost\TodoApi.AppHost.csproj", "{4ECB456A-BC4A-4F99-A1D5-FE2DF1C4EA1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.AppHost", "TodoApp.AppHost\TodoApp.AppHost.csproj", "{4ECB456A-BC4A-4F99-A1D5-FE2DF1C4EA1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApi.ServiceDefaults", "TodoApi.ServiceDefaults\TodoApi.ServiceDefaults.csproj", "{67B571B3-F4FB-46AA-888E-17A5A773610C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TodoApp.ServiceDefaults", "TodoApp.ServiceDefaults\TodoApp.ServiceDefaults.csproj", "{67B571B3-F4FB-46AA-888E-17A5A773610C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
