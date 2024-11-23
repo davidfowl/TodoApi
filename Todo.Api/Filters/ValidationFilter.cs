@@ -1,11 +1,13 @@
 ﻿using System.Reflection;
-using Microsoft.AspNetCore.Http.Metadata;
 using MiniValidation;
 
 namespace TodoApi;
 
 public static class ValidationFilterExtensions
 {
+    private static readonly ProducesResponseTypeMetadata ValidationErrorResponseMetadata = 
+        new(400, typeof(HttpValidationProblemDetails), ["application/problem+json"]);
+
     public static TBuilder WithParameterValidation<TBuilder>(this TBuilder builder, params Type[] typesToValidate) where TBuilder : IEndpointConventionBuilder
     {
         builder.Add(eb =>
@@ -35,7 +37,7 @@ public static class ValidationFilterExtensions
             }
 
             // We can respond with problem details if there's a validation error
-            eb.Metadata.Add(new ProducesResponseTypeMetadata(typeof(HttpValidationProblemDetails), 400, "application/problem+json"));
+            eb.Metadata.Add(ValidationErrorResponseMetadata);
 
             eb.FilterFactories.Add((context, next) =>
             {
@@ -55,14 +57,5 @@ public static class ValidationFilterExtensions
         });
 
         return builder;
-    }
-
-    // Equivalent to the .Produces call to add metadata to endpoints
-    private sealed class ProducesResponseTypeMetadata(Type type, int statusCode, string contentType) : 
-        IProducesResponseTypeMetadata
-    {
-        public Type Type { get; } = type;
-        public int StatusCode { get; } = statusCode;
-        public IEnumerable<string> ContentTypes { get; } = [contentType];
     }
 }
