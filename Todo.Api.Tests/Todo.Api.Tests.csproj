@@ -6,7 +6,7 @@
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" PrivateAssets="all" />
     <PackageReference Include="coverlet.collector" PrivateAssets="all" />
-    <ProjectReference Include="..\TodoApi\TodoApi.csproj" />
+    <ProjectReference Include="..\Todo.Api\Todo.Api.csproj" />
   </ItemGroup>
 
     <ItemGroup>

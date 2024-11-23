@@ -2,7 +2,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var migrateOperation = builder.AddTodoDbMigration();
 
-var todoapi = builder.AddProject<Projects.TodoApi>("todoapi");
+var todoapi = builder.AddProject<Projects.Todo_Api>("todoapi");
 
 builder.AddProject<Projects.Todo_Web_Server>("todo-web-server")
        .WithReference(todoapi);

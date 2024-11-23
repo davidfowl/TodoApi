@@ -6,14 +6,14 @@
 
         if (builder.ExecutionContext.IsRunMode)
         {
-            var projectDirectory = Path.GetDirectoryName(new Projects.TodoApi().ProjectPath)!;
+            var projectDirectory = Path.GetDirectoryName(new Projects.Todo_Api().ProjectPath)!;
             var dbDirectory = Path.Combine(projectDirectory, ".db");
 
             if (!Directory.Exists(dbDirectory))
             {
                 Directory.CreateDirectory(dbDirectory);
 
-                migrateOperation = builder.AddEfMigration<Projects.TodoApi>("todo-db-migration");
+                migrateOperation = builder.AddEfMigration<Projects.Todo_Api>("todo-db-migration");
             }
         }
 

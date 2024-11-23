@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <Using Include="TodoApi" />
-    <InternalsVisibleTo Include="TodoApi.Tests" />
+    <InternalsVisibleTo Include="Todo.Api.Tests" />
   </ItemGroup>
 
   <ItemGroup>
