@@ -50,25 +50,25 @@ public class TodoClient(HttpClient client)
         return (statusCode, todos);
     }
 
-    public async Task<bool> LoginAsync(string? username, string? password)
+    public async Task<bool> LoginAsync(string? email, string? password)
     {
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
             return false;
         }
 
-        var response = await client.PostAsJsonAsync("auth/login", new UserInfo { Email = username, Password = password });
+        var response = await client.PostAsJsonAsync("auth/login", new UserInfo { Email = email, Password = password });
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> CreateUserAsync(string? username, string? password)
+    public async Task<bool> CreateUserAsync(string? email, string? password)
     {
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
         {
             return false;
         }
 
-        var response = await client.PostAsJsonAsync("auth/register", new UserInfo { Email = username, Password = password });
+        var response = await client.PostAsJsonAsync("auth/register", new UserInfo { Email = email, Password = password });
         return response.IsSuccessStatusCode;
     }
 
