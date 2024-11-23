@@ -4,7 +4,7 @@
 
 This is a Todo application that features:
 - [**Todo.Web**](Todo.Web) - An ASP.NET Core hosted Blazor WASM front end application
-- [**TodoApi**](TodoApi) - An ASP.NET Core REST API backend using minimal APIs
+- [**Todo.Api**](Todo.Api) - An ASP.NET Core REST API backend using minimal APIs
 
 ![image](https://user-images.githubusercontent.com/95136/204161352-bc54ccb7-32cf-49ba-a6f7-f46d0f2d204f.png)
 
@@ -37,7 +37,7 @@ To run the application, run the [TodoApi.AppHost](TodoApi.AppHost) project. This
 ## Optional
 
 ### Using the API standalone
-The Todo REST API can run standalone as well. You can run the [TodoApi](TodoApi) project and make requests to various endpoints using the Swagger UI (or a client of your choice):
+The Todo REST API can run standalone as well. You can run the [Todo.Api](Todo.Api) project and make requests to various endpoints using the Swagger UI (or a client of your choice):
 
 <img width="1200" alt="image" src="https://user-images.githubusercontent.com/95136/204315486-86d25a5f-1164-467a-9891-827343b9f0e8.png">
 
