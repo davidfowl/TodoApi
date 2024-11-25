@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
 
 namespace TodoApi;
 
@@ -9,7 +11,25 @@ public static class RateLimitExtensions
 
     public static IServiceCollection AddRateLimiting(this IServiceCollection services)
     {
-        return services.AddRateLimiter(options =>
+        services.AddRateLimiter();
+
+        // Setup defaults for the TokenBucketRateLimiterOptions and read them from config if defined
+        // In theory this could be per user using named options
+        services.AddOptions<TokenBucketRateLimiterOptions>()
+                .Configure(options =>
+                {
+                    // Set defaults
+                    options.ReplenishmentPeriod = TimeSpan.FromSeconds(10);
+                    options.AutoReplenishment = true;
+                    options.TokenLimit = 100;
+                    options.TokensPerPeriod = 100;
+                    options.QueueLimit = 100;
+                })
+                .BindConfiguration("RateLimiting");
+
+        // Setup the rate limiting policies taking the per user rate limiting options into account
+        services.AddOptions<RateLimiterOptions>()
+                .Configure((RateLimiterOptions options, IOptionsMonitor<TokenBucketRateLimiterOptions> perUserRateLimitingOptions) =>
         {
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
@@ -20,17 +40,12 @@ public static class RateLimitExtensions
 
                 return RateLimitPartition.GetTokenBucketLimiter(username, key =>
                 {
-                    return new()
-                    {
-                        ReplenishmentPeriod = TimeSpan.FromSeconds(10),
-                        AutoReplenishment = true,
-                        TokenLimit = 100,
-                        TokensPerPeriod = 100,
-                        QueueLimit = 100,
-                    };
+                    return perUserRateLimitingOptions.CurrentValue;
                 });
             });
         });
+
+        return services;
     }
 
     public static IEndpointConventionBuilder RequirePerUserRateLimit(this IEndpointConventionBuilder builder)
