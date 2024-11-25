@@ -6,6 +6,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
+// Configure data protection, setup the application discriminator
+// so that the data protection keys can be shared between the BFF and this API
+builder.Services.AddDataProtection(o => o.ApplicationDiscriminator = "TodoApp");
+
 // Configure auth
 builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
 builder.Services.AddAuthorizationBuilder().AddCurrentUserHandler();

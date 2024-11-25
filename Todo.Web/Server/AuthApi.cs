@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace Todo.Web.Server;
 
@@ -60,7 +61,7 @@ public static class AuthApi
                 authenticationSchemes: [provider]);
         });
 
-        group.MapGet("signin/{provider}", async (string provider, AuthClient client, HttpContext context) =>
+        group.MapGet("signin/{provider}", async (string provider, AuthClient client, HttpContext context, IDataProtectionProvider dataProtectionProvider) =>
         {
             // Grab the login information from the external login dance
             var result = await context.AuthenticateAsync(AuthenticationSchemes.ExternalScheme);
@@ -75,7 +76,10 @@ public static class AuthApi
                 // for now we'll prefer the email address
                 var name = (principal.FindFirstValue(ClaimTypes.Email) ?? principal.Identity?.Name)!;
 
-                var token = await client.GetOrCreateUserAsync(provider, new() { Username = name, ProviderKey = id });
+                // Protect the user id so it for transport
+                var protector = dataProtectionProvider.CreateProtector(provider);
+
+                var token = await client.GetOrCreateUserAsync(provider, new() { Username = name, ProviderKey = protector.Protect(id) });
 
                 if (token is not null)
                 {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
@@ -20,9 +21,13 @@ public static class UsersApi
 
         // The MapIdentityApi<T> doesn't expose an external login endpoint so we write this custom endpoint that follows
         // a similar pattern
-        group.MapPost("/token/{provider}", async Task<Results<Ok<AccessTokenResponse>, SignInHttpResult, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, SignInManager<TodoUser> signInManager) =>
+        group.MapPost("/token/{provider}", async Task<Results<Ok<AccessTokenResponse>, SignInHttpResult, ValidationProblem>> (string provider, ExternalUserInfo userInfo, UserManager<TodoUser> userManager, SignInManager<TodoUser> signInManager, IDataProtectionProvider dataProtectionProvider) =>
         {
-            var user = await userManager.FindByLoginAsync(provider, userInfo.ProviderKey);
+            var protector = dataProtectionProvider.CreateProtector(provider);
+
+            var providerKey = protector.Unprotect(userInfo.ProviderKey);
+
+            var user = await userManager.FindByLoginAsync(provider, providerKey);
 
             var result = IdentityResult.Success;
 
@@ -34,7 +39,7 @@ public static class UsersApi
 
                 if (result.Succeeded)
                 {
-                    result = await userManager.AddLoginAsync(user, new UserLoginInfo(provider, userInfo.ProviderKey, displayName: null));
+                    result = await userManager.AddLoginAsync(user, new UserLoginInfo(provider, providerKey, displayName: null));
                 }
             }
 
