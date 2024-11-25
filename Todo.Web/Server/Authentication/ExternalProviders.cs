@@ -27,10 +27,10 @@ public class ExternalProviders(IAuthenticationSchemeProvider schemeProvider)
                 continue;
             }
 
-            providerNames ??= new();
+            providerNames ??= [];
             providerNames.Add(s.Name);
         }
 
-        return providerNames?.ToArray() ?? Array.Empty<string>();
+        return providerNames?.ToArray() ?? [];
     }
 }

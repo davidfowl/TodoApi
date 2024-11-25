@@ -12,6 +12,8 @@ public static class UsersApi
 
         group.WithTags("Users");
 
+        // TODO: Add service to service auth between the BFF and this API
+
         group.WithParameterValidation(typeof(ExternalUserInfo));
 
         group.MapIdentityApi<TodoUser>();
