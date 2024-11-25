@@ -23,7 +23,7 @@ It showcases:
 ## Prerequisites
 
 ### .NET
-1. [Install .NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+1. [Install .NET 9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 
 ### Database
 

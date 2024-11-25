@@ -44,14 +44,17 @@ app.UseRateLimiter();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapScalarApiReference();
+    app.MapScalarApiReference(options =>
+    {
+        options.Servers = [];
+    });
 }
 
 app.MapOpenApi();
 
 app.MapDefaultEndpoints();
 
-app.Map("/", () => Results.Redirect("/swagger"));
+app.Map("/", () => Results.Redirect("/scalar/v1"));
 
 // Configure the APIs
 app.MapTodos();
