@@ -9,6 +9,9 @@ builder.AddServiceDefaults();
 builder.AddAuthentication();
 builder.Services.AddAuthorizationBuilder();
 
+// Configure data protection, setup the application discriminator so that the data protection keys can be shared between the BFF and this API
+builder.Services.AddDataProtection(o => o.ApplicationDiscriminator = "TodoApp");
+
 // Must add client services
 builder.Services.AddScoped<TodoClient>();
 

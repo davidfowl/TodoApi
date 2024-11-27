@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace TodoApi.Tests;
 
@@ -116,7 +117,12 @@ public class UserApiTests
         await using var db = application.CreateTodoDbContext();
 
         var client = application.CreateClient();
-        var response = await client.PostAsJsonAsync("/users/token/Google", new ExternalUserInfo { Username = "todouser", ProviderKey = "1003" });
+
+        var encryptedId = application.Services.GetRequiredService<IDataProtectionProvider>()
+                                    .CreateProtector("Google")
+                                    .Protect("1003");
+
+        var response = await client.PostAsJsonAsync("/users/token/Google", new ExternalUserInfo { Username = "todouser", ProviderKey = encryptedId });
 
         Assert.True(response.IsSuccessStatusCode);
 
